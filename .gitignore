@@ -30,6 +30,7 @@ ASIO_SDK/*
 CA_SDK/*
 Projects/*
 */*/gui/*
+.sync/*
 
 Icon?
 .DS_Stor*
