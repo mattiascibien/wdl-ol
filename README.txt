@@ -1,9 +1,9 @@
 WDL-Youlean 
 
-This is enchanced IPlug that supports GUI resizing and GUI rescaling and it has live edit mode.
+This is enchanced WDL-OL that supports GUI resizing, GUI rescaling and it has live edit mode.
 
 
-========================================================================================================================================
+====================================================================================================================
 
 
 WDL / IPlug - Oli Larkin Edition
