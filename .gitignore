@@ -32,6 +32,7 @@ ASIO_SDK/*
 CA_SDK/*
 Projects/*
 */*/gui/*
+.sync/*
 
 Icon?
 .DS_Stor*
@@ -50,8 +51,7 @@ IPlugExamples/build_errors.log
 /ReaperExtensions/
 
 /IPlugExamples/duplicate.pyc
-
-/IPlugExamples/*/LiveEditLayout.h
+/WDL/IPlug/IPlugGUIResize - Copy (2).h
+/WDL/IPlug/IPlugGUIResize - Copy.h
 /IPlugExamples/IPlugBetterGUIResize/IPlugBetterGUIResize.VC.VC.opendb
-/IPlugExamples/IPlugCairo
-/IPlugExamples/Cairo_Teaser_001
+WDL/lice/glew/include/GL/WGLEXT.H
