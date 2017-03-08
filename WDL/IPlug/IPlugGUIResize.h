@@ -159,6 +159,13 @@ public:
 	void HideControl(int index);
 	void ShowControl(int index);
 
+	void MoveControlRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void MoveControlRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
+	void MoveControlHorizontallyRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void MoveControlHorizontallyRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
+	void MoveControlVerticallyRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void MoveControlVerticallyRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
+	
 	void MoveControlRelativeToControlDrawRect(int moveControlIndex, int relativeToControlIndex, double xRatio, double yRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlRelativeToControlDrawRect(IControl * moveControl, IControl * relativeToControl, double xRatio, double yRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlHorizontallyRelativeToControlDrawRect(int moveControlIndex, int relativeToControlIndex, double xRatio, resizeFlag flag = drawAndTargetArea);
@@ -174,20 +181,35 @@ public:
 	void MoveControlVerticallyRelativeToNonScaledDRECT(IControl * pControl, DRECT relativeTo, double yRatio, resizeFlag flag = drawAndTargetArea);
 	
 	void MoveControl(int index, double x, double y, resizeFlag flag = drawAndTargetArea);
-	void MoveControl(IControl * pControl, double x, double y, resizeFlag flag);
-	void MoveControlHorizontally(int index, double x, resizeFlag flag);
-	void MoveControlHorizontally(IControl * pControl, double x, resizeFlag flag);
-	void MoveControlVertically(int index, double y, resizeFlag flag);
-	void MoveControlVertically(IControl * pControl, double y, resizeFlag flag);
+	void MoveControl(IControl * pControl, double x, double y, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControl(int index, double x, double y, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControl(IControl * pControl, double x, double y, resizeFlag flag = drawAndTargetArea);
+	void MoveAllContainingControls(int index, double x, double y, resizeFlag flag = drawAndTargetArea);
+	void MoveAllContainingControls(IControl * pControl, double x, double y, resizeFlag flag = drawAndTargetArea);
+	void MoveControlHorizontally(int index, double x, resizeFlag flag = drawAndTargetArea);
+	void MoveControlHorizontally(IControl * pControl, double x, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControlHorizontally(int index, double x, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControlHorizontally(IControl * pControl, double x, resizeFlag flag = drawAndTargetArea);
+	void MoveControlVertically(int index, double y, resizeFlag flag = drawAndTargetArea);
+	void MoveControlVertically(IControl * pControl, double y, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControlVertically(int index, double y, resizeFlag flag = drawAndTargetArea);
+	void RelativelyMoveControlVertically(IControl * pControl, double y, resizeFlag flag = drawAndTargetArea);
 
 	void MoveControlTopEdge(int index, double T, resizeFlag flag = drawAndTargetArea);
-	void MoveControlTopEdge(IControl * pControl, double T, resizeFlag flag);
+	void MoveControlTopEdge(IControl * pControl, double T, resizeFlag flag = drawAndTargetArea);
 	void MoveControlLeftEdge(int index, double L, resizeFlag flag = drawAndTargetArea);
-	void MoveControlLeftEdge(IControl * pControl, double L, resizeFlag flag);
+	void MoveControlLeftEdge(IControl * pControl, double L, resizeFlag flag = drawAndTargetArea);
 	void MoveControlRightEdge(int index, double R, resizeFlag flag = drawAndTargetArea);
-	void MoveControlRightEdge(IControl * pControl, double R, resizeFlag flag);
+	void MoveControlRightEdge(IControl * pControl, double R, resizeFlag flag = drawAndTargetArea);
 	void MoveControlBottomEdge(int index, double B, resizeFlag flag = drawAndTargetArea);
-	void MoveControlBottomEdge(IControl * pControl, double B, resizeFlag flag);
+	void MoveControlBottomEdge(IControl * pControl, double B, resizeFlag flag = drawAndTargetArea);
+
+	void ResizeControlRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void ResizeControlRelativeToWindowSize(IControl * pControl, resizeFlag flag = drawAndTargetArea);
+	void ResizeControlHorizontalyRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void ResizeControlHorizontalyRelativeToWindowSize(IControl * pControl, resizeFlag flag = drawAndTargetArea);
+	void ResizeControlVerticallyRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
+	void ResizeControlVerticallyRelativeToWindowSize(IControl * pControl, resizeFlag flag = drawAndTargetArea);
 
 	void SetNormalizedDrawRect(int index, double L, double T, double R, double B);
 	void SetNormalizedDrawRect(IControl *pControl, double L, double T, double R, double B);
@@ -204,6 +226,8 @@ public:
 	int GetViewMode();
 	int GetViewModeSize();
 	bool CurrentlyFastResizing();
+	double GetWidnowSizeWidthRatio();
+	double GetWidnowSizeHeightRatio();
 	
 	// You can override this to use in your custom resizing control
 	virtual void DrawBackgroundAtFastResizing(IGraphics* pGraphics, IRECT *pRECT);
@@ -233,7 +257,9 @@ private:
 	bool double_equals(double a, double b, double epsilon = 0.0000000001);
 	DRECT IRECT_to_DRECT(IRECT * iRECT);
 	IRECT DRECT_to_IRECT(DRECT * dRECT);
-	IRECT ResizeIRECT(DRECT * old_IRECT, double width_ratio, double height_ratio);
+	IRECT RescaleToIRECT(DRECT * old_IRECT, double width_ratio, double height_ratio);
+	DRECT RescaleToDRECT(DRECT * old_IRECT, double width_ratio, double height_ratio);
+	void GetContainingControls(vector<IControl*> *containingControls, IControl* pControl);
 	DRECT* GetLayoutContainerDrawRECT(int viewMode, IControl* pControl);
 	DRECT* GetLayoutContainerTargetRECT(int viewMode, IControl* pControl);
 	int* GetLayoutContainerIsHidden(int viewMode, IControl* pControl);
@@ -264,8 +290,8 @@ private:
 	int current_view_mode;
 
 	viewContainer view_container;
-	vector <layoutContainer> layout_container;
 
+	vector <layoutContainer> layout_container;
 	vector <bool> controls_visibility;
 
 	bool use_handle = true;
