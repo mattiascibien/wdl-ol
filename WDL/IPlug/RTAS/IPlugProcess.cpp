@@ -430,6 +430,11 @@ void IPlugProcess::ResizeGraphics(int w, int h)
 {
   mCustomUI->Close();
   mPlug->OnWindowResize();
+
+#ifdef USING_YCAIRO
+  mPlug->ResizeCairoSurface();
+#endif
+
   SSetProcessWindowResizeToken theToken(fRootNameId, fRootNameId);
   FicSDSDispatchToken (&theToken);
 }

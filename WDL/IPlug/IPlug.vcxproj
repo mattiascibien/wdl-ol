@@ -143,6 +143,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\Include-Win;..\..\YCAIRO\Cairo_Graphics\Include-Win\cairo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -158,6 +161,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\Include-Win;..\..\YCAIRO\Cairo_Graphics\Include-Win\cairo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -176,6 +180,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\Include-Win;..\..\YCAIRO\Cairo_Graphics\Include-Win\cairo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -194,6 +199,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\Include-Win;..\..\YCAIRO\Cairo_Graphics\Include-Win\cairo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -243,20 +249,22 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\YCAIRO\ycairo.cpp" />
     <ClCompile Include="Hosts.cpp" />
     <ClCompile Include="IBitmapMonoText.cpp" />
     <ClCompile Include="IControl.cpp" />
     <ClCompile Include="IGraphics.cpp" />
     <ClCompile Include="IGraphicsWin.cpp" />
     <ClCompile Include="IParam.cpp" />
-    <ClCompile Include="IPlugAnimation.cpp" />
     <ClCompile Include="IPlugBase.cpp" />
+    <ClCompile Include="IPlugGUILiveEdit.cpp" />
     <ClCompile Include="IPlugGUIResize.cpp" />
     <ClCompile Include="IPlugStructs.cpp" />
     <ClCompile Include="IPopupMenu.cpp" />
     <ClCompile Include="Log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\YCAIRO\ycairo.h" />
     <ClInclude Include="Containers.h" />
     <ClInclude Include="Hosts.h" />
     <ClInclude Include="IBitmapMonoText.h" />
@@ -264,7 +272,6 @@
     <ClInclude Include="IGraphics.h" />
     <ClInclude Include="IGraphicsWin.h" />
     <ClInclude Include="IParam.h" />
-    <ClInclude Include="IPlugAnimation.h" />
     <ClInclude Include="IPlugBase.h" />
     <ClInclude Include="IPlugGUILiveEdit.h" />
     <ClInclude Include="IPlugGUIResize.h" />

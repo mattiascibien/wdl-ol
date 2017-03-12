@@ -144,7 +144,7 @@ LRESULT CALLBACK IGraphicsWin::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
           if (pGraphics->mParamEditWnd)
           {
-            IRECT* notDirtyR = pGraphics->mEdControl->GetRECT();
+            IRECT* notDirtyR = pGraphics->mEdControl->GetDrawRECT();
             RECT r2 = { notDirtyR->L, notDirtyR->T, notDirtyR->R, notDirtyR->B };
             ValidateRect(hWnd, &r2); // make sure we dont redraw the edit box area
             UpdateWindow(hWnd);

@@ -29,16 +29,15 @@ struct IColor
 {
   int A, R, G, B;
   double nA, nR, nG, nB;
-  IColor(int a = 255, int r = 0, int g = 0, int b = 0) : A(a), R(r), G(g), B(b), 
-	  nA(double(a) / 255), nR(double(r) / 255), nG(double(g) / 255), nB(double(b) / 255) {}
+  IColor(int a = 255, int r = 0, int g = 0, int b = 0) : A(a), R(r), G(g), B(b) {}
   bool operator==(const IColor& rhs) { return (rhs.A == A && rhs.R == R && rhs.G == G && rhs.B == B); }
   bool operator!=(const IColor& rhs) { return !operator==(rhs); }
   bool Empty() const { return A == 0 && R == 0 && G == 0 && B == 0; }
-  void Clamp() 
-  { 
-	  A = IPMIN(A, 255); R = IPMIN(R, 255); G = IPMIN(G, 255); B = IPMIN(B, 255); 
-	  nA = IPMIN(nA, 1.0); nR = IPMIN(nR, 1.0); nG = IPMIN(nG, 1.0); nB = IPMIN(nB, 1.0);
-  }
+  void Clamp() { A = IPMIN(A, 255); R = IPMIN(R, 255); G = IPMIN(G, 255); B = IPMIN(B, 255); }
+  double A_norm() { return double(A) / 255.0; }
+  double R_norm() { return double(R) / 255.0; }
+  double G_norm() { return double(G) / 255.0; }
+  double B_norm() { return double(B) / 255.0; }
 };
 
 const IColor COLOR_TRANSPARENT(0, 0, 0, 0);

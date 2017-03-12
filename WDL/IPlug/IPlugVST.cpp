@@ -236,6 +236,10 @@ void IPlugVST::ResizeGraphics(int w, int h)
     mEditRect.bottom = h;
       
     OnWindowResize();
+
+#ifdef USING_YCAIRO
+	ResizeCairoSurface();
+#endif
   }
 }
 

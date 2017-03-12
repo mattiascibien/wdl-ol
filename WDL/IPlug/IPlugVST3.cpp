@@ -1120,6 +1120,11 @@ tresult PLUGIN_API IPlugVST3View::onSize(ViewRect* newSize)
     if (mExpectingNewSize)
     {
       mPlug->OnWindowResize();
+
+#ifdef USING_YCAIRO
+	  mPlug->ResizeCairoSurface();
+#endif
+
       mExpectingNewSize = false;
     }
   }

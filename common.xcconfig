@@ -6,24 +6,20 @@
 CERTIFICATE_ID = Youlean
 
 // Which compiler to use
-//COMPILER = com.apple.compilers.gcc.4_2 // use this with xcode3
-//COMPILER = com.intel.compilers.icc.12_1_0
-//COMPILER = com.apple.compilers.llvmgcc42 // use this ...
 COMPILER = com.apple.compilers.llvm.clang.1_0 // or this with xcode4+/10.7+
 
 // which osx sdk to compile against - BASE_SDK rather than SDKROOT so we can override other xcconfigs (avid's)
-//BASE_SDK = macosx10.5
-//BASE_SDK = macosx10.6
 //BASE_SDK = macosx10.7 // Carbon GUIs do not work fully with the 10.7 or higher sdks
 //BASE_SDK = macosx10.8
 //BASE_SDK = macosx10.9
 //BASE_SDK = macosx10.10
 BASE_SDK = macosx10.11
+//BASE_SDK = macosx10.12
 
 CLANG_CXX_LANGUAGE_STANDARD = c++11
 CLANG_CXX_LIBRARY = libc++
 
-// the minimum OS to support
+// the minimum OS to support (don't go below 10.7)
 DEPLOYMENT_TARGET = 10.7
 
 // Where the SDKs etc are located in relation to the plugin xcode project

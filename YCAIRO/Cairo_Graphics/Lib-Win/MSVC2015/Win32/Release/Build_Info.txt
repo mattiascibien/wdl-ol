@@ -1,0 +1,3 @@
+Configuration: "Release|Win32" 
+Cairo and Pixman extensions: "MMX=off SSE2=on SSSE3=on" 
+Made by Youlean 

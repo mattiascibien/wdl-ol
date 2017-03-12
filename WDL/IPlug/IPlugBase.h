@@ -1,7 +1,7 @@
 #ifndef _IPLUGBASE_
 #define _IPLUGBASE_
 
-#define IPLUG_VERSION 0x010000
+#define IPLUG_VERSION 0x00010000
 #define IPLUG_VERSION_MAGIC 'pfft'
 
 #include "Containers.h"
@@ -14,6 +14,8 @@
 // Uncomment to enable IPlug::OnIdle() and IGraphics::OnGUIIdle().
 // #define USE_IDLE_CALLS
 
+#define USING_YCAIRO // Define this if you want to use Cairo graphics with IPlug
+
 #define MAX_EFFECT_NAME_LEN 128
 #define DEFAULT_BLOCK_SIZE 1024
 #define DEFAULT_TEMPO 120.0
@@ -23,6 +25,7 @@
 class IGraphics;
 class IPlugGUIResize;
 class IPlugGUILiveEdit;
+class ycairo_base;
 class IPlugBase
 {
 public:
@@ -96,19 +99,26 @@ public:
 
 	virtual void PopupHostContextMenuForParam(int param, int x, int y) { return; }; //only for VST3, call it from the GUI
 
-																					// ----------------------------------------
-																					// Your plugin class, or a control class, can call these functions.
+	// --------------------------------------------------------------------------------------------------------------------------------
+	// Your plugin class, or a control class, can call these functions.
 
 	int NParams() { return mParams.GetSize(); }
 	IParam* GetParam(int idx) { return mParams.Get(idx); }
 	IGraphics* GetGUI() { return mGraphics; }
+
+#ifdef USING_YCAIRO
+	ycairo_base* GetYCAIRO() { return ycairo; }
+
+	// Used by framework
+	void SetYCAIRO(ycairo_base* _ycairo) { ycairo = _ycairo; }
+	void ResizeCairoSurface();
+#endif
 
 	// GUI resize functions ------------------------------------------------------------------------------------------------------
 	void AttachGUIResize(IPlugGUIResize* pGUIResize) { mGUIResize = pGUIResize; }
 	void ResizeAtGUIOpen(IGraphics* pGraphics);
 	IPlugGUIResize* GetGUIResize() { return mGUIResize; }
 	// ---------------------------------------------------------------------------------------------------------------------------
-	IPlugGUILiveEdit* GetGUILiveEdit();
 
 	const char* GetEffectName() { return mEffectName; }
 	int GetEffectVersion(bool decimal);   // Decimal = VVVVRRMM, otherwise 0xVVVVRRMM.
@@ -335,11 +345,11 @@ protected:
 	unsigned int mTailSize;
 	NChanDelayLine* mDelay; // for delaying dry signal when mLatency > 0 and plugin is bypassed
 	WDL_PtrList<const char> mParamGroups;
+	ycairo_base *ycairo;
 
 private:
 	IGraphics* mGraphics;
 	IPlugGUIResize* mGUIResize = NULL;
-	IPlugGUILiveEdit* mGUILiveEdit = NULL;
 	WDL_PtrList<IParam> mParams;
 	WDL_PtrList<IPreset> mPresets;
 	WDL_TypedBuf<double*> mInData, mOutData;

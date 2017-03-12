@@ -88,7 +88,7 @@ bool IBitmapTextControl::Draw(IGraphics* pGraphics)
   char* cStr = mStr.Get();
   if (CSTR_NOT_EMPTY(cStr))
   {
-    DrawBitmapedText(pGraphics, &mTextBitmap, &mRECT, &mText, &mBlend, cStr, mVCentre, mMultiLine, mCharWidth, mCharHeight, mCharOffset);
+    DrawBitmapedText(pGraphics, &mTextBitmap, &mDrawRECT, &mText, &mBlend, cStr, mVCentre, mMultiLine, mCharWidth, mCharHeight, mCharOffset);
   }
   return true;
 }

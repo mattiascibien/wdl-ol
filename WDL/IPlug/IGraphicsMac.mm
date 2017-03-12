@@ -298,12 +298,12 @@ bool IGraphicsMac::DrawScreen(IRECT* pR)
     }
   }
 #endif
-  
-  
+
   CGDataProviderRef provider = CGDataProviderCreateWithData(NULL,retina_buf ? retina_buf : p,4*sw*h,NULL);
   img = CGImageCreate(w,h,8,32,4*sw,(CGColorSpaceRef)mColorSpace,
                       (kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little),
                                  provider,NULL,NO,kCGRenderingIntentDefault);
+    
   CGDataProviderRelease(provider);
 #endif
   
@@ -461,39 +461,25 @@ bool IGraphicsMac::WindowIsOpen()
 void IGraphicsMac::Resize(int w, int h)
 {
   if (w == Width() && h == Height()) return;
-    
-  int oldHeight = Height();
-  int oldWidth = Width();
 
   IGraphics::Resize(w, h);
 
   #ifndef IPLUG_NO_CARBON_SUPPORT
   if (mGraphicsCarbon)
   {
-    mGraphicsCarbon->Resize(w, h);
+   // mGraphicsCarbon->Resize(w, h);
   }
   else
   #endif
   if (mGraphicsCocoa)
   {
-    [NSAnimationContext beginGrouping]; // Prevent animated resizing
-    [[NSAnimationContext currentContext] setDuration:0.0f];
-    
-    NSSize size = { static_cast<CGFloat>(w), static_cast<CGFloat>(h) };
-    NSSize superviewSize = [(NSView*) mGraphicsCocoa superview].frame.size;
-    [(IGRAPHICS_COCOA*) mGraphicsCocoa setFrameSize: size ];
+      [NSAnimationContext beginGrouping]; // Prevent animated resizing
+      [[NSAnimationContext currentContext] setDuration:0.0f];
       
-    // Here we are inluding host part of the window.
-    size.height += superviewSize.height - oldHeight;
-    size.width += superviewSize.width - oldWidth;
-    
-    [[(IGRAPHICS_COCOA*) mGraphicsCocoa superview] setFrameSize: size ];
-    
-    [NSAnimationContext endGrouping];
-    
-    // Ask display to redraw
-    [(IGRAPHICS_COCOA*)mGraphicsCocoa  setNeedsDisplay:YES];
-
+       NSSize size = { static_cast<CGFloat>(w), static_cast<CGFloat>(h) };
+       [(IGRAPHICS_COCOA*) mGraphicsCocoa setFrameSize: size ];
+      
+      [NSAnimationContext endGrouping];
   }
 }
 

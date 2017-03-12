@@ -16,13 +16,13 @@ enum ELayout
   kWidth = GUI_WIDTH,
   kHeight = GUI_HEIGHT,
 
-  kGainX = 100,
-  kGainY = 100,
+  kGainX = 125,
+  kGainY = 125,
   kKnobFrames = 60
 };
 
 IPlugEffect::IPlugEffect(IPlugInstanceInfo instanceInfo)
-  :	IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo), mGain(1.)
+  :	IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo)
 {
   TRACE;
 
@@ -31,12 +31,17 @@ IPlugEffect::IPlugEffect(IPlugInstanceInfo instanceInfo)
   GetParam(kGain)->SetShape(2.);
 
   IGraphics* pGraphics = MakeGraphics(this, kWidth, kHeight);
-  pGraphics->AttachPanelBackground(&COLOR_RED);
 
+  pGraphics->AttachPanelBackground(&COLOR_GRAY);
+  
   IBitmap* knob = pGraphics->LoadPointerToBitmap(KNOB_ID, KNOB_FN, kKnobFrames);
-
   pGraphics->AttachControl(new IKnobMultiControl(this, kGainX, kGainY, kGain, knob));
-
+   
+ 
+  IColor textColor = IColor(255, 0, 0, 0);
+  IText textProps4(24, &textColor, "Arial", IText::kStyleNormal, IText::kAlignCenter, 0, IText::kQualityDefault);
+  pGraphics->AttachControl(new ITextControl(this, DRAW_RECT(IRECT(80, 44, 220, 84)), &textProps4, "Hello IPlug!"));
+  
   AttachGraphics(pGraphics);
 
   //MakePreset("preset 1", ... );

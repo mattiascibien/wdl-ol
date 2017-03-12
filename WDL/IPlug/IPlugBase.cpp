@@ -2,12 +2,15 @@
 #include "IGraphics.h"
 #include "IControl.h"
 #include "IPlugGUIResize.h"
-#include "IPlugGUILiveEdit.h"
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
 #include "../wdlendian.h"
 #include "../base64encdec.h"
+
+#ifdef USING_YCAIRO
+#include "ycairo.h"
+#endif
 
 #ifndef VstInt32
   #ifdef WIN32
@@ -147,8 +150,6 @@ IPlugBase::IPlugBase(int nParams,
     pOutChannel->mFDest = 0;
     mOutChannels.Add(pOutChannel);
   }
-
-  mGUILiveEdit = new IPlugGUILiveEdit;
 }
 
 IPlugBase::~IPlugBase()
@@ -168,7 +169,9 @@ IPlugBase::~IPlugBase()
     DELETE_NULL(mDelay);
   }
 
-  if (mGUILiveEdit) delete mGUILiveEdit;
+#ifdef USING_YCAIRO
+  DELETE_NULL(ycairo);
+#endif
 }
 
 int IPlugBase::GetHostVersion(bool decimal)
@@ -250,10 +253,24 @@ void IPlugBase::AttachGraphics(IGraphics* pGraphics)
     
     mGraphics = pGraphics;
 
-	// Load control positions from file if user was live editing the GUI
-	GetGUILiveEdit()->StoreDefaults(pGraphics);
+#ifdef USING_YCAIRO
+	ycairo->bind_to_lice(pGraphics);
+#endif
   }
 }
+
+#ifdef USING_YCAIRO
+void IPlugBase::ResizeCairoSurface()
+{
+	if (mGraphics && GetYCAIRO()->get_surface() && GetYCAIRO()->get_cr())
+	{
+		cairo_destroy(GetYCAIRO()->get_cr());
+		cairo_surface_destroy(GetYCAIRO()->get_surface());
+
+		GetYCAIRO()->bind_to_lice(mGraphics);
+	}
+}
+#endif
 
 void IPlugBase::ResizeAtGUIOpen(IGraphics * pGraphics)
 {
@@ -265,10 +282,6 @@ void IPlugBase::ResizeAtGUIOpen(IGraphics * pGraphics)
 
 // ---------------------------------------------------------------------------------------------------------------------------
 
-IPlugGUILiveEdit * IPlugBase::GetGUILiveEdit() 
-{ 
-	return mGUILiveEdit; 
-}
 
 // Decimal = VVVVRRMM, otherwise 0xVVVVRRMM.
 int IPlugBase::GetEffectVersion(bool decimal)

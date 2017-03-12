@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Hosts.cpp" />
+    <ClCompile Include="IBitmapMonoText.cpp" />
+    <ClCompile Include="IControl.cpp" />
+    <ClCompile Include="IGraphics.cpp" />
+    <ClCompile Include="IGraphicsWin.cpp" />
+    <ClCompile Include="IParam.cpp" />
+    <ClCompile Include="IPlugBase.cpp" />
+    <ClCompile Include="IPlugGUIResize.cpp" />
+    <ClCompile Include="IPlugStructs.cpp" />
+    <ClCompile Include="IPopupMenu.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="..\..\YCAIRO\ycairo.cpp" />
+    <ClCompile Include="IPlugGUILiveEdit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Containers.h" />
+    <ClInclude Include="Hosts.h" />
+    <ClInclude Include="IBitmapMonoText.h" />
+    <ClInclude Include="IControl.h" />
+    <ClInclude Include="IGraphics.h" />
+    <ClInclude Include="IGraphicsWin.h" />
+    <ClInclude Include="IParam.h" />
+    <ClInclude Include="IPlugBase.h" />
+    <ClInclude Include="IPlugGUIResize.h" />
+    <ClInclude Include="IPlugOSDetect.h" />
+    <ClInclude Include="IPlugStructs.h" />
+    <ClInclude Include="IPopupMenu.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="..\..\YCAIRO\ycairo.h" />
+    <ClInclude Include="IPlugGUILiveEdit.h" />
+  </ItemGroup>
+</Project>

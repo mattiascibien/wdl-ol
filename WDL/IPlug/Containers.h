@@ -268,11 +268,6 @@ public:
 			  T value;
 			  startPos = Get(&value, startPos);
 
-			  if (i == 58)
-			  {
-				   int a =0;
-			  }
-
 			  (*data)[i] = value;
 		  }
 	  }

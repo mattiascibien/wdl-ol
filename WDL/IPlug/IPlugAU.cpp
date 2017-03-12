@@ -2115,6 +2115,10 @@ void IPlugAU::ResizeGraphics(int w, int h)
   if (pGraphics)
   {
     OnWindowResize();
+
+#ifdef USING_YCAIRO
+	ResizeCairoSurface();
+#endif
   }
 }
 

@@ -22,6 +22,13 @@
     IGraphicsWin* pGraphics = new IGraphicsWin(pPlug, w, h, FPS);
 
     pGraphics->SetHInstance(gHInstance);
+
+#ifdef USING_YCAIRO
+	ycairo_base* ycairo = new ycairo_base(pPlug);
+	pPlug->SetYCAIRO(ycairo);
+	pPlug->GetYCAIRO()->set_HINSTANCE(gHInstance); // This is needed if you want to load fronts from memory
+#endif
+
     return pGraphics;
   }
 #elif defined OS_OSX
@@ -29,6 +36,13 @@
   {
     IGraphicsMac* pGraphics = new IGraphicsMac(pPlug, w, h, FPS);
     pGraphics->SetBundleID(BUNDLE_ID);
+
+#ifdef USING_YCAIRO
+	ycairo_base* ycairo = new ycairo_base(pPlug);
+	pPlug->SetYCAIRO(ycairo);
+	pPlug->GetYCAIRO()->set_BUNDLE_ID(BUNDLE_ID); // This is needed if you want to load fronts from memory
+#endif
+
     return pGraphics;
   }
 #else

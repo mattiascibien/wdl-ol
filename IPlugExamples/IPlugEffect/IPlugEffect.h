@@ -14,7 +14,7 @@ public:
   void ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames);
 
 private:
-  double mGain;
+  double mGain = 1.0;
 };
 
 #endif

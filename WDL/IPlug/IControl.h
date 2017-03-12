@@ -4,7 +4,6 @@
 #include <typeinfo>
 #include "IPlugBase.h"
 #include "IGraphics.h"
-#include "IPlugAnimation.h"
 
 // A control is anything on the GUI, it could be a static bitmap, or
 // something that moves or changes.  The control could manipulate
@@ -21,7 +20,7 @@ class IControl
 public:
   // If paramIdx is > -1, this control will be associated with a plugin parameter.
   IControl(IPlugBase* pPlug, IRECT pR, int paramIdx = -1, IChannelBlend blendMethod = IChannelBlend::kBlendNone)
-    : mPlug(pPlug), mRECT(pR), mNonScaledDrawRECT(pR), mTargetRECT(pR), mParamIdx(paramIdx), mValue(0.0), mDefaultValue(-1.0),
+    : mPlug(pPlug), mDrawRECT(pR), mNonScaledDrawRECT(pR), mTargetRECT(pR), mParamIdx(paramIdx), mValue(0.0), mDefaultValue(-1.0),
       mBlend(blendMethod), mDirty(true), mHide(false), mGrayed(false), mDisablePrompt(true), mDblAsSingleClick(false),
       mClampLo(0.0), mClampHi(1.0), mMOWhenGreyed(false), mTextEntryLength(DEFAULT_TEXT_ENTRY_LEN), 
       mValDisplayControl(0), mNameDisplayControl(0), mTooltip("") {}
@@ -50,13 +49,10 @@ public:
   virtual void AfterGUIResize(double guiScaleRatio) {}
   // --------------------------------------------------------------------------------------------------------------------
 
-  // Get animation object. 
-  IPlugAnimation* GetAnimation() { return &mAnimation; }
-
   // This retrives derived class name
   const char* GetDerivedClassName() const { return typeid(*this).name(); }
 
-  void UpdateLayerPositionValue(int position) { mLayerPosition = position; }
+  void UpdateLayerPositionIndex(int position) { mLayerPosition = position; } // This is called automatically by the framework
   int* GetLayerPosition() { return &mLayerPosition; }
 
   // Ask the IGraphics object to open an edit box so the user can enter a value for this control.
@@ -73,17 +69,22 @@ public:
   double GetValue() { return mValue; }
 
   IText* GetText() { return &mText; }
+  void SetText(IText* txt) { mText = *txt; }
   int GetTextEntryLength() { return mTextEntryLength; }
   void SetTextEntryLength(int len) { mTextEntryLength = len;  }
-  void SetText(IText* txt) { mText = *txt; }
-  IRECT* GetRECT() { return &mRECT; }       // The draw area for this control.
-  IRECT* GetTargetRECT() { return &mTargetRECT; } // The mouse target area (default = draw area).
-  void SetDrawRECT(IRECT pR) { mRECT = pR; }
-  IRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; }
-  void SetNonScaledDrawRECT(IRECT pR) { mNonScaledDrawRECT = pR; } // Sets draw rectangle that is unaffected by GUI scaling
+
+  virtual void TextFromTextEntry(const char* txt) { return; } // does nothing by default
+
+  // The draw area for this control.
+  IRECT* GetDrawRECT() { return &mDrawRECT; }       
+  void SetDrawRECT(IRECT pR) { mDrawRECT = pR; }
+  // The mouse target area (default = draw area).
+  IRECT* GetTargetRECT() { return &mTargetRECT; } 
   void SetTargetRECT(IRECT pR) { mTargetRECT = pR; }
-  virtual void TextFromTextEntry( const char* txt ) { return; } // does nothing by default
-  
+  // The draw area that is unaffected by GUI scaling.
+  IRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; } 
+  void SetNonScaledDrawRECT(IRECT pR) { mNonScaledDrawRECT = pR; } 
+    
   virtual void Hide(bool hide);
   bool IsHidden() const { return mHide; }
 
@@ -133,7 +134,7 @@ public:
   int AuxParamIdx(int paramIdx);
   // add an auxilliary parameter linked to paramIdx
   void AddAuxParam(int paramIdx);
-  virtual void SetAuxParamValueFromPlug(int auxParamIdx, double value); // can override if nessecary
+  virtual void SetAuxParamValueFromPlug(int auxParamIdx, double value); // can override if necessary
   void SetAllAuxParamsFromGUI();
   int NAuxParams() { return mAuxParams.GetSize(); }
   
@@ -145,7 +146,7 @@ protected:
   int mTextEntryLength;
   IText mText;
   IPlugBase* mPlug;
-  IRECT mRECT, mTargetRECT, mNonScaledDrawRECT;
+  IRECT mDrawRECT, mTargetRECT, mNonScaledDrawRECT;
   int mParamIdx;
   int mLayerPosition = 0;
   
@@ -156,8 +157,6 @@ protected:
   IControl* mValDisplayControl;
   IControl* mNameDisplayControl;
   WDL_String mTooltip;
-	private:
-		IPlugAnimation mAnimation;
 };
 
 enum EDirection { kVertical, kHorizontal };

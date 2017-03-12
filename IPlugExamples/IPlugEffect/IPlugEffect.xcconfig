@@ -6,8 +6,9 @@
 // the basename of the vst, vst3, app, component, dpm, aaxplugin
 BINARY_NAME = IPlugEffect
 
-ADDITIONAL_INCLUDES = // $(SRCROOT)/../../../MyDSP/
-//ADDITIONAL_LIBRARY_PATHS = //
+ADDITIONAL_INCLUDES =  "../../YCAIRO/Cairo_Graphics/Include-Mac/cairo/" "../../YCAIRO/Cairo_Graphics/Include-Mac/" "../../YCAIRO/"
+
+ADDITIONAL_LIBRARY_PATHS = "../../YCAIRO/Cairo_Graphics/Lib-Mac/"
 
 // for jack headers
 //ADDITIONAL_APP_INCLUDES = /usr/local/include

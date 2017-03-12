@@ -591,7 +591,6 @@
 				PRODUCT_NAME = lice;
 				SKIP_INSTALL = YES;
 				SYMROOT = "build-mac";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Debug;
 		};
@@ -614,7 +613,6 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				SYMROOT = "build-mac";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Release;
 		};
@@ -632,10 +630,10 @@
 				GCC_VERSION = "$(COMPILER)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = "$(BASE_SDK)";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Debug;
 		};
@@ -652,9 +650,9 @@
 				GCC_VERSION = "$(COMPILER)";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 				PREBINDING = NO;
 				SDKROOT = "$(BASE_SDK)";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Release;
 		};
@@ -678,7 +676,6 @@
 				PRODUCT_NAME = lice32;
 				SKIP_INSTALL = YES;
 				SYMROOT = "build-mac";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Debug;
 		};
@@ -702,7 +699,6 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				SYMROOT = "build-mac";
-                MACOSX_DEPLOYMENT_TARGET = "$(DEPLOYMENT_TARGET)";
 			};
 			name = Release;
 		};

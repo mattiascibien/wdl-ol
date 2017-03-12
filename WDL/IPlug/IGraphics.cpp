@@ -1,5 +1,5 @@
 #include "IGraphics.h"
-#include "IPlugGUILiveEdit.h"
+#include "IPlugGUIResize.h"
 
 #define DEFAULT_FPS 120
 
@@ -507,7 +507,7 @@ void UpdateLayerPosition(WDL_PtrList<IControl>* pControls)
 {
 	for (int i = 0; i < pControls->GetSize(); i++)
 	{
-		pControls->Get(i)->UpdateLayerPositionValue(i);
+		pControls->Get(i)->UpdateLayerPositionIndex(i);
 	}
 }
 
@@ -1086,21 +1086,20 @@ bool IGraphics::IsDirty(IRECT* pR)
 	for (i = 0; i < n; ++i, ++ppControl)
 	{
 		IControl* pControl = *ppControl;
-		if (pControl->GetAnimation()->AnimationRequestDirty()) pControl->SetDirty();
 
 		if (mPlug->GetGUIResize())
 		{
 			if (pControl->IsDirty())
 			{
 					double guiScaleRatio = mPlug->GetGUIResize()->GetGUIScaleRatio();
-					IRECT tmpRECT = *pControl->GetNonScaledDrawRECT();
+					IRECT nonScaledDrawRECT = *pControl->GetNonScaledDrawRECT();
 
-					tmpRECT.L = int(tmpRECT.L * guiScaleRatio);
-					tmpRECT.T = int(tmpRECT.T * guiScaleRatio);
-					tmpRECT.R = int(tmpRECT.R * guiScaleRatio + 0.9999999);
-					tmpRECT.B = int(tmpRECT.B * guiScaleRatio + 0.9999999);
+					nonScaledDrawRECT.L = int(nonScaledDrawRECT.L * guiScaleRatio);
+					nonScaledDrawRECT.T = int(nonScaledDrawRECT.T * guiScaleRatio);
+					nonScaledDrawRECT.R = int(nonScaledDrawRECT.R * guiScaleRatio + 0.9999999);
+					nonScaledDrawRECT.B = int(nonScaledDrawRECT.B * guiScaleRatio + 0.9999999);
 
-				*pR = pR->Union(&tmpRECT);
+				*pR = pR->Union(&nonScaledDrawRECT);
 				dirty = true;
 			}
 		}
@@ -1108,7 +1107,7 @@ bool IGraphics::IsDirty(IRECT* pR)
 		{
 			if (pControl->IsDirty())
 			{
-				*pR = pR->Union(pControl->GetRECT());
+				*pR = pR->Union(pControl->GetDrawRECT());
 				dirty = true;
 			}
 		}
@@ -1169,7 +1168,7 @@ bool IGraphics::Draw(IRECT* pR)
 		for (int i = 0; i < n; ++i, ++ppControl)
 		{
 			IControl* pControl = *ppControl;
-			if (!(pControl->IsHidden()) && pR->Intersects(pControl->GetRECT()))
+			if (!(pControl->IsHidden()) && pR->Intersects(pControl->GetDrawRECT()))
 			{
 				pControl->Draw(this);
 			}
@@ -1181,7 +1180,7 @@ bool IGraphics::Draw(IRECT* pR)
 		IControl* pBG = mControls.Get(0);
 		if (pBG->IsDirty())   // Special case when everything needs to be drawn.
 		{
-			mDrawRECT = *(pBG->GetRECT());
+			mDrawRECT = *(pBG->GetDrawRECT());
 			for (int j = 0; j < n; ++j)
 			{
 				IControl* pControl2 = mControls.Get(j);
@@ -1202,15 +1201,15 @@ bool IGraphics::Draw(IRECT* pR)
 
 					// printf("control %i is Dirty\n", i);
 
-					mDrawRECT = *(pControl->GetRECT()); // put the rect in the mDrawRect member variable
+					mDrawRECT = *(pControl->GetDrawRECT()); // put the rect in the mDrawRect member variable
 					for (j = 0; j < n; ++j)   // loop through all controls
 					{
 						IControl* pControl2 = mControls.Get(j); // assign control j to pControl2
 
 																// if control1 == control2 OR control2 is not hidden AND control2's rect intersects mDrawRect
-						if (!pControl2->IsHidden() && (i == j || pControl2->GetRECT()->Intersects(&mDrawRECT)))
+						if (!pControl2->IsHidden() && (i == j || pControl2->GetDrawRECT()->Intersects(&mDrawRECT)))
 						{
-							//if ((i == j) && (!pControl2->IsHidden())|| (!(pControl2->IsHidden()) && pControl2->GetRECT()->Intersects(&mDrawRECT))) {
+							//if ((i == j) && (!pControl2->IsHidden())|| (!(pControl2->IsHidden()) && pControl2->GetDrawRECT()->Intersects(&mDrawRECT))) {
 							//printf("control %i and %i \n", i, j);
 
 							pControl2->Draw(this);
@@ -1223,7 +1222,7 @@ bool IGraphics::Draw(IRECT* pR)
 	}
 
 #ifndef NDEBUG
-	if (mShowControlBounds && !liveEditing)
+	if (mShowControlBounds)
 	{
 		int controlSize = mControls.GetSize();
 		if (mPlug->GetGUIResize()) controlSize -= 3;
@@ -1232,7 +1231,7 @@ bool IGraphics::Draw(IRECT* pR)
 		{
 			IControl* pControl = mControls.Get(j);
 
-			DrawRect(&CONTROL_BOUNDS_COLOR, pControl->GetRECT());
+			DrawRect(&CONTROL_BOUNDS_COLOR, pControl->GetDrawRECT());
 		}
 
 		WDL_String str;
@@ -1243,13 +1242,6 @@ bool IGraphics::Draw(IRECT* pR)
 	}
 
 #endif
-	
-	if (liveEditing)
-	{
-		mPlug->GetGUILiveEdit()->EditGUI(mPlug, this, &mControls, mDrawBitmap, &liveEditingMod, &liveGridSize, &liveSnap, &liveKeyDown,
-			&liveToogleEditing, &liveMouseCapture, &liveMouseDragging, &liveMode, &mMouseX, &mMouseY, Width(), Height(), guiScaleRatio);
-	}
-
 	return DrawScreen(pR);
 }
 
@@ -1261,18 +1253,6 @@ void IGraphics::SetStrictDrawing(bool strict)
 
 void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 {
-	int l = liveGetControlIdx(x, y);
-	if (l >= 0)
-	{
-		liveMouseCapture = l;
-	}
-
-	liveEditingMod.A = pMod->A;
-	liveEditingMod.C = pMod->C;
-	liveEditingMod.L = pMod->L;
-	liveEditingMod.R = pMod->R;
-	liveEditingMod.S = pMod->S;
-
 	ReleaseMouseCapture();
 	int c = GetMouseControlIdx(x, y);
 	if (c >= 0)
@@ -1321,27 +1301,18 @@ void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 			mPlug->BeginInformHostOfParamChange(paramIdx);
 		}
 
-		if (liveEditing == true && liveToogleEditing == false) pControl->OnMouseDown(x, y, pMod);
-		else if (liveEditing == false) pControl->OnMouseDown(x, y, pMod);
+		pControl->OnMouseDown(x, y, pMod);
 	}
 }
 
 void IGraphics::OnMouseUp(int x, int y, IMouseMod* pMod)
 {
-	liveMouseCapture = -1;
-	liveEditingMod.A = pMod->A;
-	liveEditingMod.C = false;
-	liveEditingMod.L = pMod->L;
-	liveEditingMod.R = pMod->R;
-	liveEditingMod.S = pMod->S;
-
 	int c = GetMouseControlIdx(x, y);
 	mMouseCapture = mMouseX = mMouseY = -1;
 	if (c >= 0)
 	{
 		IControl* pControl = mControls.Get(c);
-		if (liveEditing == true && liveToogleEditing == false) pControl->OnMouseUp(x, y, pMod);
-		else if (liveEditing == false) pControl->OnMouseUp(x, y, pMod);
+		pControl->OnMouseUp(x, y, pMod);
 		pControl = mControls.Get(c); // needed if the mouse message caused a resize/rebuild
 		int paramIdx = pControl->ParamIdx();
 		if (paramIdx >= 0)
@@ -1353,8 +1324,6 @@ void IGraphics::OnMouseUp(int x, int y, IMouseMod* pMod)
 
 bool IGraphics::OnMouseOver(int x, int y, IMouseMod* pMod)
 {
-	liveEditingMod.S = pMod->S;
-
 	if (mHandleMouseOver)
 	{
 		int c = GetMouseControlIdx(x, y, true);
@@ -1388,10 +1357,6 @@ void IGraphics::OnMouseOut()
 
 void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 {
-	liveMouseDragging = true;
-	liveEditingMod.A = pMod->A;
-	liveEditingMod.S = pMod->S;
-
 	int c = mMouseCapture;
 	if (c >= 0)
 	{
@@ -1401,8 +1366,7 @@ void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 		{
 			mMouseX = x;
 			mMouseY = y;
-			if (liveEditing == true && liveToogleEditing == false) mControls.Get(c)->OnMouseDrag(x, y, dX, dY, pMod);
-			else if (liveEditing == false) mControls.Get(c)->OnMouseDrag(x, y, dX, dY, pMod);
+			mControls.Get(c)->OnMouseDrag(x, y, dX, dY, pMod);
 		}
 	}
 }
@@ -1420,14 +1384,12 @@ bool IGraphics::OnMouseDblClick(int x, int y, IMouseMod* pMod)
 			mMouseCapture = c;
 			mMouseX = x;
 			mMouseY = y;
-			if (liveEditing == true && liveToogleEditing == false) pControl->OnMouseDown(x, y, pMod);
-			else if (liveEditing == false) pControl->OnMouseDown(x, y, pMod);
+			pControl->OnMouseDown(x, y, pMod);
 			newCapture = true;
 		}
 		else
 		{
-			if (liveEditing == true && liveToogleEditing == false) pControl->OnMouseDblClick(x, y, pMod);
-			else if (liveEditing == false) pControl->OnMouseDblClick(x, y, pMod);
+			pControl->OnMouseDblClick(x, y, pMod);
 		}
 	}
 	return newCapture;
@@ -1449,8 +1411,6 @@ void IGraphics::ReleaseMouseCapture()
 
 bool IGraphics::OnKeyDown(int x, int y, int key)
 {
-	if (liveEditing == true && key == 19) SetAllControlsDirty();
-	liveKeyDown = key;
 	int c = GetMouseControlIdx(x, y);
 	if (c > 0)
 		return mControls.Get(c)->OnKeyDown(x, y, key);
@@ -1496,34 +1456,6 @@ int IGraphics::GetMouseControlIdx(int x, int y, bool mo)
 	}
 	return -1;
 }
-
-int IGraphics::liveGetControlIdx(int x, int y, bool mo)
-{
-	if (liveMouseCapture >= 0)
-	{
-		return liveMouseCapture;
-	}
-
-	int i = mControls.GetSize() - 1;
-
-	// Exclude gui resize controls
-	if (mPlug->GetGUIResize()) i -= 3;
-
-	IControl** ppControl = mControls.GetList() + i;
-	for (/* */; i >= 0; --i, --ppControl)
-	{
-		IControl* pControl = *ppControl;
-
-		// If we need to move controls that have same draw rect and target rect
-		if (liveMode == 0 && pControl->GetRECT()->Contains(x,y) && (*pControl->GetTargetRECT() == *pControl->GetRECT())) return i;
-		// Move just draw rect
-		else if (liveMode == 1 && pControl->GetRECT()->Contains(x, y)) return i;
-		// Move just target rect
-		else if (liveMode == 2 && pControl->GetTargetRECT()->Contains(x, y)) return i;
-	}
-	return -1;
-}
-
 
 int IGraphics::GetParamIdxForPTAutomation(int x, int y)
 {
@@ -1573,7 +1505,8 @@ bool IGraphics::DrawIText(IText* pTxt, char* str, IRECT* pR, bool measure)
 		if (!font) return false;
 	}
 
-	LICE_pixel color = LiceColor(&pTxt->mColor);
+    LICE_pixel color = LiceColor(&pTxt->mColor);
+    
 	font->SetTextColor(color);
 
 	UINT fmt = DT_NOCLIP;

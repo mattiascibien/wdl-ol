@@ -57,6 +57,10 @@ void IPlugStandalone::ResizeGraphics(int w, int h)
     SetWindowPos(gHWND, 0, r.left, r.bottom - pGraphics->Height() - TITLEBAR_BODGE, pGraphics->Width(), pGraphics->Height() + TITLEBAR_BODGE, 0);
     #endif
     OnWindowResize();
+
+#ifdef USING_YCAIRO
+	ResizeCairoSurface();
+#endif
   }
 }
 

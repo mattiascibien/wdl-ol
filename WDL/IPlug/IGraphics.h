@@ -6,7 +6,6 @@
 #include "IControl.h"
 #include "../lice/lice.h"
 
-
 // Specialty stuff for calling in to Reaper for Lice functionality.
 #ifdef REAPER_SPECIAL
 #include "../IPlugExt/ReaperExt.h"
@@ -234,22 +233,16 @@ public:
 
 	void AssignParamNameToolTips();
 
-	// in debug builds you can enable this to draw a coloured box on the top of the GUI to show the bounds of the IControls
+	// in debug builds you can enable this to draw a colored box on the top of the GUI to show the bounds of the IControls
 	inline void ShowControlBounds(bool enable)
 	{
 		mShowControlBounds = enable;
 	}
 
 	// In debug mode you can use this to move controls live and to make GUI layout setting more easy
-	inline void LiveEditing(int gridSize = 6, int snapSize = 4)
+	void LiveEditing(int gridSize = 6, int snapSize = 4)
 	{
-		if (gridSize > 0) liveGridSize = gridSize;
-		else liveGridSize = 1;
 
-		if (snapSize > 0) liveSnap = snapSize;
-		else liveSnap = 0;
-
-		liveEditing = true;
 	}
 
 	// Updates tooltips after (un)hiding controls.
@@ -303,21 +296,10 @@ private:
 	int mMouseCapture, mMouseOver, mMouseX, mMouseY, mLastClickedParam;
 	bool mHandleMouseOver, mStrict, mEnableTooltips, mShowControlBounds;
 	IControl* mKeyCatcher;
+
 	unsigned bitmapOversample = 1;
 	double guiScaleRatio = 1.0;
 	int viewMode = 0;
-
-	// Live editing stuff
-	int liveGetControlIdx(int x, int y, bool mo = false);
-	int liveMode = 0;
-	bool liveEditing = false;
-	IMouseMod liveEditingMod;
-	int liveGridSize = 1;
-	int liveSnap = 0;
-	int liveKeyDown = -1;
-	bool liveToogleEditing = false;
-	int liveMouseCapture = -1;
-	bool liveMouseDragging = false;
 };
 
 
