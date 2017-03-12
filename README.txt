@@ -1,6 +1,6 @@
-WDL-Youlean 
+IPlug-Youlean 
 
-This is enchanced WDL-OL that supports GUI resizing, GUI rescaling and it has live edit mode.
+This is enchanced WDL-OL that supports GUI resizing, GUI rescaling, has live edit mode and have added cairo graphics support.
 
 
 ====================================================================================================================
