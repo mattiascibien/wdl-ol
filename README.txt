@@ -2,6 +2,10 @@ IPlug-Youlean
 
 This is enchanced WDL-OL that supports GUI resizing, GUI rescaling, has live edit mode and have added cairo graphics support.
 
+Supported OS: 
+macOS 10.7+
+Windows 7+
+
 
 ====================================================================================================================
 
