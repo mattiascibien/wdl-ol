@@ -28,7 +28,6 @@ struct IBitmap
 struct IColor
 {
   int A, R, G, B;
-  double nA, nR, nG, nB;
   IColor(int a = 255, int r = 0, int g = 0, int b = 0) : A(a), R(r), G(g), B(b) {}
   bool operator==(const IColor& rhs) { return (rhs.A == A && rhs.R == R && rhs.G == G && rhs.B == B); }
   bool operator!=(const IColor& rhs) { return !operator==(rhs); }
