@@ -8,13 +8,13 @@
 
 struct AGTab 
 {
-  IRECT mRECT;
+  IRECT mDrawRECT;
   WDL_TypedBuf<int> mParamsToMux;
   WDL_String mLabel;
   
   AGTab(IRECT rect, const char* pLabel)
   {
-    mRECT = rect;
+    mDrawRECT = rect;
     mLabel.Set(pLabel);
   }
   
@@ -60,7 +60,7 @@ public:
     
     for (i = 0; i < n; ++i) 
     {
-      if (mTabs.Get(i)->mRECT.Contains(x, y)) 
+      if (mTabs.Get(i)->mDrawRECT.Contains(x, y)) 
       {
         hit = i;
         mValue = (double) i / (double) (n - 1);
@@ -101,10 +101,10 @@ public:
     for (int t = 0; t < mTabs.GetSize(); t++) 
     {
       if (t == mActive) {
-        pGraphics->FillIRect(&mOnColor, &mTabs.Get(t)->mRECT);
+        pGraphics->FillIRect(&mOnColor, &mTabs.Get(t)->mDrawRECT);
       }
-      pGraphics->DrawRect(&mFGColor, &mTabs.Get(t)->mRECT);
-      pGraphics->DrawIText(&mText, mTabs.Get(t)->mLabel.Get(), &mTabs.Get(t)->mRECT);
+      pGraphics->DrawRect(&mFGColor, &mTabs.Get(t)->mDrawRECT);
+      pGraphics->DrawIText(&mText, mTabs.Get(t)->mLabel.Get(), &mTabs.Get(t)->mDrawRECT);
     }
     
     return true;
@@ -130,9 +130,9 @@ public:
     mText.mAlign = IText::kAlignNear;
     mDisablePrompt = false;
     
-    mParamNameRECT =  IRECT(mRECT.L, mRECT.T, mRECT.L + paramNameWidth, mRECT.B);
-    mParamValueRECT = IRECT(mRECT.R - paramValWidth, mRECT.T, mRECT.R, mRECT.B);
-    mSliderRECT =     IRECT(mParamNameRECT.R + 2, mRECT.T, mParamValueRECT.L - 2, mRECT.B);
+    mParamNameRECT =  IRECT(mDrawRECT.L, mDrawRECT.T, mDrawRECT.L + paramNameWidth, mDrawRECT.B);
+    mParamValueRECT = IRECT(mDrawRECT.R - paramValWidth, mDrawRECT.T, mDrawRECT.R, mDrawRECT.B);
+    mSliderRECT =     IRECT(mParamNameRECT.R + 2, mDrawRECT.T, mParamValueRECT.L - 2, mDrawRECT.B);
     mTextEntryRect =  mParamValueRECT;//IRECT(mParamValueRECT.L+3, mParamValueRECT.T+3, mParamValueRECT.R, mParamValueRECT.B-3);
     mBlend = IChannelBlend::kBlendNone;
     
@@ -141,7 +141,7 @@ public:
   
   bool Draw(IGraphics* pGraphics)
   {
-    //pGraphics->RoundRect(&mFGColor, &mRECT, &mBlend, 2, true);
+    //pGraphics->RoundRect(&mFGColor, &mDrawRECT, &mBlend, 2, true);
 
     pGraphics->DrawIText(&mText, mParamNameStr.Get(), &mParamNameRECT);
     
@@ -151,7 +151,7 @@ public:
     // Draw Slider handle
     int xPos = int(mValue * (mSliderRECT.W() - (SLIDER_HANDLE_WIDTH-1)));
   
-    IRECT sliderHandleRect = IRECT(mSliderRECT.L + xPos, mRECT.T+4, mSliderRECT.L + xPos + SLIDER_HANDLE_WIDTH, mRECT.B-4);
+    IRECT sliderHandleRect = IRECT(mSliderRECT.L + xPos, mDrawRECT.T+4, mSliderRECT.L + xPos + SLIDER_HANDLE_WIDTH, mDrawRECT.B-4);
     pGraphics->FillRoundRect(&mFGColor, &sliderHandleRect, &mBlend, 2, true);
 
     char cstr[32];    
@@ -222,11 +222,11 @@ public:
     
     mDisablePrompt = false;
     
-    mParamNameRECT =  IRECT(mRECT.L, mRECT.T, mRECT.R, mRECT.T + textHeight);
-    mParamValueRECT = IRECT(mRECT.L, mRECT.B - textHeight, mRECT.R, mRECT.B);
-    mKnobRECT =       IRECT(mRECT.L, mParamNameRECT.B, mRECT.R, mParamValueRECT.T);
+    mParamNameRECT =  IRECT(mDrawRECT.L, mDrawRECT.T, mDrawRECT.R, mDrawRECT.T + textHeight);
+    mParamValueRECT = IRECT(mDrawRECT.L, mDrawRECT.B - textHeight, mDrawRECT.R, mDrawRECT.B);
+    mKnobRECT =       IRECT(mDrawRECT.L, mParamNameRECT.B, mDrawRECT.R, mParamValueRECT.T);
 
-    //mUnitRECT =       IRECT(mRECT.R - unitWidth, mRECT.T, mRECT.R, mRECT.B);
+    //mUnitRECT =       IRECT(mDrawRECT.R - unitWidth, mDrawRECT.T, mDrawRECT.R, mDrawRECT.B);
     mTextEntryRect =  IRECT(mParamValueRECT.L+2, mParamValueRECT.T+3, mParamValueRECT.R - 2, mParamValueRECT.B-3);
     
     mInnerRadius = 0.;
@@ -241,7 +241,7 @@ public:
   
   bool Draw(IGraphics* pGraphics)
   {
-    pGraphics->RoundRect(&mFGColor, &mRECT, &mBlend, 2, true);
+    pGraphics->RoundRect(&mFGColor, &mDrawRECT, &mBlend, 2, true);
 
     // Draw Param Name
     pGraphics->DrawIText(&mText, mParamNameStr.Get(), &mParamNameRECT);
@@ -333,8 +333,8 @@ public:
   
   bool Draw(IGraphics* pGraphics)
   {
-    pGraphics->FillIRect(&mColor, &mRECT);
-    pGraphics->DrawIText(&mText, "Dump preset", &mRECT);
+    pGraphics->FillIRect(&mColor, &mDrawRECT);
+    pGraphics->DrawIText(&mText, "Dump preset", &mDrawRECT);
     
     return true;
   }

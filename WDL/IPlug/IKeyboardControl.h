@@ -96,8 +96,8 @@ public:
     mOctaveWidth(pRegularKeys->W * 7), mMaxKey(nOctaves * 12), mKey(-1)
   {
     memcpy(mKeyCoords, pKeyCoords, 12 * sizeof(int));
-    mRECT.R += nOctaves * mOctaveWidth;
-    mTargetRECT.R = mRECT.R;
+    mDrawRECT.R += nOctaves * mOctaveWidth;
+    mTargetRECT.R = mDrawRECT.R;
 
     mDblAsSingleClick = true;
   }
@@ -152,7 +152,7 @@ public:
     if (((PLUG_CLASS_NAME*)mPlug)->GetNumKeys() == 0 && mKey == -1) return true;
 
     // "Regular" keys
-    IRECT r(mRECT.L, mRECT.T, mRECT.L + mRegularKeys.W, mRECT.B);
+    IRECT r(mDrawRECT.L, mDrawRECT.T, mDrawRECT.L + mRegularKeys.W, mDrawRECT.B);
     int key = 0;
     while (key < mMaxKey)
     {
@@ -169,8 +169,8 @@ public:
     if (((PLUG_CLASS_NAME*)mPlug)->GetKeyStatus(key + mMinNote) || key == mKey) DrawKey(pGraphics, &r, key, 0, false);
 
     // Flat/sharp keys
-    int l = mRECT.L;
-    r.B = mRECT.T + mSharpKey.H / mSharpKey.N;
+    int l = mDrawRECT.L;
+    r.B = mDrawRECT.T + mSharpKey.H / mSharpKey.N;
     key = 1;
     while (true)
     {
@@ -283,7 +283,7 @@ protected:
 
   RegularKey:
     {
-      h = mRECT.H();
+      h = mDrawRECT.H();
       int n = x / mRegularKeys.W;
       note = n * 2;
       if (n >= 3) note--;

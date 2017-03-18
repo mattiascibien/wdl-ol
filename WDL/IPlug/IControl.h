@@ -224,7 +224,7 @@ public:
   void OnMouseDown(int x, int y, IMouseMod* pMod);
 };
 
-// A switch where each frame of the bitmap contains images for multiple button states. The Control's mRect will be divided into clickable areas.
+// A switch where each frame of the bitmap contains images for multiple button states. The Control's mDrawRECT will be divided into clickable areas.
 class ISwitchFramesControl : public ISwitchControl
 {
 public:
@@ -236,7 +236,7 @@ public:
   void OnMouseDown(int x, int y, IMouseMod* pMod);
   
 protected:
-  WDL_TypedBuf<IRECT> mRECTs;
+  WDL_TypedBuf<IRECT> mDrawRECTs;
 };
 
 // On/off switch that has a target area only.
@@ -264,7 +264,7 @@ public:
   bool Draw(IGraphics* pGraphics);
 
 protected:
-  WDL_TypedBuf<IRECT> mRECTs;
+  WDL_TypedBuf<IRECT> mDrawRECTs;
   IRECT mDefaultRECT;
   IBitmap *mBitmap;
   EDirection mDirection;

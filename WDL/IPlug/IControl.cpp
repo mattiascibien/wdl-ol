@@ -238,19 +238,19 @@ ISwitchFramesControl::ISwitchFramesControl(IPlugBase* pPlug, int x, int y, int p
   for(int i = 0; i < pBitmap->N; i++)
   {
     if (imagesAreHorizontal)
-      mRECTs.Add(mDrawRECT.SubRectHorizontal(pBitmap->N, i));
+      mDrawRECTs.Add(mDrawRECT.SubRectHorizontal(pBitmap->N, i));
     else
-      mRECTs.Add(mDrawRECT.SubRectVertical(pBitmap->N, i));
+      mDrawRECTs.Add(mDrawRECT.SubRectVertical(pBitmap->N, i));
   }
 }
 
 void ISwitchFramesControl::OnMouseDown(int x, int y, IMouseMod* pMod)
 {
-  int n = mRECTs.GetSize();
+  int n = mDrawRECTs.GetSize();
   
   for (int i = 0; i < n; i++) 
   {
-    if (mRECTs.Get()[i].Contains(x, y)) 
+    if (mDrawRECTs.Get()[i].Contains(x, y)) 
     {
       mValue = (double) i / (double) (n - 1);
       break;
@@ -285,7 +285,7 @@ IRadioButtonsControl::IRadioButtonsControl(IPlugBase* pPlug, IRECT pR, int param
 {
   mDefaultRECT = pR;
   mBitmap = pBitmap;
-  mRECTs.Resize(nButtons);
+  mDrawRECTs.Resize(nButtons);
   mDirection = direction;
   mReverse = reverse;
   mNButtons = nButtons;
@@ -314,7 +314,7 @@ void IRadioButtonsControl::AfterGUIResize(double guiScaleRatio)
 
 			for (int i = 0; i < mNButtons; ++i)
 			{
-				mRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
+				mDrawRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
 				x -= mBitmap->W + dX;
 			}
 		}
@@ -326,7 +326,7 @@ void IRadioButtonsControl::AfterGUIResize(double guiScaleRatio)
 
 			for (int i = 0; i < mNButtons; ++i)
 			{
-				mRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
+				mDrawRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
 				y -= h + dY;
 			}
 		}
@@ -341,7 +341,7 @@ void IRadioButtonsControl::AfterGUIResize(double guiScaleRatio)
 			int dX = int((double)(scaledDefaultRECT.W() - mNButtons * mBitmap->W) / (double)(mNButtons - 1));
 			for (int i = 0; i < mNButtons; ++i)
 			{
-				mRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
+				mDrawRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
 				x += mBitmap->W + dX;
 			}
 		}
@@ -350,7 +350,7 @@ void IRadioButtonsControl::AfterGUIResize(double guiScaleRatio)
 			int dY = int((double)(scaledDefaultRECT.H() - mNButtons * h) / (double)(mNButtons - 1));
 			for (int i = 0; i < mNButtons; ++i)
 			{
-				mRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
+				mDrawRECTs.Get()[i] = IRECT(x, y, x + mBitmap->W, y + h);
 				y += h + dY;
 			}
 		}
@@ -377,11 +377,11 @@ void IRadioButtonsControl::OnMouseDown(int x, int y, IMouseMod* pMod)
     return;
   }
 
-  int i, n = mRECTs.GetSize();
+  int i, n = mDrawRECTs.GetSize();
 
   for (i = 0; i < n; ++i)
   {
-    if (mRECTs.Get()[i].Contains(x, y))
+    if (mDrawRECTs.Get()[i].Contains(x, y))
     {
       mValue = (double) i / (double) (n - 1);
       break;
@@ -393,18 +393,18 @@ void IRadioButtonsControl::OnMouseDown(int x, int y, IMouseMod* pMod)
 
 bool IRadioButtonsControl::Draw(IGraphics* pGraphics)
 {
-  int i, n = mRECTs.GetSize();
+  int i, n = mDrawRECTs.GetSize();
   int active = int(0.5 + mValue * (double) (n - 1));
   active = BOUNDED(active, 0, n - 1);
   for (i = 0; i < n; ++i)
   {
     if (i == active)
     {
-      pGraphics->DrawBitmap(mBitmap, &mRECTs.Get()[i], 2, &mBlend);
+      pGraphics->DrawBitmap(mBitmap, &mDrawRECTs.Get()[i], 2, &mBlend);
     }
     else
     {
-      pGraphics->DrawBitmap(mBitmap, &mRECTs.Get()[i], 1, &mBlend);
+      pGraphics->DrawBitmap(mBitmap, &mDrawRECTs.Get()[i], 1, &mBlend);
     }
   }
   return true;
