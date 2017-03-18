@@ -239,12 +239,6 @@ public:
 		mShowControlBounds = enable;
 	}
 
-	// In debug mode you can use this to move controls live and to make GUI layout setting more easy
-	void LiveEditing(int gridSize = 6, int snapSize = 4)
-	{
-
-	}
-
 	// Updates tooltips after (un)hiding controls.
 	virtual void UpdateTooltips() = 0;
 

@@ -76,7 +76,7 @@ public:
 			if (mouseClickedOnResizeHandle) ResizeSelectedControl(x, y);
 
 			// Move controls, but don't move background
-			if (clickedOnControl > 0 && !mouseClickedOnResizeHandle) MoveSelectedControl(x, y);
+			if (pMod->L && clickedOnControl > 0 && !mouseClickedOnResizeHandle) MoveSelectedControl(x, y);
 
 			if (clickedOnControl > -1)
 			{
@@ -86,22 +86,34 @@ public:
 		}
 	}
 
+	IRECT RescaleIRECT(IRECT *old_IRECT, double ratio)
+	{
+		return IRECT(int(old_IRECT->L * ratio), int(old_IRECT->T * ratio), int(old_IRECT->R * ratio), int(old_IRECT->B * ratio));
+	}
+
 	void ResizeSelectedControl(int x, int y)
 	{
 
 		IRECT *pSelectedDrawRECT = mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
+		IRECT *pSelectedNonScaledDrawRECT = mGraphics->GetControl(clickedOnControl)->GetNonScaledDrawRECT();
 		IRECT *pSelectedTargetRECT = mGraphics->GetControl(clickedOnControl)->GetTargetRECT();
 
 		pSelectedDrawRECT->R = SnapToGrid(mouseDownDrawRECT.R + (x - mouseDownX));
 		pSelectedDrawRECT->B = SnapToGrid(mouseDownDrawRECT.B + (y - mouseDownY));
 
 		*pSelectedTargetRECT = *pSelectedDrawRECT;
+
+		if (GetGUIResize())
+		{
+			*pSelectedNonScaledDrawRECT = RescaleIRECT(pSelectedDrawRECT, GetGUIResize()->GetGUIScaleRatio());
+		}
 	}
 
 	void MoveSelectedControl(int x, int y)
 	{
 
 		IRECT *pSelectedDrawRECT = mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
+		IRECT *pSelectedNonScaledDrawRECT = mGraphics->GetControl(clickedOnControl)->GetNonScaledDrawRECT();
 		IRECT *pSelectedTargetRECT = mGraphics->GetControl(clickedOnControl)->GetTargetRECT();
 
 		pSelectedDrawRECT->L = SnapToGrid(mouseDownDrawRECT.L + (x - mouseDownX));
@@ -110,6 +122,11 @@ public:
 		pSelectedDrawRECT->B = pSelectedDrawRECT->T + mouseDownDrawRECT.H();
 
 		*pSelectedTargetRECT = *pSelectedDrawRECT;
+
+		if (GetGUIResize())
+		{
+			*pSelectedNonScaledDrawRECT = RescaleIRECT(pSelectedDrawRECT, GetGUIResize()->GetGUIScaleRatio());
+		}
 	}
 
 	int SnapToGrid(int in)
@@ -381,9 +398,9 @@ public:
 			size_t layerStartPosition = sourceCode.find(findLayerStart, startIndex);
 
 			// Find if there is a matching end after layer start
-			size_t layerStartPositionNext = sourceCode.find(findLayerStart, layerStartPosition + findLayerStart.size());
 			size_t layerEndPosition = sourceCode.find(findLayerEnd, layerStartPosition);
-
+			size_t layerStartPositionNext = sourceCode.find(findLayerStart, layerEndPosition + findLayerEnd.size());
+			
 			if (layerStartPosition <= positionOfGUIEditEnd)
 			{
 				layerNumber++;
@@ -394,7 +411,7 @@ public:
 				tpmLayerProperties.layerEndPosition = layerEndPosition;
 
 				layerProperties.push_back(tpmLayerProperties);
-
+				
 				if ((layerEndPosition > layerStartPositionNext) || (layerEndPosition > positionOfGUIEditEnd))
 				{
 					WDL_String error;
@@ -492,7 +509,7 @@ public:
 		if (clickedOnControl > 0 && mouseIsDragging)
 		{
 			IControl *pControl = GetSelectedControl();
-			mPlug->GetGUIResize()->LiveEditSetLayout( 0, clickedOnControl, clickedOnControl, selectedDrawRECT, selectedTargetRECT, pControl->IsHidden());
+			mPlug->GetGUIResize()->LiveEditSetLayout(mPlug->GetGUIResize()->GetViewMode(), clickedOnControl, clickedOnControl, selectedDrawRECT, selectedTargetRECT, pControl->IsHidden());
 		}
 	}
 
@@ -513,7 +530,7 @@ public:
 
 		if (!foundError)
 		{
-			UpdateSourceCode();
+			if (clickedOnControl > 0 || mouseClickedOnResizeHandle) UpdateSourceCode();
 
 			if (mPlug->GetGUIResize()) UpdateGUIResize();
 
