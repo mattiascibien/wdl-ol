@@ -15,9 +15,7 @@ void IColor::SetHSV(double H, double S, double V)
 
 	if (S <= 0)
 	{
-		R = V;
-		G = V;
-		B = V;
+		R = G = B = int(V * 255);
 	}
 	else
 	{
