@@ -28,15 +28,23 @@ struct IBitmap
 struct IColor
 {
   int A, R, G, B;
-  IColor(int a = 255, int r = 0, int g = 0, int b = 0) : A(a), R(r), G(g), B(b) {}
+  IColor() : A(255), R(0), G(0), B(0) {}
+  IColor(int hexRGB, int alpha = 255); // Hex value should start with 0x
+  IColor(double H, double S, double V)  { SetHSV(H, S, V); } // H = 0-360, S = 0-100, V = 0-100
+  IColor(int a, int r, int g, int b) : A(a), R(r), G(g), B(b) {}
   bool operator==(const IColor& rhs) { return (rhs.A == A && rhs.R == R && rhs.G == G && rhs.B == B); }
   bool operator!=(const IColor& rhs) { return !operator==(rhs); }
   bool Empty() const { return A == 0 && R == 0 && G == 0 && B == 0; }
   void Clamp() { A = IPMIN(A, 255); R = IPMIN(R, 255); G = IPMIN(G, 255); B = IPMIN(B, 255); }
-  double A_Norm() { return double(A) / 255.0; }
-  double R_Norm() { return double(R) / 255.0; }
-  double G_Norm() { return double(G) / 255.0; }
-  double B_Norm() { return double(B) / 255.0; }
+  double A_Norm() { return double(A) / 255.0; } // Get normalized value 0-1
+  double R_Norm() { return double(R) / 255.0; } // Get normalized value 0-1
+  double G_Norm() { return double(G) / 255.0; } // Get normalized value 0-1
+  double B_Norm() { return double(B) / 255.0; } // Get normalized value 0-1
+  void SetHSV(double H, double S, double V); // H = 0-360, S = 0-100, V = 0-100
+  void GetHSV(double *getH, double *getS, double *getV); // H = 0-360, S = 0-100, V = 0-100
+  void SetHue(double hue); // Hue = 0-360
+  void SetSaturation(double saturation); // Saturation = 0-100
+  void SetBrightness(double brightness); // Value/Brightness = 0-100
 };
 
 const IColor COLOR_TRANSPARENT(0, 0, 0, 0);

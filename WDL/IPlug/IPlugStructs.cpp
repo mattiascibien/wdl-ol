@@ -1,6 +1,135 @@
 #include "IPlugStructs.h"
 #include "Log.h"
 
+IColor::IColor(int hexRGB, int alpha)
+{
+	B = ((hexRGB) & 0xff);
+	G = (((hexRGB) >> 8) & 0xff);
+	R = (((hexRGB) >> 16) & 0xff);
+	A = alpha;
+}
+void IColor::SetHSV(double H, double S, double V)
+{
+	S /= 100;
+	V /= 100;
+
+	if (S <= 0)
+	{
+		R = V;
+		G = V;
+		B = V;
+	}
+	else
+	{
+		int i;
+		double f, p, q, t;
+
+		if (H >= 360)
+			H = 0;
+		else
+			H = H / 60;
+
+		i = (int)trunc(H);
+		f = H - i;
+
+		p = V * (1.0 - S);
+		q = V * (1.0 - (S * f));
+		t = V * (1.0 - (S * (1.0 - f)));
+
+		switch (i)
+		{
+		case 0:
+			R = int(V * 255);
+			G = int(t * 255);
+			B = int(p * 255);
+			break;
+
+		case 1:
+			R = int(q * 255);
+			G = int(V * 255);
+			B = int(p * 255);
+			break;
+
+		case 2:
+			R = int(p * 255);
+			G = int(V * 255);
+			B = int(t * 255);
+			break;
+
+		case 3:
+			R = int(p * 255);
+			G = int(q * 255);
+			B = int(V * 255);
+			break;
+
+		case 4:
+			R = int(t * 255);
+			G = int(p * 255);
+			B = int(V * 255);
+			break;
+
+		default:
+			R = int(V * 255);
+			G = int(p * 255);
+			B = int(q * 255);
+			break;
+		}
+	}
+}
+void IColor::GetHSV(double *getH, double *getS, double *getV)
+{
+	double delta, min;
+	double h = 0, s, v;
+
+	min = IPMIN(IPMIN(R, G), B);
+	v = IPMAX(IPMAX(R, G), B);
+	delta = v - min;
+
+	if (v <= 0.0)
+		s = 0;
+	else
+		s = delta / v;
+
+	if (s <= 0)
+		h = 0.0;
+
+	else
+	{
+		if (R >= v)
+			h = (G - B) / delta;
+		else if (G >= v)
+			h = 2 + (B - R) / delta;
+		else if (B >= v)
+			h = 4 + (R - G) / delta;
+
+		h *= 60;
+
+		if (h < 0.0)
+			h = h + 360;
+	}
+	*getH = h;
+	*getS = s * 100;
+	*getV = v / 255 * 100;
+}
+void IColor::SetHue(double hue)
+{
+	double H = 0, S = 0, V = 0;
+	GetHSV(&H, &S, &V);
+	SetHSV(hue, S, V);
+}
+void IColor::SetSaturation(double saturation)
+{
+	double H = 0, S = 0, V = 0;
+	GetHSV(&H, &S, &V);
+	SetHSV(H, saturation, V);
+}
+void IColor::SetBrightness(double brightness)
+{
+	double H = 0, S = 0, V = 0;
+	GetHSV(&H, &S, &V);
+	SetHSV(H, S, brightness);
+}
+
 void IMidiMsg::MakeNoteOnMsg(int noteNumber, int velocity, int offset, int channel)
 {
   Clear();
