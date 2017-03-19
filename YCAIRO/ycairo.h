@@ -173,7 +173,7 @@ class ycairo_gui
 {
 public:
 
-	ycairo_gui(ycairo_base *ycairo_base, IRECT control_draw_rect);
+	ycairo_gui(ycairo_base *ycairo_base, IControl *pControl);
 	
 	//void ycairo_update_draw_rect(IRECT rect)
 	//{
@@ -187,13 +187,17 @@ public:
 	void ycairo_reset_clip(cairo_t *cr);
 	
 	void ycairo_set_source_rgba(cairo_t *cr, IColor color);
-	void ycairo_set_source_rgba_precise(cairo_t *cr, IColor color);
+	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor color);
+	void ycairo_convert_colors_to_grayscale(cairo_t *cr)
+	{
+
+	}
 	
-	void ycairo_prepare_draw(IRECT drawRect);
+	void ycairo_prepare_draw();
 	void ycairo_draw();
 
 private:
-	IRECT draw_rect;
+	IRECT *draw_rect;
 	int size;
 	int base_width, base_height;
 	unsigned char *surface_out_test;
@@ -205,20 +209,14 @@ protected:
 	cairo_surface_t *surface_out;
 	cairo_t *cr;
 	cairo_t *cr_out;
-
-
+	IControl *mControl;
 };
 
 class ycairo_text
 {
 
 public:
-
-	// Constructor with global font
 	ycairo_text(ycairo_base *ycairo_base);
-
-	// Constructor without global font
-	ycairo_text();
 
 	~ycairo_text();
 

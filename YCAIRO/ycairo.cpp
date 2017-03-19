@@ -245,8 +245,19 @@ IPlugBase * ycairo_base::GetIPlugBase()
 	return ycairo_iplug_base;
 }
 
-ycairo_gui::ycairo_gui(ycairo_base * ycairo_base, IRECT control_draw_rect)
+ycairo_gui::ycairo_gui(ycairo_base * ycairo_base, IControl *pControl)
 {
+	mControl = pControl;
+
+	if (ycairo_base->GetIPlugBase()->GetGUIResize())
+	{
+		draw_rect = mControl->GetNonScaledDrawRECT();
+	}
+	else
+	{
+		draw_rect = mControl->GetDrawRECT();
+	}
+
 	base_width = ycairo_base->get_width();
 	base_height = ycairo_base->get_height();
 
@@ -257,7 +268,7 @@ void ycairo_gui::ycairo_reset_clip(cairo_t * cr)
 {
 	//cairo_new_path(cr);
 	cairo_reset_clip(cr);
-	cairo_rectangle(cr, draw_rect.L, draw_rect.T, draw_rect.W(), draw_rect.H());
+	cairo_rectangle(cr, draw_rect->L, draw_rect->T, draw_rect->W(), draw_rect->H());
 	cairo_clip(cr);
 }
 
@@ -281,7 +292,7 @@ void ycairo_gui::ycairo_set_source_rgba(cairo_t * cr, IColor color)
 	cairo_set_source_rgba(cr, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0);
 }
 
-void ycairo_gui::ycairo_set_source_rgba_precise(cairo_t * cr, IColor color)
+void ycairo_gui::ycairo_set_source_rgba_fast(cairo_t * cr, IColor color)
 {
 	cairo_set_source_rgba(cr, color.R / 256.0, color.G / 256.0, color.B / 256.0, color.A / 256.0);
 }
@@ -295,17 +306,15 @@ void ycairo_gui::ycairo_triangle(cairo_t * cr, double x0, double y0, double x1, 
 	cairo_close_path(cr);
 }
 
-void ycairo_gui::ycairo_prepare_draw(IRECT drawRect)
+void ycairo_gui::ycairo_prepare_draw()
 {
-	draw_rect = drawRect;
-
 	//Getting surface
 	surface = ycairo->get_surface();
 	cr = ycairo->get_cr();
-
+	
 	//Adding new path and new clip region
 	cairo_new_path(cr);
-	cairo_rectangle(cr, draw_rect.L, draw_rect.T, draw_rect.W(), draw_rect.H());
+	cairo_rectangle(cr, draw_rect->L, draw_rect->T, draw_rect->W(), draw_rect->H());
 	cairo_clip(cr);
 }
 
@@ -315,7 +324,6 @@ void ycairo_gui::ycairo_draw()
 	cairo_reset_clip(cr);
 }
 
-// Contructor with global font
 
 ycairo_text::ycairo_text(ycairo_base * ycairo_base)
 {
@@ -324,24 +332,18 @@ ycairo_text::ycairo_text(ycairo_base * ycairo_base)
 #elif defined(__APPLE__)
 	bundleID = ycairo_base->get_BUNDLE_ID();
 #endif
-
+	
 	ext_height = new cairo_text_extents_t;
 	text_extents = new cairo_text_extents_t;
 	font_extents = new cairo_font_extents_t;
-
-	global_ft_library = ycairo_base->get_global_ft_lib();
-	global_ft_face = ycairo_base->get_global_ft_face();
 
 	global_font_initialized = ycairo_base->global_font_initialized();
-}
 
-// Constructor without global font
-
-ycairo_text::ycairo_text()
-{
-	ext_height = new cairo_text_extents_t;
-	text_extents = new cairo_text_extents_t;
-	font_extents = new cairo_font_extents_t;
+	if (global_font_initialized)
+	{
+		global_ft_library = ycairo_base->get_global_ft_lib();
+		global_ft_face = ycairo_base->get_global_ft_face();
+	}	
 }
 
 ycairo_text::~ycairo_text()
