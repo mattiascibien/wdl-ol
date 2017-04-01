@@ -61,7 +61,7 @@ instrument determined by PLUG _IS _INST
 
 // GUI default dimensions
 #define GUI_WIDTH 300
-#define GUI_HEIGHT 300
+#define GUI_HEIGHT 360
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
 #if defined(SA_API)
