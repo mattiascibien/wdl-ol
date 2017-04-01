@@ -616,6 +616,7 @@ extern bool AttachGUI()
     if (pGraphics)
     {
       gPluginInstance->OnGUIOpen();
+	  gPluginInstance->ResizeAtGUIOpen(pGraphics);
       return true;
     }
   }
@@ -796,7 +797,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdPa
 
       TranslateMessage(&msg);
       DispatchMessage(&msg);
-
     }
 
     // in case gHWND didnt get destroyed -- this corresponds to SWELLAPP_DESTROY roughly
