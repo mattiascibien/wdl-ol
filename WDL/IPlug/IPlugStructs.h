@@ -182,6 +182,85 @@ struct IRECT
     return !(*this == rhs);
   }
 
+  IRECT operator+(const IRECT& rhs) const
+  {
+	  return IRECT(L + rhs.L, T + rhs.T, R + rhs.R, B + rhs.B);
+  }
+
+  IRECT operator-(const IRECT& rhs) const
+  {
+	  return IRECT(L - rhs.L, T - rhs.T, R - rhs.R, B - rhs.B);
+  }
+
+  void operator+=(const IRECT& rhs)
+  {
+	  this->L += rhs.L;
+	  this->T += rhs.T;
+	  this->R += rhs.T;
+	  this->B += rhs.B;
+  }
+
+  void operator-=(const IRECT& rhs)
+  {
+	  this->L -= rhs.L;
+	  this->T -= rhs.T;
+	  this->R -= rhs.T;
+	  this->B -= rhs.B;
+  }
+
+  void operator*=(const IRECT& rhs)
+  {
+	  this->L *= rhs.L;
+	  this->T *= rhs.T;
+	  this->R *= rhs.T;
+	  this->B *= rhs.B;
+  }
+
+  void operator/=(const IRECT& rhs)
+  {
+#ifdef _DEBUG
+	  if (rhs.L != 0) this->L /= rhs.L;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.T != 0) this->T /= rhs.T;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.R != 0) this->R /= rhs.T;
+	  else assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.B != 0) this->B /= rhs.B;
+	  else assert(0 && "Division by 0 with IRECT occurred!");
+
+#else
+	  this->L /= rhs.L;
+	  this->T /= rhs.T;
+	  this->R /= rhs.T;
+	  this->B /= rhs.B;
+#endif
+  }
+
+  IRECT operator*(const IRECT& rhs) const
+  {
+	  return IRECT(L * rhs.L, T * rhs.T, R * rhs.R, B * rhs.B);
+  }
+
+  IRECT operator/(const IRECT& rhs) const
+  {
+#ifdef _DEBUG
+	  IRECT output;
+
+	  if (rhs.L != 0) output.L = L / rhs.L;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.T != 0) output.T = T / rhs.T;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.R != 0) output.R = R / rhs.R;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+	  if (rhs.B != 0) output.B = B / rhs.B;
+	  else  assert(0 && "Division by 0 with IRECT occurred!");
+
+	  return output;
+#else
+	  return IRECT(L / rhs.L, T / rhs.T, R / rhs.R, B / rhs.B);
+#endif
+  }
+
   inline int W() const { return R - L; }
   inline int H() const { return B - T; }
   inline float MW() const { return 0.5f * (float) (L + R); }
