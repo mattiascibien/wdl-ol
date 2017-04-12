@@ -3,7 +3,6 @@
 
 #include "IPlugStructs.h"
 #include "IPopupMenu.h"
-#include "IControl.h"
 #include "../lice/lice.h"
 
 // Specialty stuff for calling in to Reaper for Lice functionality.
