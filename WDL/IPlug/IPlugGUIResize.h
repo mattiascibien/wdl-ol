@@ -85,16 +85,6 @@ Normal View:               Normal View - Scaled 2X:
 
 using namespace std;
 
-struct DRECT
-{
-	double L, T, R, B;
-
-	DRECT() { L = T = R = B = 0.0; }
-	DRECT(double l, double t, double r, double b) : L(l), R(r), T(t), B(b) {}
-	inline double W() const { return R - L; }
-	inline double H() const { return B - T; }
-};
-
 struct viewContainer
 {
 	vector <int> view_mode;

@@ -322,3 +322,13 @@ void ISysEx::LogMsg()
   Trace(TRACELOC, "sysex:(%d:%s)", mSize, SysExStr(str, sizeof(str), mData, mSize));
 #endif
 }
+
+IRECT::operator DRECT() const
+{
+	return DRECT((double)L, (double)T, (double)R, (double)B);
+}
+
+DRECT::operator IRECT()
+{
+	return IRECT((int)L, (int)T, (int)R, (int)B);
+}
