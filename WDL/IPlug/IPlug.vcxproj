@@ -253,6 +253,7 @@
     <ClCompile Include="Hosts.cpp" />
     <ClCompile Include="IBitmapMonoText.cpp" />
     <ClCompile Include="IControl.cpp" />
+    <ClCompile Include="IControlGroup.cpp" />
     <ClCompile Include="IGraphics.cpp" />
     <ClCompile Include="IGraphicsWin.cpp" />
     <ClCompile Include="IParam.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="Hosts.h" />
     <ClInclude Include="IBitmapMonoText.h" />
     <ClInclude Include="IControl.h" />
+    <ClInclude Include="IControlGroup.h" />
     <ClInclude Include="IGraphics.h" />
     <ClInclude Include="IGraphicsWin.h" />
     <ClInclude Include="IParam.h" />

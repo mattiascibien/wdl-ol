@@ -17,7 +17,22 @@ DRECT IPlugGUIResize::IRECT_to_DRECT(IRECT *iRECT)
 
 IRECT IPlugGUIResize::DRECT_to_IRECT(DRECT *dRECT)
 {
-	return IRECT((int)(dRECT->L + 0.5), (int)(dRECT->T + 0.5), (int)(dRECT->R + 0.5), (int)(dRECT->B + 0.5));
+	int L = 0, T = 0, R = 0, B = 0;
+
+	if (dRECT->L >= 0) L = (int)(dRECT->L + 0.5);
+	else  L = (int)(dRECT->L - 0.5);
+
+	if (dRECT->T >= 0) T = (int)(dRECT->T + 0.5);
+	else T = (int)(dRECT->T - 0.5);
+
+	if (dRECT->R >= 0) R = (int)(dRECT->R + 0.5);
+	else R = (int)(dRECT->R - 0.5);
+
+	if (dRECT->B >= 0) B = (int)(dRECT->B + 0.5);
+	else B = (int)(dRECT->B - 0.5);
+
+
+	return IRECT(L, T, R, B);
 }
 
 IRECT IPlugGUIResize::RescaleToIRECT(DRECT *old_IRECT, double width_ratio, double height_ratio)
@@ -312,6 +327,8 @@ IPlugGUIResize* IPlugGUIResize::AttachGUIResize()
 
 	mGraphics->SetAllControlsDirty();
 
+	attachedToIPlugBase = true;
+
 	return this;
 }
 
@@ -505,6 +522,11 @@ void IPlugGUIResize::HideControl(int index)
 {
 	IControl* pControl = mGraphics->GetControl(index);
 
+	HideControl(pControl);
+}
+
+void IPlugGUIResize::HideControl(IControl * pControl)
+{
 	int position = FindLayoutPointerPosition(current_view_mode, pControl);
 	if (position >= 0) layout_container[current_view_mode].org_is_hidden[position] = true;
 
@@ -515,6 +537,11 @@ void IPlugGUIResize::ShowControl(int index)
 {
 	IControl* pControl = mGraphics->GetControl(index);
 
+	ShowControl(pControl);
+}
+
+void IPlugGUIResize::ShowControl(IControl * pControl)
+{
 	int position = FindLayoutPointerPosition(current_view_mode, pControl);
 	if (position >= 0) layout_container[current_view_mode].org_is_hidden[position] = false;
 
@@ -1260,6 +1287,11 @@ double IPlugGUIResize::GetWidnowSizeWidthRatio()
 double IPlugGUIResize::GetWidnowSizeHeightRatio()
 {
 	return window_height_normalized / (double)default_gui_height;
+}
+
+bool IPlugGUIResize::IsAttachedToIPlugBase() 
+{ 
+	return attachedToIPlugBase; 
 }
 
 void IPlugGUIResize::ResizeControlRects()

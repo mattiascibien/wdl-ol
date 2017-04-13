@@ -257,6 +257,7 @@ IGraphics::~IGraphics()
 		DELETE_NULL(mKeyCatcher);
 
 	mControls.Empty(true);
+	mControlGroups.Empty(true);
 	DELETE_NULL(mDrawBitmap);
 	DELETE_NULL(mTmpBitmap);
 }
@@ -532,6 +533,14 @@ int* IGraphics::AttachControl(IControl* pControl)
 	mControls.Add(pControl);
 	UpdateLayerPosition(&mControls);
 	return pControl->GetLayerPosition();
+}
+
+IControlGroup * IGraphics::CreateControlGroup(IRECT groupRECT)
+{
+	IControlGroup* pControlGroup = new IControlGroup(mPlug, groupRECT);
+	mControlGroups.Add(pControlGroup);
+
+	return pControlGroup;
 }
 
 void IGraphics::MoveControlLayers(int fromIndex, int toIndex)

@@ -14,6 +14,7 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="..\..\YCAIRO\ycairo.cpp" />
     <ClCompile Include="IPlugGUILiveEdit.cpp" />
+    <ClCompile Include="IControlGroup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Containers.h" />
@@ -31,5 +32,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="..\..\YCAIRO\ycairo.h" />
     <ClInclude Include="IPlugGUILiveEdit.h" />
+    <ClInclude Include="IControlGroup.h" />
   </ItemGroup>
 </Project>

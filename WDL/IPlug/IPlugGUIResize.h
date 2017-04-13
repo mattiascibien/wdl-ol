@@ -121,16 +121,15 @@ public:
 	~IPlugGUIResize(){}
 
 	
-	// These must be called in your plugin constructor ---------------------------------------------------------------------------------------------
+	// These must be called in your plugin constructor -----------------------------------------------------------------------------------------------------
 	void UsingBitmaps();
 	void DisableFastBitmapResizing();
 	void AddNewView(int viewMode, int viewWidth, int viewHeight);
 	void UseOneSideResizing(int handleSize, int minHandleSize = 5, resizeOneSide flag = horisontalAndVerticalResizing);
-	// ---------------------------------------------------------------------------------------------------------------------------------------------
-
-
+	// -----------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	// These can be called from your custom controls -----------------------------------------------------------------------------------------------
+	
+	// These can be called from your custom controls -------------------------------------------------------------------------------------------------------
 	void UseHandleForGUIScaling(bool statement = false);
 	void UseControlAndClickOnHandleForGUIScaling(bool statement = false);
 
@@ -144,10 +143,14 @@ public:
 	void SetWindowHeight(double height);
 	void SetGUIScaleLimits(double minSizeInPercentage, double maxSizeInPercentage);
 	void SetWindowSizeLimits(int viewMode, double minWindowWidth, double minWindowHeight, double maxWindowWidth, double maxWindowHeight);
+	// -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-	// Manipulate controls
+
+	// Manipulate controls ----------------------------------------------------------------------------------------------------------------------------------
 	void HideControl(int index);
+	void HideControl(IControl* pControl);
 	void ShowControl(int index);
+	void ShowControl(IControl* pControl);
 
 	void MoveControlRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
 	void MoveControlRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
@@ -155,7 +158,7 @@ public:
 	void MoveControlHorizontallyRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
 	void MoveControlVerticallyRelativeToWindowSize(int index, resizeFlag flag = drawAndTargetArea);
 	void MoveControlVerticallyRelativeToWindowSize(IControl * moveControl, resizeFlag flag = drawAndTargetArea);
-	
+
 	void MoveControlRelativeToControlDrawRect(int moveControlIndex, int relativeToControlIndex, double xRatio, double yRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlRelativeToControlDrawRect(IControl * moveControl, IControl * relativeToControl, double xRatio, double yRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlHorizontallyRelativeToControlDrawRect(int moveControlIndex, int relativeToControlIndex, double xRatio, resizeFlag flag = drawAndTargetArea);
@@ -169,7 +172,7 @@ public:
 	void MoveControlHorizontallyRelativeToNonScaledDRECT(IControl * pControl, DRECT relativeTo, double xRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlVerticallyRelativeToNonScaledDRECT(int index, DRECT relativeTo, double yRatio, resizeFlag flag = drawAndTargetArea);
 	void MoveControlVerticallyRelativeToNonScaledDRECT(IControl * pControl, DRECT relativeTo, double yRatio, resizeFlag flag = drawAndTargetArea);
-	
+
 	void MoveControl(int index, double x, double y, resizeFlag flag = drawAndTargetArea);
 	void MoveControl(IControl * pControl, double x, double y, resizeFlag flag = drawAndTargetArea);
 	void RelativelyMoveControl(int index, double x, double y, resizeFlag flag = drawAndTargetArea);
@@ -210,24 +213,44 @@ public:
 	void SetNormalizedTargetRect(IControl *pControl, double L, double T, double R, double B);
 	void SetNormalizedTargetRect(int index, DRECT r);
 	void SetNormalizedTargetRect(IControl *pControl, DRECT r);
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------
+		
 	
-	// Get values
+	// Get the values ---------------------------------------------------------------------------------------------------------------------------------------
 	double GetGUIScaleRatio();
 	int GetViewMode();
 	int GetViewModeSize();
 	bool CurrentlyFastResizing();
 	double GetWidnowSizeWidthRatio();
 	double GetWidnowSizeHeightRatio();
+	bool IsAttachedToIPlugBase();
+	DRECT GetOriginalDrawRECTForControl(IControl *pControl)
+	{
+		int index = FindLayoutPointerPosition(current_view_mode, pControl);
+		if (index < 0) return DRECT();
+		
+		return layout_container[current_view_mode].org_draw_area[index];
+	}
+	DRECT GetOriginalTargetRECTForControl(IControl *pControl)
+	{
+		int index = FindLayoutPointerPosition(current_view_mode, pControl);
+		if (index < 0) return DRECT();
+
+		return layout_container[current_view_mode].org_target_area[index];
+	}
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------
+		
 	
-	// You can override this to use in your custom resizing control
+	// You can override this to use in your custom resizing control -----------------------------------------------------------------------------------------
 	virtual void DrawBackgroundAtFastResizing(IGraphics* pGraphics, IRECT *pRECT);
 	virtual void DrawReopenPluginInterface(IGraphics* pGraphics, IRECT *pRECT);
 	virtual void DrawHandle(IGraphics* pGraphics, IRECT *pRECT);
 	virtual void DoPopupMenu() {}
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 
 	// Call this to resize GUI
 	void ResizeGraphics();
-	// ---------------------------------------------------------------------------------------------------------------------------------------------
 
 
 	// Used by the framework -----------------------------------------------------------------------------------------------------------------------
@@ -242,6 +265,7 @@ public:
 	bool IsDirty();
 	// ---------------------------------------------------------------------------------------------------------------------------------------------
 		
+
 private:
 	// Functions that are used internally ----------------------------------------------------------------------------------------------------------
 	bool double_equals(double a, double b, double epsilon = 0.0000000001);
@@ -276,6 +300,7 @@ private:
 	void OnMouseDblClick(int x, int y, IMouseMod * pMod);
 	void OnMouseUp(int x, int y, IMouseMod* pMod);
 	// ---------------------------------------------------------------------------------------------------------------------------------------------
+
 
 	int current_view_mode;
 
@@ -323,6 +348,8 @@ private:
 	char buf[128]; // temp buffer for writing integers to profile strings
 	resizeOneSide one_side_flag;
 	WDL_PtrList<IParam> guiResizeParameters;
+
+	bool attachedToIPlugBase = false;
 
 	friend class IPlugGUILiveEdit;
 };

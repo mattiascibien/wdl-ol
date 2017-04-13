@@ -1,0 +1,68 @@
+#ifndef _ICONTROLGROUP_
+#define _ICONTROLGROUP_
+
+#include "IPlugStructs.h"
+
+class IPlugBase;
+class IControl;
+
+class IControlGroup
+{
+public:
+	IControlGroup(IPlugBase *pPlug, DRECT GroupRect);
+	~IControlGroup();
+
+	IControl* AddControl(IControl* pControl, bool moveControlRelativeToGroup = true);
+	void AttachSubgroup(IControlGroup* pControlGroup, bool moveSubgroupRelativeToGroup = true);
+
+	DRECT GetGroupRECT();
+	void SetGroupRECT(DRECT GroupRECT);
+
+	void HideControls(bool hideSubgroups = false);
+	void ShowControls(bool showSubgroups = false);
+
+	void MoveGroup(double x, double y);
+	void MoveGroupHorizontally(double x);
+	void MoveGroupVertically(double y);
+
+	void MoveGroupLeftEdge(double L);
+	void MoveGroupTopEdge(double T);
+	void MoveGroupRightEdge(double R);
+	void MoveGroupBottomEdge(double B);
+
+	void RelativelyMoveGroup(double x, double y);
+	void RelativelyMoveGroupHorizontally(double x);
+	void RelativelyMoveGroupVertically(double y);
+
+	void RelativelyMoveGroupLeftEdge(double L);
+	void RelativelyMoveGroupTopEdge(double T);
+	void RelativelyMoveGroupRightEdge(double R);
+	void RelativelyMoveGroupBottomEdge(double B);
+
+private:
+	void MoveSubgroupRelativeToGroup(IControlGroup* pControlGroup);
+	void MoveControlRelativeToGroup(IControl* pControl);
+	void MoveAllControlsRelativeToGroup();
+	int FindIndexOfPropertiesForControl(IControl* pControl);
+	
+	struct IControlProperties
+	{
+		IControlProperties(IControl *pControl, IRECT drawRECT, IRECT targetRECT)
+		{
+			control = pControl;
+			originalDrawRECT = drawRECT;
+			originalTargetRECT = targetRECT;
+		}
+
+		IControl *control;
+		IRECT originalDrawRECT;
+		IRECT originalTargetRECT;
+	};
+
+	IPlugBase *mPlug;
+	DRECT groupRECT;
+	WDL_PtrList<IControlGroup> controlGroups;
+	WDL_PtrList<IControlProperties> controlProps;
+	WDL_PtrList<DRECT> originalGroupRECTs;
+};
+#endif

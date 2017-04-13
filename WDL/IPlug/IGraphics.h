@@ -4,6 +4,7 @@
 #include "IPlugStructs.h"
 #include "IPopupMenu.h"
 #include "../lice/lice.h"
+#include "IControlGroup.h"
 
 // Specialty stuff for calling in to Reaper for Lice functionality.
 #ifdef REAPER_SPECIAL
@@ -164,6 +165,9 @@ public:
 	// Returns the control index of this control (not the number of controls).
 	int* AttachControl(IControl* pControl);
 
+	// This will create control group. This will allow you to easily move or hide/show multiple controls at once. You can have groups inside groups too.
+	IControlGroup* CreateControlGroup(IRECT groupRECT);
+
 	void MoveControlLayers(int fromIndex, int toIndex);
 	void SwapControlLayers(int fromIndex, int toIndex);
 	void ReplaceControl(int Index, IControl * pControl);
@@ -262,6 +266,7 @@ public:
 
 protected:
 	WDL_PtrList<IControl> mControls;
+	WDL_PtrList<IControlGroup> mControlGroups;
 	IPlugBase* mPlug;
 	IRECT mDrawRECT;
 	bool mCursorHidden;
