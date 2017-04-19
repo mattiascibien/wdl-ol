@@ -483,8 +483,8 @@ struct DRECT
 
 	inline double W() const { return R - L; }
 	inline double H() const { return B - T; }
-	inline double MW() const { return 0.5 * (double)(L + R); }
-	inline double MH() const { return 0.5 * (double)(T + B); }
+	inline double MW() const { return 0.5 * (L + R); }
+	inline double MH() const { return 0.5 * (T + B); }
 };
 
 struct IMouseMod
