@@ -292,9 +292,18 @@ void ycairo_gui::ycairo_set_source_rgba(cairo_t * cr, IColor color)
 	cairo_set_source_rgba(cr, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0);
 }
 
+void ycairo_gui::ycairo_set_source_rgba(cairo_t * cr, IColor *color)
+{
+	cairo_set_source_rgba(cr, color->R / 255.0, color->G / 255.0, color->B / 255.0, color->A / 255.0);
+}
+
 void ycairo_gui::ycairo_set_source_rgba_fast(cairo_t * cr, IColor color)
 {
 	cairo_set_source_rgba(cr, color.R / 256.0, color.G / 256.0, color.B / 256.0, color.A / 256.0);
+}
+void ycairo_gui::ycairo_set_source_rgba_fast(cairo_t * cr, IColor *color)
+{
+	cairo_set_source_rgba(cr, color->R / 256.0, color->G / 256.0, color->B / 256.0, color->A / 256.0);
 }
 
 void ycairo_gui::ycairo_triangle(cairo_t * cr, double x0, double y0, double x1, double y1, double x2, double y2)

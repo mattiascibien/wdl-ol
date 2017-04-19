@@ -83,6 +83,7 @@
 #include "../WDL/IPlug/IPlugGUIResize.h"
 
 #include <cairo.h>
+#include <cairo-pdf.h>
 #include <cairo-ft.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -187,7 +188,9 @@ public:
 	void ycairo_reset_clip(cairo_t *cr);
 	
 	void ycairo_set_source_rgba(cairo_t *cr, IColor color);
+	void ycairo_set_source_rgba(cairo_t *cr, IColor *color);
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor color);
+	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor *color);
 	void ycairo_convert_colors_to_grayscale(cairo_t *cr)
 	{
 
