@@ -35,6 +35,9 @@ public:
 	{
 		clickedOnControl = ControlIndexContaining(x, y);
 
+		// Skip hidden controls is needed
+		if (!drawHiddenControl && mGraphics->GetControl(clickedOnControl)->IsHidden()) return;
+
 		if (clickedOnControl > -1)
 		{
 			mouseDownDrawRECT = selectedDrawRECT = *mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
@@ -185,6 +188,9 @@ public:
 	{
 		for (int i = 1; i < GetNumberOfControls(); i++)
 		{
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
+
 			// Skip selected control
 			if (clickedOnControl == i) continue;
 
@@ -208,6 +214,9 @@ public:
 	{
 		if (clickedOnControl > -1)
 		{
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(clickedOnControl)->IsHidden()) return;
+
 			IRECT *drawRect = mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
 			mGraphics->DrawRect(&DRAW_RECT_COLOR, drawRect);
 		}
@@ -228,6 +237,9 @@ public:
 	{
 		if (clickedOnControl > 0)
 		{
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(clickedOnControl)->IsHidden()) return;
+
 			WDL_String derivedNameText;
 			GetSelectedClassName(&derivedNameText);
 
@@ -322,6 +334,10 @@ public:
 	{
 		for (int i = 1; i < GetNumberOfControls(); i++)
 		{
+
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
+
 			IRECT *drawRect = mGraphics->GetControl(i)->GetDrawRECT();
 
 			IRECT handle = IRECT(drawRect->R - RESIZE_HANDLE_SIZE, drawRect->B - RESIZE_HANDLE_SIZE, drawRect->R, drawRect->B);
@@ -333,6 +349,9 @@ public:
 	{
 		for (int i = 1; i < GetNumberOfControls(); i++)
 		{
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
+
 			IRECT *drawRect = mGraphics->GetControl(i)->GetDrawRECT();
 
 			IRECT handle = IRECT(drawRect->R - RESIZE_HANDLE_SIZE, drawRect->B - RESIZE_HANDLE_SIZE, drawRect->R, drawRect->B);
@@ -377,6 +396,34 @@ public:
 		foundError = true;
 	}
 
+	bool FindIfLineIsCommentedOut(string *code, size_t startPosition, size_t endPosition, size_t layerPosition)
+	{
+		// TODO: Add ability to check multi line comments
+		char nL;
+		nL = '\n';
+
+		size_t findPos = layerPosition;
+		size_t newLinePosition = endPosition;
+
+		while (findPos > startPosition)
+		{
+			char c = (*code)[findPos];
+
+			if (c == nL)
+			{
+				newLinePosition = findPos;
+				break;
+			}
+
+			findPos--;
+		}
+
+		size_t commentPostion = code->find("//", newLinePosition);
+
+		if ((commentPostion > newLinePosition) && (commentPostion < layerPosition)) return true;
+		else return false;
+	}
+
 	void PrepareSourceCode()
 	{
 		size_t sourceCodeSize = sourceCode.size();
@@ -391,7 +438,7 @@ public:
 		string findLayerEnd = "END";
 		size_t startIndex = positionOfGUIEditStart;
 		int layerNumber = numberOfLayersInCode = 0;
-		layerProperties.resize(1);
+		layerProperties.resize(0);
 
 		while (true)
 		{
@@ -420,26 +467,35 @@ public:
 					return;
 				}
 			}
-			else return;
+			else break;
 
 			startIndex = layerStartPosition + findLayerStart.size();
 		}
 
-		return;
+		for (size_t i = 0; i < layerProperties.size(); i++)
+		{
+			if (FindIfLineIsCommentedOut(&sourceCode, positionOfGUIEditStart, positionOfGUIEditEnd, layerProperties[i].layerStartPosition))
+			{
+				layerProperties.erase(layerProperties.begin() + i);
+				numberOfLayersInCode--;
+			}
+		}
 	}
 
 	string GetLayerAt(int layerIndex)
 	{
-		size_t layerSize = layerProperties[layerIndex].layerEndPosition - layerProperties[layerIndex].layerStartPosition;
-		return sourceCode.substr(layerProperties[layerIndex].layerStartPosition, layerSize);
+		int controlIndex = layerIndex - 1; // -1 because we have not included a background
+		size_t layerSize = layerProperties[controlIndex].layerEndPosition - layerProperties[controlIndex].layerStartPosition;
+		return sourceCode.substr(layerProperties[controlIndex].layerStartPosition, layerSize);
 	}
 
 	void SetLayerAt(int layerIndex, const char* layerText)
 	{
-		size_t layerSize = layerProperties[layerIndex].layerEndPosition - layerProperties[layerIndex].layerStartPosition;
-		sourceCode.erase(layerProperties[layerIndex].layerStartPosition, layerSize);
+		int controlIndex = layerIndex - 1; // -1 because we have not included a background
+		size_t layerSize = layerProperties[controlIndex].layerEndPosition - layerProperties[controlIndex].layerStartPosition;
+		sourceCode.erase(layerProperties[controlIndex].layerStartPosition, layerSize);
 
-		sourceCode.insert(layerProperties[layerIndex].layerStartPosition, layerText);
+		sourceCode.insert(layerProperties[controlIndex].layerStartPosition, layerText);
 	}
 
 	void UpdateDrawRECT(int layerIndex)
@@ -567,10 +623,12 @@ private:
 	int mouseDownY = 0;
 
 	bool liveEditingEnabled = false;
-	int gridSize = 10;
-	int clickedOnControl = -1;
 	bool mouseClickedOnResizeHandle = false;
 	bool mouseIsDragging = false;
+	bool drawHiddenControl = false;
+	int gridSize = 10;
+	int clickedOnControl = -1;
+
 	int numberOfLayersInCode = 0;
 
 	string sourceCode;
