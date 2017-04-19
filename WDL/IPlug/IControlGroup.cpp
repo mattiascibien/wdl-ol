@@ -41,7 +41,7 @@ IControl* IControlGroup::AddControl(IControl* pControl, bool moveControlRelative
 
 void IControlGroup::AttachSubgroup(IControlGroup * pControlGroup, bool moveSubgroupRelativeToGroup)
 {
-	controlGroups.Add(pControlGroup);
+	controlSubgroups.Add(pControlGroup);
 	if (moveSubgroupRelativeToGroup) MoveSubgroupRelativeToGroup(pControlGroup);
 }
 
@@ -68,9 +68,9 @@ void IControlGroup::HideControls(bool hideSubgroups)
 		else controlProps.Get(i)->control->Hide(true);
 	}
 
-	for (int i = 0; i < controlGroups.GetSize() && hideSubgroups; i++)
+	for (int i = 0; i < controlSubgroups.GetSize() && hideSubgroups; i++)
 	{
-		controlGroups.Get(i)->HideControls(hideSubgroups);
+		controlSubgroups.Get(i)->HideControls(hideSubgroups);
 	}
 }
 
@@ -84,9 +84,9 @@ void IControlGroup::ShowControls(bool showSubgroups)
 		else controlProps.Get(i)->control->Hide(false);
 	}
 
-	for (int i = 0; i < controlGroups.GetSize() && showSubgroups; i++)
+	for (int i = 0; i < controlSubgroups.GetSize() && showSubgroups; i++)
 	{
-		controlGroups.Get(i)->HideControls(showSubgroups);
+		controlSubgroups.Get(i)->HideControls(showSubgroups);
 	}
 }
 
@@ -199,6 +199,68 @@ void IControlGroup::RelativelyMoveGroupBottomEdge(double B)
 	MoveAllControlsRelativeToGroup();
 }
 
+int IControlGroup::GetNumberOfSubgroups()
+{
+	return controlSubgroups.GetSize();
+}
+
+int IControlGroup::GetNumberOfControls()
+{
+	return controlProps.GetSize();
+}
+
+int IControlGroup::GetNumberOfControlsIncludingSubgroups()
+{
+	int numberOfControls = 0;
+
+	numberOfControls += controlProps.GetSize();
+
+	for (int i = 0; i < controlSubgroups.GetSize(); i++)
+		numberOfControls += controlSubgroups.Get(i)->GetNumberOfControls();
+
+	return numberOfControls;
+}
+
+double IControlGroup::L() { return groupRECT.L; }
+
+double IControlGroup::T() { return groupRECT.T; }
+
+double IControlGroup::R() { return groupRECT.R; }
+
+double IControlGroup::B() { return groupRECT.B; }
+
+double IControlGroup::W() { return groupRECT.W(); }
+
+double IControlGroup::H() { return groupRECT.H(); }
+
+inline double IControlGroup::MW() const { return 0.5 * (groupRECT.L + groupRECT.R); }
+
+inline double IControlGroup::MH() const { return 0.5 * (groupRECT.T + groupRECT.B); }
+
+IControlGroup * IControlGroup::GetSubgroup(int index)
+{
+	return controlSubgroups.Get(index);
+}
+
+IControl * IControlGroup::GetControl(int index)
+{
+	return controlProps.Get(index)->control;
+}
+
+IControl * IControlGroup::GetControlIncludingSubgroups(int index)
+{
+	IControl *pControl;
+
+	if (index < controlProps.GetSize()) return controlProps.Get(index)->control;
+	else index -= controlProps.GetSize();
+
+	int i = 0;
+	for (; index >= controlSubgroups.Get(i)->GetNumberOfControls(); i++)
+		index -= controlSubgroups.Get(i)->GetNumberOfControls();
+
+	return controlSubgroups.Get(i)->GetControl(index);
+}
+
 void IControlGroup::MoveSubgroupRelativeToGroup(IControlGroup * pControlGroup)
 {
 	DRECT subgroupRECT = pControlGroup->GetGroupRECT();
@@ -254,9 +316,9 @@ void IControlGroup::MoveAllControlsRelativeToGroup()
 		MoveControlRelativeToGroup(controlProps.Get(i)->control);
 	}
 
-	for (int i = 0; i < controlGroups.GetSize(); i++)
+	for (int i = 0; i < controlSubgroups.GetSize(); i++)
 	{
-		controlGroups.Get(i)->MoveAllControlsRelativeToGroup();
+		controlSubgroups.Get(i)->MoveAllControlsRelativeToGroup();
 	}
 
 	// Update original draw rect

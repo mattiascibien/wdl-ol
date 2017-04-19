@@ -12,11 +12,15 @@ public:
 	IControlGroup(IPlugBase *pPlug, DRECT GroupRect);
 	~IControlGroup();
 
-	IControl* AddControl(IControl* pControl, bool moveControlRelativeToGroup = true);
-	void AttachSubgroup(IControlGroup* pControlGroup, bool moveSubgroupRelativeToGroup = true);
+	IControl* AddControl(IControl* pControl, bool moveControlRelativeToGroup = false);
+	void AttachSubgroup(IControlGroup* pControlGroup, bool moveSubgroupRelativeToGroup = false);
 
 	DRECT GetGroupRECT();
 	void SetGroupRECT(DRECT GroupRECT);
+
+	IControlGroup* GetSubgroup(int index);
+	IControl* GetControl(int index);
+	IControl* GetControlIncludingSubgroups(int index);
 
 	void HideControls(bool hideSubgroups = false);
 	void ShowControls(bool showSubgroups = false);
@@ -39,12 +43,25 @@ public:
 	void RelativelyMoveGroupRightEdge(double R);
 	void RelativelyMoveGroupBottomEdge(double B);
 
+	int GetNumberOfSubgroups();
+	int GetNumberOfControls();
+	int GetNumberOfControlsIncludingSubgroups();
+
+	double L();
+	double T();
+	double R();
+	double B();
+	double W();
+	double H();
+	inline double MW() const;
+	inline double MH() const;
+
 private:
 	void MoveSubgroupRelativeToGroup(IControlGroup* pControlGroup);
 	void MoveControlRelativeToGroup(IControl* pControl);
 	void MoveAllControlsRelativeToGroup();
 	int FindIndexOfPropertiesForControl(IControl* pControl);
-	
+
 	struct IControlProperties
 	{
 		IControlProperties(IControl *pControl, IRECT drawRECT, IRECT targetRECT)
@@ -61,7 +78,7 @@ private:
 
 	IPlugBase *mPlug;
 	DRECT groupRECT;
-	WDL_PtrList<IControlGroup> controlGroups;
+	WDL_PtrList<IControlGroup> controlSubgroups;
 	WDL_PtrList<IControlProperties> controlProps;
 	WDL_PtrList<DRECT> originalGroupRECTs;
 };
