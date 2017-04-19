@@ -45,22 +45,6 @@ DRECT IPlugGUIResize::RescaleToDRECT(DRECT *old_IRECT, double width_ratio, doubl
 	return DRECT(old_IRECT->L * width_ratio, old_IRECT->T * height_ratio, old_IRECT->R * width_ratio, old_IRECT->B * height_ratio);
 }
 
-void IPlugGUIResize::GetContainingControls(vector<IControl*> *containingControls, IControl *pControl)
-{
-	containingControls->resize(0);
-	int numberOfControls = mGraphics->GetNControls() - 3;
-
-	for (int i = 0; i < numberOfControls; i++)
-	{
-		IControl *tmpControl = mGraphics->GetControl(i);
-
-		if (pControl->GetDrawRECT()->Contains(tmpControl->GetDrawRECT()))
-		{
-			containingControls->push_back(tmpControl);
-		}
-	}
-}
-
 DRECT * IPlugGUIResize::GetLayoutContainerDrawRECT(int viewMode, IControl * pControl)
 {
 	int position = FindLayoutPointerPosition(viewMode, pControl);
@@ -810,28 +794,6 @@ void IPlugGUIResize::RelativelyMoveControl(IControl* pControl, double x, double 
 	double yRelative = pControl->GetDrawRECT()->T + y;
 
 	MoveControl(pControl, xRelative, yRelative, flag);
-}
-
-void IPlugGUIResize::MoveAllContainingControls(int index, double x, double y, resizeFlag flag)
-{
-	IControl* pControl = mGraphics->GetControl(index);
-	MoveAllContainingControls(pControl, x, y, flag);
-}
-
-void IPlugGUIResize::MoveAllContainingControls(IControl* pControl, double x, double y, resizeFlag flag)
-{
-	vector<IControl*> containingControls;
-	GetContainingControls(&containingControls, pControl);
-
-	for (int i = 0; i < containingControls.size(); i++)
-	{
-		double xRelative = pControl->GetDrawRECT()->L - x;
-		double yRelative = pControl->GetDrawRECT()->T - y;
-
-		RelativelyMoveControl(containingControls[i], xRelative, yRelative, flag);
-	}
-
-	MoveControl(pControl, x, y, flag);
 }
 
 void IPlugGUIResize::MoveControlHorizontally(int index, double x, resizeFlag flag)
