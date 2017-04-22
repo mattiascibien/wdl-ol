@@ -125,7 +125,8 @@ void IPlugEffectGUIResize::SetGUILayout(int viewMode, double windowWidth, double
 		GetGUIResize()->MoveControl(*miniViewIndex, 20, 80);
 		GetGUIResize()->MoveControl(*defaultViewIndex, 20, 110);
 		GetGUIResize()->MoveControl(*hugeViewIndex, 20, 140);
-		GetGUIResize()->MoveControl(*handleSelectorIndex, 340, 80);
+
+		GetGUIResize()->ResizeControlRelativeToWindowSize(*handleSelectorIndex);
 	}
 }
 
