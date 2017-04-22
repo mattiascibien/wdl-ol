@@ -213,7 +213,8 @@ int IControlGroup::GetNumberOfControlsIncludingSubgroups()
 {
 	int numberOfControls = 0;
 
-	numberOfControls += controlProps.GetSize();
+	// Gets number of attached IControls in a group
+	numberOfControls = controlProps.GetSize();
 
 	for (int i = 0; i < controlSubgroups.GetSize(); i++)
 		numberOfControls += controlSubgroups.Get(i)->GetNumberOfControls();
