@@ -10,6 +10,7 @@
   //#warning Carbon GUIs work best with the 10.6 sdk or lower
 #endif
 
+#include "IControl.h"
 #include "IGraphics.h"
 #include "../swell/swell.h"
 
