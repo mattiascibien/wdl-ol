@@ -79,7 +79,7 @@ Normal View:               Normal View - Scaled 2X:
 */
 
 #include <vector>
-#include <math.h> 
+#include <cmath> 
 #include "IGraphics.h"
 #include "IControl.h"
 
