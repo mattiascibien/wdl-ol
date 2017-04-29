@@ -151,7 +151,8 @@ void ycairo_base::create_global_font_from_memory(int name, int type, const char 
 	FT_New_Memory_Face(ft_library, data, size, 0, &ft_face);
 
 #elif defined(__APPLE__)
-	CFBundleRef requestedBundle = CFBundleGetBundleWithIdentifier(CFStringRef(bundleID));
+    CFStringRef CFBundleID = __CFStringMakeConstantString(bundleID);
+    CFBundleRef requestedBundle = CFBundleGetBundleWithIdentifier(CFBundleID);
 	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(requestedBundle);
 	char path[PATH_MAX];
 	CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX);
@@ -403,7 +404,8 @@ void ycairo_text::ycairo_create_font_from_memory(int name, int type, const char 
 	FT_New_Memory_Face(local_ft_library, data, size, 0, &local_ft_face);
 
 #elif defined(__APPLE__)
-	CFBundleRef requestedBundle = CFBundleGetBundleWithIdentifier(CFStringRef(bundleID));
+    CFStringRef CFBundleID = __CFStringMakeConstantString(bundleID);
+    CFBundleRef requestedBundle = CFBundleGetBundleWithIdentifier(CFBundleID);
 	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(requestedBundle);
 	char path[PATH_MAX];
 	CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX);
