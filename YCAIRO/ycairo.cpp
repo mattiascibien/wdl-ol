@@ -84,8 +84,8 @@ ycairo_base::ycairo_base(IPlugBase * pPlug)
 
 ycairo_base::~ycairo_base()
 {
-	cairo_destroy(cr);
-	cairo_surface_destroy(surface);
+	if (cr) cairo_destroy(cr);
+	if (surface) cairo_surface_destroy(surface);
 
 	// If global font was initialized, destroy font on exit
 	if (global_font)
