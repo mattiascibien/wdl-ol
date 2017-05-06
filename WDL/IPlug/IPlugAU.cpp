@@ -517,6 +517,27 @@ UInt32 IPlugAU::GetChannelLayoutTags(AudioUnitScope scope, AudioUnitElement elem
   }
 }
 
+ComponentResult IPlugAU::GetPropertyInfo(AudioUnitPropertyID propID, AudioUnitScope scope, AudioUnitElement element, UInt32 * pDataSize, Boolean * pWriteable)
+{
+    if (scope == kAudioUnitScope_Global)
+    {
+        switch( propID )
+        {
+            case kAudioUnitProperty_MIDIOutputCallbackInfo:
+                *pWriteable = false;
+                *pDataSize = sizeof(CFArrayRef);
+                return noErr;
+                
+            case kAudioUnitProperty_MIDIOutputCallback:
+                *pWriteable = true;
+                *pDataSize = sizeof(AUMIDIOutputCallbackStruct);
+                return noErr;
+        }
+    }
+    
+	return ComponentResult();
+}
+
 #define ASSERT_SCOPE(reqScope) if (scope != reqScope) { return kAudioUnitErr_InvalidProperty; }
 #define ASSERT_ELEMENT(numElements) if (element >= numElements) { return kAudioUnitErr_InvalidElement; }
 #define ASSERT_INPUT_OR_GLOBAL_SCOPE \
@@ -1066,7 +1087,15 @@ ComponentResult IPlugAU::GetProperty(AudioUnitPropertyID propID, AudioUnitScope 
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_4
     NO_OP(kAudioUnitProperty_AUHostIdentifier);           // 46,
-    NO_OP(kAudioUnitProperty_MIDIOutputCallbackInfo);     // 47,
+      case kAudioUnitProperty_MIDIOutputCallbackInfo:
+      {
+          ASSERT_SCOPE(kAudioUnitScope_Global);
+          CFStringRef string = CFSTR("midiOut");
+          CFArrayRef array = CFArrayCreate(kCFAllocatorDefault, (const void**)&string, 1, nullptr);
+          CFRelease(string);
+          *((CFArrayRef*)pData) = array;
+          return noErr;
+      }
     NO_OP(kAudioUnitProperty_MIDIOutputCallback);         // 48,
     NO_OP(kAudioUnitProperty_InputSamplesInOutput);       // 49,
     NO_OP(kAudioUnitProperty_ClassInfoFromDocument);      // 50
@@ -1267,7 +1296,13 @@ ComponentResult IPlugAU::SetProperty(AudioUnitPropertyID propID, AudioUnitScope 
       return noErr;
     }
     NO_OP(kAudioUnitProperty_MIDIOutputCallbackInfo);   // 47,
-    NO_OP(kAudioUnitProperty_MIDIOutputCallback);       // 48,
+      case kAudioUnitProperty_MIDIOutputCallback:
+      {
+          ASSERT_SCOPE(kAudioUnitScope_Global);
+          AUMIDIOutputCallbackStruct *callbackStruct = (AUMIDIOutputCallbackStruct *)pData;
+          mCallbackHelper.SetCallbackInfo(callbackStruct->midiOutputCallback, callbackStruct->userData);
+          return noErr;
+      }
     NO_OP(kAudioUnitProperty_InputSamplesInOutput);       // 49,
     NO_OP(kAudioUnitProperty_ClassInfoFromDocument)       // 50
 #endif
@@ -1622,7 +1657,9 @@ ComponentResult IPlugAU::RenderProc(void* pPlug, AudioUnitRenderActionFlags* pFl
 {
   TRACE_PROCESS(TRACELOC, "%d:%d:%d", outputBusIdx, pOutBufList->mNumberBuffers, nFrames);
 
+  //lastTimeStamp = *pTimestamp; // TODO: enable this somehow
   IPlugAU* _this = (IPlugAU*) pPlug;
+  _this->mCallbackHelper.FireAtTimeStamp(*pTimestamp);
 
   if (!(pTimestamp->mFlags & kAudioTimeStampSampleTimeValid) || outputBusIdx >= _this->mOutBuses.GetSize() || nFrames > _this->GetBlockSize())
   {
@@ -1860,7 +1897,6 @@ IPlugAU::IPlugAU(IPlugInstanceInfo instanceInfo,
   Trace(TRACELOC, "%s", effectName);
 
   memset(&mHostCallbacks, 0, sizeof(HostCallbackInfo));
-  memset(&mMidiCallback, 0, sizeof(AUMIDIOutputCallbackStruct));
   memset(mParamValueString, 0, MAX_PARAM_DISPLAY_LEN * sizeof(char));
 
   mOSXBundleID.Set(instanceInfo.mOSXBundleID.Get());
@@ -2167,8 +2203,68 @@ void IPlugAU::SetLatency(int samples)
   IPlugBase::SetLatency(samples);
 }
 
-// TODO: SendMidiMsg
+
+void MIDIOutputCallbackHelper::AddMIDIEvent(UInt8	status,
+                                            UInt8		channel,
+                                            UInt8		data1,
+                                            UInt8		data2,
+                                            UInt32		inStartFrame)
+{
+    MIDIMessageInfoStruct info = {status, channel, data1, data2, inStartFrame};
+    mMIDIMessageList.push_back(info);
+}
+
+void MIDIOutputCallbackHelper::FireAtTimeStamp(const AudioTimeStamp &inTimeStamp)
+{
+    if (!mMIDIMessageList.empty())
+    {
+        if (mMIDICallbackStruct.midiOutputCallback)
+        {
+            // synthesize the packet list and call the MIDIOutputCallback
+            // iterate through the vector and get each item
+            MIDIPacketList *pktlist = PacketList();
+            
+            MIDIPacket *pkt = MIDIPacketListInit(pktlist);
+            
+            for (MIDIMessageList::iterator iter = mMIDIMessageList.begin(); iter != mMIDIMessageList.end(); iter++)
+            {
+                const MIDIMessageInfoStruct & item = *iter;
+                
+                Byte midiStatusByte = item.status + item.channel;
+                const Byte data[3] = { midiStatusByte, item.data1, item.data2 };
+                UInt32 midiDataCount = ((item.status == 0xC || item.status == 0xD) ? 2 : 3);
+                pkt = MIDIPacketListAdd (pktlist,
+                                         kSizeofMIDIBuffer,
+                                         pkt,
+                                         item.startFrame,
+                                         midiDataCount,
+                                         data);
+                if (!pkt)
+                {
+                    // send what we have and then clear the buffer and then go through this again
+                    // issue the callback with what we got
+                    OSStatus result = (*mMIDICallbackStruct.midiOutputCallback) (mMIDICallbackStruct.userData, &inTimeStamp, 0, pktlist);
+                    if (result != noErr)
+                        printf("error calling output callback: %d", (int) result);
+                    
+                    // clear stuff we've already processed, and fire again
+                    mMIDIMessageList.erase (mMIDIMessageList.begin(), iter);
+                    FireAtTimeStamp(inTimeStamp);
+                    return;
+                }
+            }
+            
+            // fire callback
+            OSStatus result = (*mMIDICallbackStruct.midiOutputCallback) (mMIDICallbackStruct.userData, &inTimeStamp, 0, pktlist);
+            if (result != noErr)
+                printf("error calling output callback: %d", (int) result);
+        }
+        mMIDIMessageList.clear();
+    }
+}
+
 bool IPlugAU::SendMidiMsg(IMidiMsg* pMsg)
 {
-  return false;
+    mCallbackHelper.AddMIDIEvent((UInt8)pMsg->mStatus, (UInt8)pMsg->Channel(), (UInt8)pMsg->mData1, (UInt8)pMsg->mData2, (UInt32)pMsg->mOffset);
+  return true;
 }

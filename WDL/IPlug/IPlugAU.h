@@ -8,6 +8,7 @@
 #include <AudioUnit/AudioUnitProperties.h>
 #include <AudioToolbox/AudioUnitUtilities.h>
 #include <AudioUnit/AudioUnitCarbonView.h>
+#include <CoreMIDI/CoreMIDI.h>
 
 // Argh!
 #if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4
@@ -23,6 +24,61 @@
 struct IPlugInstanceInfo
 {
   WDL_String mOSXBundleID, mCocoaViewFactoryClassName;
+};
+
+typedef struct MIDIMessageInfoStruct {
+    UInt8	status;
+    UInt8	channel;
+    UInt8	data1;
+    UInt8	data2;
+    UInt32	startFrame;
+} MIDIMessageInfoStruct;
+
+class MIDIOutputCallbackHelper
+{
+    enum  { kSizeofMIDIBuffer = 512 };
+    
+public:
+    MIDIOutputCallbackHelper()
+    {
+								mMIDIMessageList.reserve (128);
+								mMIDICallbackStruct.midiOutputCallback = NULL;
+								mMIDIBuffer = new Byte[kSizeofMIDIBuffer];
+    }
+    
+    ~MIDIOutputCallbackHelper()
+    {
+								delete [] mMIDIBuffer;
+    }
+    
+    void					SetCallbackInfo (AUMIDIOutputCallback & callback, void *userData)
+    {
+								mMIDICallbackStruct.midiOutputCallback = callback;
+								mMIDICallbackStruct.userData = userData;
+    }
+    
+    void					AddMIDIEvent (UInt8		status,
+                                          UInt8		channel,
+                                          UInt8		data1,
+                                          UInt8		data2,
+                                          UInt32		inStartFrame );
+    
+    void					FireAtTimeStamp(const AudioTimeStamp &inTimeStamp);
+    
+    
+private:
+    MIDIPacketList		  * PacketList()
+    {
+								return (MIDIPacketList *)mMIDIBuffer;
+    }
+    
+    
+    Byte *						mMIDIBuffer;
+    
+    AUMIDIOutputCallbackStruct	mMIDICallbackStruct;
+    
+    typedef std::vector<MIDIMessageInfoStruct> MIDIMessageList;
+    MIDIMessageList				mMIDIMessageList;
 };
 
 class IPlugAU : public IPlugBase
@@ -94,7 +150,7 @@ private:
 // OutScratchBuf is only needed if the downstream connection fails to give us a buffer.
   WDL_TypedBuf<AudioSampleType> mInScratchBuf, mOutScratchBuf;
   WDL_PtrList<AURenderCallbackStruct> mRenderNotify;
-  AUMIDIOutputCallbackStruct mMidiCallback;
+  MIDIOutputCallbackHelper mCallbackHelper;
 
   // Every stereo pair of plugin input or output is a bus.
   // Buses can have zero host channels if the host hasn't connected the bus at all,
@@ -183,12 +239,13 @@ public:
                                       AudioUnitParameterValue value, 
                                       UInt32 offsetFrames);
   
-  static ComponentResult RenderProc(void* pPlug, 
+  static ComponentResult RenderProc(void* pPlug,
                                     AudioUnitRenderActionFlags* pFlags, 
                                     const AudioTimeStamp* pTimestamp,
                                     UInt32 outputBusIdx, 
                                     UInt32 nFrames, 
                                     AudioBufferList* pBufferList);
+
 };
 
 IPlugAU* MakePlug();
