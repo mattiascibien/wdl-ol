@@ -50,6 +50,7 @@ instrument determined by PLUG _IS _INST
 
 // if this is 0 RTAS can't get tempo info
 #define PLUG_DOES_MIDI 0
+#define AU_MIDI_FX 0
 
 #define PLUG_DOES_STATE_CHUNKS 0
   

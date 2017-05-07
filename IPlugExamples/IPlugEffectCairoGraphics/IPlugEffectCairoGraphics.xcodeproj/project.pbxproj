@@ -121,6 +121,7 @@
 		0F40451E1E74C89300A28FED /* swell-misc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D3F13B635A0001D0217 /* swell-misc.mm */; };
 		0F40451F1E74C89300A28FED /* swell-wnd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4113B635AB001D0217 /* swell-wnd.mm */; };
 		0F4045201E74C89300A28FED /* swell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4313B635B2001D0217 /* swell.cpp */; };
+		0FDA231F1EBF519600593ADC /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F78D7CF13B637790032E0F3 /* CoreMIDI.framework */; };
 		0FE4D6681EABBAD200ACFC54 /* IControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4D6661EABBAD200ACFC54 /* IControlGroup.cpp */; };
 		0FE4D6691EABBAD200ACFC54 /* IControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4D6661EABBAD200ACFC54 /* IControlGroup.cpp */; };
 		0FE4D66A1EABBAD200ACFC54 /* IControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4D6661EABBAD200ACFC54 /* IControlGroup.cpp */; };
@@ -790,6 +791,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FDA231F1EBF519600593ADC /* CoreMIDI.framework in Frameworks */,
 				4F3AE1D412C0E5E2001FD7A4 /* Carbon.framework in Frameworks */,
 				4F3AE1D512C0E5E2001FD7A4 /* Cocoa.framework in Frameworks */,
 				4F3AE1D612C0E5E2001FD7A4 /* AudioToolbox.framework in Frameworks */,
