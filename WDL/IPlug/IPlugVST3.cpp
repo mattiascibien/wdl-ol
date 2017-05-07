@@ -1007,10 +1007,16 @@ int IPlugVST3::GetSamplePos()
 
 void IPlugVST3::ResizeGraphics(int w, int h)
 {
-  if (GetGUI())
-  {
-    viewsArray.at(0)->resize(w, h);
-  }
+    if (GetGUI())
+    {
+        viewsArray.at(0)->resize(w, h);
+        
+        OnWindowResize();
+        
+#ifdef USING_YCAIRO
+        ResizeCairoSurface();
+#endif
+    }
 }
 
 void IPlugVST3::SetLatency(int latency)
@@ -1117,14 +1123,9 @@ tresult PLUGIN_API IPlugVST3View::onSize(ViewRect* newSize)
   {
     rect = *newSize;
 
+    // TODO: Check what is this doing
     if (mExpectingNewSize)
     {
-      mPlug->OnWindowResize();
-
-#ifdef USING_YCAIRO
-	  mPlug->ResizeCairoSurface();
-#endif
-
       mExpectingNewSize = false;
     }
   }
