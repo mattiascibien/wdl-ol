@@ -1090,10 +1090,12 @@ ComponentResult IPlugAU::GetProperty(AudioUnitPropertyID propID, AudioUnitScope 
       case kAudioUnitProperty_MIDIOutputCallbackInfo:
       {
           ASSERT_SCOPE(kAudioUnitScope_Global);
+          
           CFStringRef string = CFSTR("midiOut");
           CFArrayRef array = CFArrayCreate(kCFAllocatorDefault, (const void**)&string, 1, nullptr);
           CFRelease(string);
           *((CFArrayRef*)pData) = array;
+
           return noErr;
       }
     NO_OP(kAudioUnitProperty_MIDIOutputCallback);         // 48,
@@ -1657,9 +1659,7 @@ ComponentResult IPlugAU::RenderProc(void* pPlug, AudioUnitRenderActionFlags* pFl
 {
   TRACE_PROCESS(TRACELOC, "%d:%d:%d", outputBusIdx, pOutBufList->mNumberBuffers, nFrames);
 
-  //lastTimeStamp = *pTimestamp; // TODO: enable this somehow
   IPlugAU* _this = (IPlugAU*) pPlug;
-  _this->mCallbackHelper.FireAtTimeStamp(*pTimestamp);
 
   if (!(pTimestamp->mFlags & kAudioTimeStampSampleTimeValid) || outputBusIdx >= _this->mOutBuses.GetSize() || nFrames > _this->GetBlockSize())
   {
@@ -1803,6 +1803,7 @@ ComponentResult IPlugAU::RenderProc(void* pPlug, AudioUnitRenderActionFlags* pFl
     else
     {
       _this->ProcessBuffers((AudioSampleType) 0, nFrames);
+      _this->mCallbackHelper.FireAtTimeStamp(*pTimestamp);
     }
   }
 
@@ -2204,11 +2205,25 @@ void IPlugAU::SetLatency(int samples)
 }
 
 
-void MIDIOutputCallbackHelper::AddMIDIEvent(UInt8	status,
-                                            UInt8		channel,
-                                            UInt8		data1,
-                                            UInt8		data2,
-                                            UInt32		inStartFrame)
+MIDIOutputCallbackHelper::MIDIOutputCallbackHelper()
+{
+	mMIDIMessageList.reserve(64);
+	mMIDICallbackStruct.midiOutputCallback = NULL;
+	mMIDIBuffer = new Byte[sizeOfMIDIBuffer];
+}
+
+MIDIOutputCallbackHelper::~MIDIOutputCallbackHelper()
+{
+	delete[] mMIDIBuffer;
+}
+
+void MIDIOutputCallbackHelper::SetCallbackInfo(AUMIDIOutputCallback &callback, void *userData)
+{
+	mMIDICallbackStruct.midiOutputCallback = callback;
+	mMIDICallbackStruct.userData = userData;
+}
+
+void MIDIOutputCallbackHelper::AddMIDIEvent(UInt8 status, UInt8 channel, UInt8 data1, UInt8 data2, UInt32 inStartFrame)
 {
     MIDIMessageInfoStruct info = {status, channel, data1, data2, inStartFrame};
     mMIDIMessageList.push_back(info);
@@ -2228,17 +2243,13 @@ void MIDIOutputCallbackHelper::FireAtTimeStamp(const AudioTimeStamp &inTimeStamp
             
             for (MIDIMessageList::iterator iter = mMIDIMessageList.begin(); iter != mMIDIMessageList.end(); iter++)
             {
-                const MIDIMessageInfoStruct & item = *iter;
-                
+                const MIDIMessageInfoStruct &item = *iter;
+                                
                 Byte midiStatusByte = item.status + item.channel;
                 const Byte data[3] = { midiStatusByte, item.data1, item.data2 };
                 UInt32 midiDataCount = ((item.status == 0xC || item.status == 0xD) ? 2 : 3);
-                pkt = MIDIPacketListAdd (pktlist,
-                                         kSizeofMIDIBuffer,
-                                         pkt,
-                                         item.startFrame,
-                                         midiDataCount,
-                                         data);
+                pkt = MIDIPacketListAdd (pktlist, sizeOfMIDIBuffer, pkt, item.startFrame, midiDataCount, data);
+
                 if (!pkt)
                 {
                     // send what we have and then clear the buffer and then go through this again
@@ -2259,8 +2270,13 @@ void MIDIOutputCallbackHelper::FireAtTimeStamp(const AudioTimeStamp &inTimeStamp
             if (result != noErr)
                 printf("error calling output callback: %d", (int) result);
         }
-        mMIDIMessageList.clear();
+        mMIDIMessageList.resize(0);
     }
+}
+
+MIDIPacketList * MIDIOutputCallbackHelper::PacketList()
+{
+	return (MIDIPacketList *)mMIDIBuffer;
 }
 
 bool IPlugAU::SendMidiMsg(IMidiMsg* pMsg)

@@ -26,59 +26,35 @@ struct IPlugInstanceInfo
   WDL_String mOSXBundleID, mCocoaViewFactoryClassName;
 };
 
-typedef struct MIDIMessageInfoStruct {
-    UInt8	status;
-    UInt8	channel;
-    UInt8	data1;
-    UInt8	data2;
-    UInt32	startFrame;
-} MIDIMessageInfoStruct;
-
 class MIDIOutputCallbackHelper
 {
-    enum  { kSizeofMIDIBuffer = 512 };
-    
 public:
-    MIDIOutputCallbackHelper()
-    {
-								mMIDIMessageList.reserve (128);
-								mMIDICallbackStruct.midiOutputCallback = NULL;
-								mMIDIBuffer = new Byte[kSizeofMIDIBuffer];
-    }
+	MIDIOutputCallbackHelper();
+	~MIDIOutputCallbackHelper();
     
-    ~MIDIOutputCallbackHelper()
-    {
-								delete [] mMIDIBuffer;
-    }
-    
-    void					SetCallbackInfo (AUMIDIOutputCallback & callback, void *userData)
-    {
-								mMIDICallbackStruct.midiOutputCallback = callback;
-								mMIDICallbackStruct.userData = userData;
-    }
-    
-    void					AddMIDIEvent (UInt8		status,
-                                          UInt8		channel,
-                                          UInt8		data1,
-                                          UInt8		data2,
-                                          UInt32		inStartFrame );
-    
-    void					FireAtTimeStamp(const AudioTimeStamp &inTimeStamp);
-    
+	void SetCallbackInfo(AUMIDIOutputCallback &callback, void *userData);
+	void AddMIDIEvent(UInt8 status, UInt8 hannel, UInt8 data1, UInt8 data2, UInt32 inStartFrame);
+    void FireAtTimeStamp(const AudioTimeStamp &inTimeStamp);
     
 private:
-    MIDIPacketList		  * PacketList()
+    typedef struct MIDIMessageInfoStruct
     {
-								return (MIDIPacketList *)mMIDIBuffer;
-    }
+        UInt8	status;
+        UInt8	channel;
+        UInt8	data1;
+        UInt8	data2;
+        UInt32	startFrame;
+    } MIDIMessageInfoStruct;
     
-    
-    Byte *						mMIDIBuffer;
-    
-    AUMIDIOutputCallbackStruct	mMIDICallbackStruct;
+    MIDIPacketList* PacketList();
+   
+    Byte *mMIDIBuffer;
+    AUMIDIOutputCallbackStruct mMIDICallbackStruct;
     
     typedef std::vector<MIDIMessageInfoStruct> MIDIMessageList;
-    MIDIMessageList				mMIDIMessageList;
+    MIDIMessageList	mMIDIMessageList;
+    
+    const int sizeOfMIDIBuffer = 512;
 };
 
 class IPlugAU : public IPlugBase
