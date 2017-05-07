@@ -485,6 +485,13 @@ struct DRECT
 	inline double H() const { return B - T; }
 	inline double MW() const { return 0.5 * (L + R); }
 	inline double MH() const { return 0.5 * (T + B); }
+
+	inline DRECT Union(DRECT* pRHS)
+	{
+		if (Empty()) { return *pRHS; }
+		if (pRHS->Empty()) { return *this; }
+		return DRECT(IPMIN(L, pRHS->L), IPMIN(T, pRHS->T), IPMAX(R, pRHS->R), IPMAX(B, pRHS->B));
+	}
 };
 
 struct IMouseMod
