@@ -1091,6 +1091,7 @@ bool IGraphics::IsDirty(IRECT* pR)
 	bool dirty = false;
 	int i, n = mControls.GetSize();
 	IControl** ppControl = mControls.GetList();
+	IRECT nonScaledDrawRECT; // TODO: change this to DRECT and find a better way to detect dirty area
 
 	for (i = 0; i < n; ++i, ++ppControl)
 	{
@@ -1100,15 +1101,7 @@ bool IGraphics::IsDirty(IRECT* pR)
 		{
 			if (pControl->IsDirty())
 			{
-					double guiScaleRatio = mPlug->GetGUIResize()->GetGUIScaleRatio();
-					IRECT nonScaledDrawRECT = *pControl->GetNonScaledDrawRECT();
-
-					nonScaledDrawRECT.L = int(nonScaledDrawRECT.L * guiScaleRatio);
-					nonScaledDrawRECT.T = int(nonScaledDrawRECT.T * guiScaleRatio);
-					nonScaledDrawRECT.R = int(nonScaledDrawRECT.R * guiScaleRatio + 0.9999999);
-					nonScaledDrawRECT.B = int(nonScaledDrawRECT.B * guiScaleRatio + 0.9999999);
-
-				*pR = pR->Union(&nonScaledDrawRECT);
+				nonScaledDrawRECT = nonScaledDrawRECT.Union(pControl->GetNonScaledDrawRECT());
 				dirty = true;
 			}
 		}
@@ -1120,6 +1113,19 @@ bool IGraphics::IsDirty(IRECT* pR)
 				dirty = true;
 			}
 		}
+	}
+
+	// Upscale draw rect
+	if (mPlug->GetGUIResize() && dirty)
+	{
+		double guiScaleRatio = mPlug->GetGUIResize()->GetGUIScaleRatio();
+
+		nonScaledDrawRECT.L = int(nonScaledDrawRECT.L * guiScaleRatio);
+		nonScaledDrawRECT.T = int(nonScaledDrawRECT.T * guiScaleRatio);
+		nonScaledDrawRECT.R = int(nonScaledDrawRECT.R * guiScaleRatio + 0.9999999);
+		nonScaledDrawRECT.B = int(nonScaledDrawRECT.B * guiScaleRatio + 0.9999999);
+
+		*pR = nonScaledDrawRECT;
 	}
 
 #ifdef USE_IDLE_CALLS
