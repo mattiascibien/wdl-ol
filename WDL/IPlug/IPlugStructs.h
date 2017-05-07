@@ -477,7 +477,7 @@ struct DRECT
 
 		return output;
 #else
-		return IRECT(L / rhs.L, T / rhs.T, R / rhs.R, B / rhs.B);
+		return DRECT(L / rhs.L, T / rhs.T, R / rhs.R, B / rhs.B);
 #endif
 	}
 
