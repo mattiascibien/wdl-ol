@@ -27,54 +27,21 @@
 #define CAIRO_WIN32_STATIC_BUILD
 #endif
 
-
-#if (_MSC_VER == 1800)
-// ... Include Visual Studio 2013 libs
-
 #if defined(_WIN64)
 #if defined(_DEBUG)
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\x64\\Debug\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\x64\\Debug\\freetype.lib")
+#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\cairo-x64-Debug.lib")
 #else
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\x64\\Release\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\x64\\Release\\freetype.lib")
+#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\cairo-x64-Release.lib")
 #endif
 
 #else // If Win32
 
 #if defined(_DEBUG)
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\Win32\\Debug\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\Win32\\Debug\\freetype.lib")
+#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\cairo-Win32-Debug.lib")
 #else
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\Win32\\Release\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2013\\Win32\\Release\\freetype.lib")
+#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\cairo-Win32-Release.lib")
 #endif
 #endif
-
-#elif (_MSC_VER == 1900)
-// ... Include Visual Studio 2015 libs
-
-#if defined(_WIN64)
-#if defined(_DEBUG)
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\x64\\Debug\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\x64\\Debug\\freetype.lib")
-#else
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\x64\\Release\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\x64\\Release\\freetype.lib")
-#endif
-
-#else // If Win32
-
-#if defined(_DEBUG)
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\Win32\\Debug\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\Win32\\Debug\\freetype.lib")
-#else
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\Win32\\Release\\cairo-static.lib")
-#pragma comment(lib,"..\\..\\YCAIRO\\Cairo_Graphics\\Lib-Win\\MSVC2015\\Win32\\Release\\freetype.lib")
-#endif
-#endif
-#endif
-
 
 #elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
