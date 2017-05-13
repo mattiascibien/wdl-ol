@@ -22,6 +22,8 @@ build-*
 /IPlugExamples/*/*.vcxproj.user
 /.git
 /.sync
+YCAIRO/Cairo_Graphics/projects/*/Win32
+YCAIRO/Cairo_Graphics/projects/*/x64
 
 PCH/*
 VST3_SDK/*
