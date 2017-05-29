@@ -55,3 +55,4 @@ IPlugExamples/build_errors.log
 /IPlugExamples/duplicate.pyc
 WDL/lice/glew/include/GL/WGLEXT.H
 *.opendb
+IControl.cpp.orig
