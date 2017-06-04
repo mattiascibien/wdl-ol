@@ -400,8 +400,7 @@
       <ProgramDataBaseFileName>
       </ProgramDataBaseFileName>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
@@ -440,8 +439,7 @@
       <ProgramDataBaseFileName>
       </ProgramDataBaseFileName>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
