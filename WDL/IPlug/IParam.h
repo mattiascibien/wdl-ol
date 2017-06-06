@@ -52,9 +52,12 @@ public:
   // Accessors / converters.
   // These all return the readable value, not the VST (0,1).
   double Value() const { return mValue; }
-  bool Bool() const { return (mValue >= 0.5); }
+  bool Bool() const { return (mValue >= boolThreshold); }
   int Int() const { return int(mValue); }
   double DBToAmp();
+
+  // Sets threshold that is used to determent bool value. Use values from 0..1
+  void SetBoolThreshold(double value) { boolThreshold = value; }
 
   void SetNormalized(double normalizedValue);
   double GetNormalized();
@@ -89,6 +92,7 @@ private:
   // SetFromHost() and GetForHost() handle conversion from/to (0,1).
   EParamType mType;
   double mValue, mMin, mMax, mStep, mShape, mDefault;
+  double boolThreshold = 0.5;
   int mDisplayPrecision;
   char mName[MAX_PARAM_NAME_LEN];
   char mLabel[MAX_PARAM_LABEL_LEN];
