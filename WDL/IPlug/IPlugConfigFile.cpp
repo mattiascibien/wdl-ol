@@ -1,5 +1,10 @@
 #include "IPlugConfigFile.h"
 
+IPlugConfigFile::IPlugConfigFile()
+{
+	key.reserve(2048);
+}
+
 void IPlugConfigFile::UseEncryption(bool value)
 {
 	useEncryption = value;
@@ -28,23 +33,17 @@ void IPlugConfigFile::SetEncriptionKey(unsigned numberOfValues, ...)
 	{
 		unsigned tmp = va_arg(vl, unsigned);
 
-		char a = char((tmp) & 0xff);
-		key.push_back(a);
+		for (int s = 0; s < 31; s++)
+		{
+			unsigned char tmpChar = (unsigned char)(tmp >> s);
 
-		int count = key.size();
-		char b = char(((tmp) >> 8) & 0xff);
-		for (int t = 0; t < count && b != '\0'; t++)
-			key.push_back(key[t] ^ b);
+			while (tmpChar < 128)
+			{
+				tmpChar += (s + 1);
+			}
 
-		count = key.size();
-		char c = char(((tmp) >> 16) & 0xff);
-		for (int t = 0; t < count && c != '\0'; t++)
-			key.push_back(key[t] ^ c);
-
-		count = key.size();
-		char d = char(((tmp) >> 24) & 0xff);
-		for (int t = 0; t < count && d != '\0'; t++)
-			key.push_back(key[t] ^ d);
+			key.push_back(tmpChar);
+		}
 	}
 	va_end(vl);
 }
@@ -213,7 +212,6 @@ string IPlugConfigFile::GetValue(size_t groupPropsPos, string valueName, string 
 	{
 		size_t valueStart = firstEqualPos + 2;
 		size_t valueEnd = IPMIN(firstNewLinePos, firstCommentPos) - 1;
-		size_t replaceSize = valueEnd - valueStartPos;
 
 		string outValue(outputString.begin() + valueStart, outputString.begin() + valueEnd);
 
@@ -304,16 +302,16 @@ void IPlugConfigFile::ReadFromPath(string filePath)
 {
 	outputString.resize(0);
 
-	string line;
 	ifstream myfile(filePath);
+
 	if (myfile.is_open())
 	{
-		while (getline(myfile, line))
-		{
-			outputString.append(line);
-			outputString.append("\n");
-		}
-		if (outputString.size() > 0) outputString.resize(outputString.size() - 1);
+		myfile.seekg(0, std::ios::end);
+		outputString.reserve(myfile.tellg());
+		myfile.seekg(0, std::ios::beg);
+
+		outputString.assign((std::istreambuf_iterator<char>(myfile)),
+			std::istreambuf_iterator<char>());
 		myfile.close();
 	}
 }
@@ -355,43 +353,10 @@ void IPlugConfigFile::CreateGroup(string groupName)
 	outputString.append("}\n");
 }
 
-template<typename ValueType>
-void IPlugConfigFile::WriteValue(string groupName, string valueName, ValueType value, string comment)
-{
-	WriteString(groupName, valueName, T_to_string(value), comment = "");
-}
-
-template<typename ValueType>
-ValueType IPlugConfigFile::ReadValue(string groupName, string valueName, ValueType defaultValue)
-{
-	return string_to_T<ValueType>(ReadString(groupName, valueName, T_to_string(defaultValue)));
-}
-
-// Convert T, which should be a primitive, to a std::string.
-
-template<typename T>
-std::string IPlugConfigFile::T_to_string(T const & val)
-{
-	std::ostringstream ostr;
-	ostr << val;
-
-	return ostr.str();
-}
-
-template<>
-std::string IPlugConfigFile::string_to_T(std::string const & val)
+#ifdef __APPLE__
+template <>
+std::string IPlugConfigFile::string_to_T<std::string>(std::string const &val)
 {
 	return val;
 }
-
-// Convert a std::string to T.	
-
-template<typename T>
-T IPlugConfigFile::string_to_T(std::string const & val)
-{
-	std::istringstream istr(val);
-	T returnVal;
-	istr >> returnVal;
-
-	return returnVal;
-}
+#endif // __APPLE__

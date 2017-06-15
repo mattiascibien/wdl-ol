@@ -23,6 +23,7 @@ appreciated but is not required.
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <streambuf>
 #include <vector>
 #include "IPlugStructs.h"
 
@@ -31,19 +32,27 @@ using namespace std;
 class IPlugConfigFile
 {
 public:
+	IPlugConfigFile();
 	void UseEncryption(bool value);
 	void SetEncriptionKey(unsigned numberOfValues, ...);
-
+	
 	void SetFilePath(string _filePath);
 
 	void ReadFile();
 	void WriteFile();
 
-	template <typename ValueType>
-	void WriteValue(string groupName, string valueName, ValueType value, string comment = "");
+	template<typename ValueType>
+	void WriteValue(string groupName, string valueName, ValueType value, string comment = "")
+	{
+		WriteString(groupName, valueName, T_to_string(value), comment);
+	}
 
-	template <typename ValueType>
-	ValueType ReadValue(string groupName, string valueName, ValueType defaultValue);
+	template<typename ValueType>
+	ValueType ReadValue(string groupName, string valueName, ValueType defaultValue)
+	{
+		return string_to_T<ValueType>(ReadString(groupName, valueName, T_to_string(defaultValue)));
+	}
+	
 	
 private:
 	struct GroupProps
@@ -53,22 +62,41 @@ private:
 		size_t groupEnd;
 	};
 
+	string key;
 	vector<GroupProps> groupPropsVector;
 	string outputString;
-	string key;
+	
 	bool useEncryption = false;
 	string filePath;
 
 	// Convert T, which should be a primitive, to a std::string.
-	template <typename T>
-	static std::string T_to_string(T const &val);
+	template<typename T>
+	static std::string T_to_string(T const & val)
+	{
+		std::ostringstream ostr;
+		ostr << val;
 
+		return ostr.str();
+	}
+	
 	// Convert a std::string to T.	
-	template <typename T>
-	static T string_to_T(std::string const &val);
+	template<typename T>
+	static T string_to_T(std::string const & val)
+	{
+		std::istringstream istr(val);
+		T returnVal;
+		istr >> returnVal;
 
-	template <>
-	static std::string string_to_T(std::string const &val);
+		return returnVal;
+	}
+
+#ifdef _WIN32
+	template<>
+	static std::string string_to_T(std::string const & val)
+	{
+		return val;
+	}
+#endif // __WIN32
 
 	void EncryptDecryptString(string *workingString);
 	void WriteString(string groupName, string valueName, string value, string comment = "");
