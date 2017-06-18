@@ -23,7 +23,8 @@ class IPlugVST3 : public IPlugBase
 {
 public:
   IPlugVST3(IPlugInstanceInfo instanceInfo,
-            int nParams,
+	        int nPublicParams,
+	        int nPrivateParams,
             const char* channelIOStr,
             int nPresets,
             const char* effectName,

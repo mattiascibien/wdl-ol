@@ -1,3 +1,5 @@
+#pragma once
+
 #define PLUG_MFR "AcmeInc"
 #define PLUG_NAME "IPlugEffect"
 
@@ -82,3 +84,18 @@ instrument determined by PLUG _IS _INST
 "Spatial|Fx", "OnlyRT", "OnlyOfflineProcess", "Mono", "Stereo",
 "Surround"
 */
+
+
+// Parameters and presets stuff ------------------------------------------------------------------------
+#define kNumPrograms 1
+#define kNumPublicParams 1
+#define kNumPrivateParams 0
+  
+// Public parameters should go on top and private on the bottom.
+// You can freely add or remove parameters from the bottom while preserving the compatibility.
+enum EParam
+{
+  // public:
+  kGain
+  // private:
+};

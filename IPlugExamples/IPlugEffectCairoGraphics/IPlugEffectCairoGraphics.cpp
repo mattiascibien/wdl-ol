@@ -3,15 +3,9 @@
 #include "IControl.h"
 #include "resource.h"
 
-const int kNumPrograms = 1;
-
-enum EParams
-{
-  kNumParams
-};
 
 IPlugEffectCairoGraphics::IPlugEffectCairoGraphics(IPlugInstanceInfo instanceInfo)
-  :	IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo)
+  :	IPLUG_CTOR(kNumPublicParams, kNumPrivateParams, kNumPrograms, instanceInfo)
 {
   TRACE;
   IGraphics* pGraphics = MakeGraphics(this, GUI_WIDTH, GUI_HEIGHT);

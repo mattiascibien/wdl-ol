@@ -57,7 +57,8 @@ void GetVersionStr(int version, char* str)
   #define MAX_PATH 1024
 #endif
 
-IPlugBase::IPlugBase(int nParams,
+IPlugBase::IPlugBase(int nPublicParams,
+	                 int nPrivateParams,
                      const char* channelIOStr,
                      int nPresets,
                      const char* effectName,
@@ -88,10 +89,12 @@ IPlugBase::IPlugBase(int nParams,
   , mIsBypassed(false)
   , mDelay(0)
   , mTailSize(0)
+  , numPublicParams(nPublicParams)
+  , numPrivateParams(nPrivateParams)
 {
   Trace(TRACELOC, "%s:%s", effectName, CurrentTime());
 
-  for (int i = 0; i < nParams; ++i)
+  for (int i = 0; i < nPublicParams + nPrivateParams; ++i)
   {
     mParams.Add(new IParam);
   }
@@ -918,16 +921,16 @@ bool IPlugBase::SerializeParams(ByteChunk* pChunk)
 
   WDL_MutexLock lock(&mMutex);
   bool savedOK = true;
-  int i, n = mParams.GetSize();
 
   // Save number of parameters. Do this so you can add parameters in the future versions without braking the plugin. 
   // NOTE: Add new parameters at the end.
-  pChunk->Put(&n);
+  pChunk->Put(&numPublicParams);
+  pChunk->Put(&numPrivateParams);
 
   // Save parameters for GUIResize
   if (GetGUIResize())
   {
-	  for (i = 0; i < GetGUIResize()->GetGUIResizeParameterSize(); i++)
+	  for (int i = 0; i < GetGUIResize()->GetGUIResizeParameterSize(); i++)
 	  {
 		  IParam* pParam = GetGUIResize()->GetGUIResizeParameter(i);
 		  double v = pParam->Value();
@@ -935,12 +938,22 @@ bool IPlugBase::SerializeParams(ByteChunk* pChunk)
 	  }
   }
 
-  for (i = 0; i < n && savedOK; ++i)
+  // Save public parameters
+  for (int i = 0; i < numPublicParams && savedOK; ++i)
   {
     IParam* pParam = mParams.Get(i);
     Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
     double v = pParam->Value();
     savedOK &= (pChunk->Put(&v) > 0);
+  }
+
+  // Save private parameters
+  for (int i = numPublicParams; i < (numPublicParams + numPrivateParams) && savedOK; ++i)
+  {
+	  IParam* pParam = mParams.Get(i);
+	  Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
+	  double v = pParam->Value();
+	  savedOK &= (pChunk->Put(&v) > 0);
   }
 
   return savedOK;
@@ -951,16 +964,21 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
   TRACE;
 
   WDL_MutexLock lock(&mMutex);
-  int i, n = mParams.GetSize(), pos = startPos;
+  int pos = startPos;
 
-  // Use last saved parameter number.
-  pos = pChunk->Get(&n, pos);
-  n = IPMIN(n, mParams.GetSize());
+  // Load last saved parameter number.
 
-  // Save parameters for GUIResize
+  int nStoredPublicParams, nStoredPrivateParams;
+  pos = pChunk->Get(&nStoredPublicParams, pos);
+  pos = pChunk->Get(&nStoredPrivateParams, pos);
+
+  nStoredPublicParams = IPMIN(nStoredPublicParams, numPublicParams);
+  nStoredPrivateParams = IPMIN(nStoredPrivateParams, numPrivateParams);
+
+  // Load parameters for GUIResize
   if (GetGUIResize())
   {
-	  for (i = 0; i < GetGUIResize()->GetGUIResizeParameterSize(); i++)
+	  for (int i = 0; i < GetGUIResize()->GetGUIResizeParameterSize(); i++)
 	  {
 		  IParam* pParam = GetGUIResize()->GetGUIResizeParameter(i);
 		  double v = 0.0;
@@ -970,13 +988,24 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	  }
   }
 
-  for (int i = 0; i < n && pos >= 0; ++i)
+  // Load public parameters
+  for (int i = 0; i < nStoredPublicParams && pos >= 0; ++i)
   {
     IParam* pParam = mParams.Get(i);
     double v = 0.0;
     Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
     pos = pChunk->Get(&v, pos);
     pParam->Set(v);
+  }
+
+  // Load private parameters
+  for (int i = 0; i < nStoredPrivateParams && pos >= 0; ++i)
+  {
+	  IParam* pParam = mParams.Get(i + numPublicParams);
+	  double v = 0.0;
+	  Trace(TRACELOC, "%d %s %f", i + numPublicParams, pParam->GetNameForHost(), pParam->Value());
+	  pos = pChunk->Get(&v, pos);
+	  pParam->Set(v);
   }
 
   OnParamReset();

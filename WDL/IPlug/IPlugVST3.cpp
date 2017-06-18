@@ -75,7 +75,8 @@ protected:
 };
 
 IPlugVST3::IPlugVST3(IPlugInstanceInfo instanceInfo,
-                     int nParams,
+	                 int nPublicParams,
+	                 int nPrivateParams,
                      const char* channelIOStr,
                      int nPresets,
                      const char* effectName,
@@ -89,7 +90,8 @@ IPlugVST3::IPlugVST3(IPlugInstanceInfo instanceInfo,
                      bool plugDoesChunks,
                      bool plugIsInst,
                      int plugScChans)
-  : IPlugBase(nParams,
+  : IPlugBase(nPublicParams,
+	          nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,

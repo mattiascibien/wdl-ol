@@ -13,7 +13,8 @@ int VSTSpkrArrType(int nchan)
 }
 
 IPlugVST::IPlugVST(IPlugInstanceInfo instanceInfo,
-                   int nParams,
+	               int nPublicParams,
+	               int nPrivateParams,
                    const char* channelIOStr,
                    int nPresets,
                    const char* effectName,
@@ -27,7 +28,8 @@ IPlugVST::IPlugVST(IPlugInstanceInfo instanceInfo,
                    bool plugDoesChunks,
                    bool plugIsInst,
                    int plugScChans)
-  : IPlugBase(nParams,
+  : IPlugBase(nPublicParams,
+	          nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,
@@ -57,7 +59,7 @@ IPlugVST::IPlugVST(IPlugInstanceInfo instanceInfo,
   mAEffect.getParameter = VSTGetParameter;
   mAEffect.setParameter = VSTSetParameter;
   mAEffect.numPrograms = nPresets;
-  mAEffect.numParams = nParams;
+  mAEffect.numParams = nPublicParams;
   mAEffect.numInputs = nInputs;
   mAEffect.numOutputs = nOutputs;
   mAEffect.uniqueID = uniqueID;

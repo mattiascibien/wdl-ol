@@ -3,7 +3,8 @@
 extern HWND gHWND;
 
 IPlugStandalone::IPlugStandalone(IPlugInstanceInfo instanceInfo,
-                                 int nParams,
+	                             int nPublicParams,
+	                             int nPrivateParams,
                                  const char* channelIOStr,
                                  int nPresets,
                                  const char* effectName,
@@ -17,7 +18,8 @@ IPlugStandalone::IPlugStandalone(IPlugInstanceInfo instanceInfo,
                                  bool plugDoesChunks,
                                  bool plugIsInst,
                                  int plugScChans)
-  : IPlugBase(nParams,
+  : IPlugBase(nPublicParams,
+	          nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,

@@ -41,7 +41,8 @@ class IPlugAAX : public IPlugBase,
 public:
 
   IPlugAAX(IPlugInstanceInfo instanceInfo, 
-                  int nParams, 
+	              int nPublicParams,
+	              int nPrivateParams,
                   const char* channelIOStr, 
                   int nPresets,
                   const char* effectName, 
