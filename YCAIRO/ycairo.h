@@ -1,5 +1,4 @@
-#ifndef YCAIRO_H
-#define YCAIRO_H
+#pragma once
 
 /*
  Youlean - ycairo - small library for enabling Cairo graphics support in IPlug
@@ -137,49 +136,19 @@ private:
 #endif
 };
 
-class ycairo_gui
+class ycairo_graphics_helper
 {
 public:
-
-	ycairo_gui(ycairo_base *ycairo_base, IControl *pControl);
-	
-	//void ycairo_update_draw_rect(IRECT rect)
-	//{
-	//	draw_rect = rect;
-	//}
-
 	void ycairo_rounded_rectangle(cairo_t *cr, double x, double y, double width, double height, double corner);
 	void ycairo_circle(cairo_t *cr, double x, double y, double radius);
 	void ycairo_triangle(cairo_t *cr, double x0, double y0, double x1, double y1, double x2, double y2);
 
-	void ycairo_reset_clip(cairo_t *cr);
-	
 	void ycairo_set_source_rgba(cairo_t *cr, IColor color);
 	void ycairo_set_source_rgba(cairo_t *cr, IColor *color);
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor color);
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor *color);
-	void ycairo_convert_colors_to_grayscale(cairo_t *cr)
-	{
 
-	}
-	
-	void ycairo_prepare_draw();
-	void ycairo_draw();
-
-private:
-	IRECT *draw_rect;
-	int size;
-	int base_width, base_height;
-	unsigned char *surface_out_test;
-
-	ycairo_base *ycairo;
-
-protected:
-	cairo_surface_t *surface;
-	cairo_surface_t *surface_out;
-	cairo_t *cr;
-	cairo_t *cr_out;
-	IControl *mControl;
+	void ycairo_reset_clip_to(cairo_t *cr, IRECT rect);
 };
 
 class ycairo_text
@@ -187,10 +156,8 @@ class ycairo_text
 
 public:
 	ycairo_text(ycairo_base *ycairo_base);
-
 	~ycairo_text();
-
-
+	
 	void ycairo_create_font_from_path(const char* path);
 	void ycairo_create_font_from_memory(int name, int type, const char* relative_path);
 
@@ -239,4 +206,20 @@ private:
 
 };
 
-#endif
+class ycairo_gui : public ycairo_graphics_helper
+{
+public:
+	ycairo_gui(ycairo_base *ycairo_base, IControl *pControl);
+
+	void ycairo_reset_clip(cairo_t *cr);
+	void ycairo_prepare_draw();
+	void ycairo_draw();
+
+private:
+	IRECT *draw_rect;
+	ycairo_base *ycairo;
+
+protected:
+	cairo_surface_t *surface;
+	cairo_t *cr;
+};

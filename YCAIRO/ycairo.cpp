@@ -248,32 +248,32 @@ IPlugBase * ycairo_base::GetIPlugBase()
 
 ycairo_gui::ycairo_gui(ycairo_base * ycairo_base, IControl *pControl)
 {
-	mControl = pControl;
-
 	if (ycairo_base->GetIPlugBase()->GetGUIResize())
 	{
-		draw_rect = mControl->GetNonScaledDrawRECT();
+		draw_rect = pControl->GetNonScaledDrawRECT();
 	}
 	else
 	{
-		draw_rect = mControl->GetDrawRECT();
+		draw_rect = pControl->GetDrawRECT();
 	}
-
-	base_width = ycairo_base->get_width();
-	base_height = ycairo_base->get_height();
 
 	ycairo = ycairo_base;
 }
 
 void ycairo_gui::ycairo_reset_clip(cairo_t * cr)
 {
+	ycairo_reset_clip_to(cr, *draw_rect);
+}
+
+void ycairo_graphics_helper::ycairo_reset_clip_to(cairo_t *cr, IRECT rect)
+{
 	//cairo_new_path(cr);
 	cairo_reset_clip(cr);
-	cairo_rectangle(cr, draw_rect->L, draw_rect->T, draw_rect->W(), draw_rect->H());
+	cairo_rectangle(cr, rect.L, rect.T, rect.W(), rect.H());
 	cairo_clip(cr);
 }
 
-void ycairo_gui::ycairo_rounded_rectangle(cairo_t * cr, double x, double y, double width, double height, double corner)
+void ycairo_graphics_helper::ycairo_rounded_rectangle(cairo_t * cr, double x, double y, double width, double height, double corner)
 {
 	cairo_new_sub_path(cr);
 	cairo_arc(cr, x + width - corner, y + corner, corner, -1.5707963267948966192313216916398, 0);
@@ -283,31 +283,31 @@ void ycairo_gui::ycairo_rounded_rectangle(cairo_t * cr, double x, double y, doub
 	cairo_close_path(cr);
 }
 
-void ycairo_gui::ycairo_circle(cairo_t * cr, double x, double y, double radius)
+void ycairo_graphics_helper::ycairo_circle(cairo_t * cr, double x, double y, double radius)
 {
 	cairo_arc(cr, x, y, radius, 0, 6.283185307179586476925286766559);
 }
 
-void ycairo_gui::ycairo_set_source_rgba(cairo_t * cr, IColor color)
+void ycairo_graphics_helper::ycairo_set_source_rgba(cairo_t * cr, IColor color)
 {
 	cairo_set_source_rgba(cr, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0);
 }
 
-void ycairo_gui::ycairo_set_source_rgba(cairo_t * cr, IColor *color)
+void ycairo_graphics_helper::ycairo_set_source_rgba(cairo_t * cr, IColor *color)
 {
 	cairo_set_source_rgba(cr, color->R / 255.0, color->G / 255.0, color->B / 255.0, color->A / 255.0);
 }
 
-void ycairo_gui::ycairo_set_source_rgba_fast(cairo_t * cr, IColor color)
+void ycairo_graphics_helper::ycairo_set_source_rgba_fast(cairo_t * cr, IColor color)
 {
 	cairo_set_source_rgba(cr, color.R / 256.0, color.G / 256.0, color.B / 256.0, color.A / 256.0);
 }
-void ycairo_gui::ycairo_set_source_rgba_fast(cairo_t * cr, IColor *color)
+void ycairo_graphics_helper::ycairo_set_source_rgba_fast(cairo_t * cr, IColor *color)
 {
 	cairo_set_source_rgba(cr, color->R / 256.0, color->G / 256.0, color->B / 256.0, color->A / 256.0);
 }
 
-void ycairo_gui::ycairo_triangle(cairo_t * cr, double x0, double y0, double x1, double y1, double x2, double y2)
+void ycairo_graphics_helper::ycairo_triangle(cairo_t * cr, double x0, double y0, double x1, double y1, double x2, double y2)
 {
 	cairo_new_sub_path(cr);
 	cairo_move_to(cr, x0, y0);
