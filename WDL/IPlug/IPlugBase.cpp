@@ -683,6 +683,7 @@ void IPlugBase::MakePreset(char* name, ...)
       GET_PARAM_FROM_VARARG(GetParam(i)->Type(), vp, v);
       pPreset->mChunk.Put(&v);
     }
+	va_end(vp);
   }
 }
 
