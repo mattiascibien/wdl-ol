@@ -635,7 +635,7 @@ struct ITimeInfo
 
   ITimeInfo()
   {
-    mSamplePos = mSamplePos = mTempo = mPPQPos = mLastBar = mCycleStart = mCycleEnd = -1.0;
+    mSamplePos = mPPQPos = mLastBar = mCycleStart = mCycleEnd = -1.0;
     mTempo = 120.;
     mNumerator = mDenominator = 4;
     mTransportIsRunning = mTransportLoopEnabled = false;

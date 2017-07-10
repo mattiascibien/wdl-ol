@@ -1633,7 +1633,7 @@ void IPlugGUIResize::OnMouseUp(int x, int y, IMouseMod * pMod)
 	}
 }
 
-void IPlugGUIResize::SetIntToFile(const char * name, int x)
+void IPlugGUIResize::SetIntToFile(const char * name,unsigned int x)
 {
 	sprintf(buf, "%u", x);
 	WritePrivateProfileString("gui", name, buf, settings_ini_path.Get());
