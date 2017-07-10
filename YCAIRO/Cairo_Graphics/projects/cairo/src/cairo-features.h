@@ -1,4 +1,4 @@
-/* Cairo Solution Files for Visual Studio 2012
+/* Cairo Solution Files for Visual Studio 2017
 *
 * Copyright © 2014 Sólyom Zoltán
 *
@@ -30,8 +30,11 @@
 // Edit this file and recompile if you want to include some features in cairo.
 // Some of the commented features might require libpng and zlib.
 
+
 #ifndef CAIRO_FEATURES_H
 #define CAIRO_FEATURES_H
+
+#include <GL/glew.h>
 
 #define CAIRO_HAS_IMAGE_SURFACE 1
 #define CAIRO_HAS_USER_FONT 1
@@ -41,10 +44,12 @@
 #define CAIRO_HAS_SVG_SURFACE 1
 #define CAIRO_HAS_PDF_SURFACE 1
 #define CAIRO_HAS_PS_SURFACE 1
+#define CAIRO_HAS_GL_SURFACE 1
 
 #define CAIRO_HAS_WIN32_SURFACE 1
 #define CAIRO_HAS_WIN32_FONT 1
 
 #define CAIRO_HAS_FT_FONT 1
 
+#define CAIRO_HAS_WGL_FUNCTIONS 1
 #endif

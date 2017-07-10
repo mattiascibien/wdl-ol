@@ -133,6 +133,24 @@
     <Filter Include="Win32\Font\Source Files">
       <UniqueIdentifier>{34a3d2a4-dd9b-40c3-b91b-71c9913f8e44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GL">
+      <UniqueIdentifier>{ec1b75e3-7209-430c-b870-5a6a65003e2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL\Header Files">
+      <UniqueIdentifier>{6cfc8868-9401-4150-8541-1af022feb3a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL\Source Files">
+      <UniqueIdentifier>{2851f61e-25ab-4e05-afe5-a99b2bc056df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLEW">
+      <UniqueIdentifier>{e005fe8e-16ac-473f-a921-afe7a46e12b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLEW\Header Files">
+      <UniqueIdentifier>{7a058047-6c27-4e42-993e-facfb6bfb835}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLEW\Source Files">
+      <UniqueIdentifier>{c4ac196d-19c0-4e44-ad29-351009f38330}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -187,9 +205,6 @@
       <Filter>Header Files\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cairo\src\cairo-error-private.h">
-      <Filter>Header Files\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="cairo-features.h">
       <Filter>Header Files\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\cairo\src\cairo-fixed-private.h">
@@ -455,6 +470,21 @@
     </ClInclude>
     <ClInclude Include="..\..\cairo\src\cairo-line-private.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cairo\src\cairo-gl-dispatch-private.h">
+      <Filter>GL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cairo\src\cairo-gl-ext-def-private.h">
+      <Filter>GL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cairo\src\cairo-gl-private.h">
+      <Filter>GL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cairo\src\cairo-gl.h">
+      <Filter>GL\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\glew\include\GL\glew.h">
+      <Filter>GLEW\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -856,6 +886,51 @@
     </ClCompile>
     <ClCompile Include="..\..\cairo\src\cairo-line.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-source.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-spans-compositor.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-surface.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-traps-compositor.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-device.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-dispatch.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-glyphs.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-gradient.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-info.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-msaa-compositor.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-operand.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-shaders.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-gl-composite.c">
+      <Filter>GL\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\glew\src\glew.c">
+      <Filter>GLEW\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cairo\src\cairo-wgl-context.c">
+      <Filter>GL\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

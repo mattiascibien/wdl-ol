@@ -103,18 +103,19 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GLEW_STATIC;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <UseFullPaths>true</UseFullPaths>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;OpenGL32.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\zlib\$(Platform)\$(Configuration)\;..\freetype\$(Platform)\$(Configuration)\;..\pixman\$(Platform)\$(Configuration)\;..\libpng\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
@@ -125,11 +126,12 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GLEW_STATIC;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <UseFullPaths>true</UseFullPaths>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,7 +139,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>..\zlib\$(Platform)\$(Configuration)\;..\freetype\$(Platform)\$(Configuration)\;..\pixman\$(Platform)\$(Configuration)\;..\libpng\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;OpenGL32.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,10 +150,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GLEW_STATIC;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <AdditionalIncludeDirectories>D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,7 +164,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>..\zlib\$(Platform)\$(Configuration)\;..\freetype\$(Platform)\$(Configuration)\;..\pixman\$(Platform)\$(Configuration)\;..\libpng\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;OpenGL32.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,10 +175,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GLEW_STATIC;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <AdditionalIncludeDirectories>D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,7 +189,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>..\zlib\$(Platform)\$(Configuration)\;..\freetype\$(Platform)\$(Configuration)\;..\pixman\$(Platform)\$(Configuration)\;..\libpng\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>pixman.lib;libpng.lib;zlib.lib;freetype.lib;OpenGL32.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -222,6 +226,10 @@
     <ClInclude Include="..\..\cairo\src\cairo-freelist-type-private.h" />
     <ClInclude Include="..\..\cairo\src\cairo-ft-private.h" />
     <ClInclude Include="..\..\cairo\src\cairo-ft.h" />
+    <ClInclude Include="..\..\cairo\src\cairo-gl-dispatch-private.h" />
+    <ClInclude Include="..\..\cairo\src\cairo-gl-ext-def-private.h" />
+    <ClInclude Include="..\..\cairo\src\cairo-gl-private.h" />
+    <ClInclude Include="..\..\cairo\src\cairo-gl.h" />
     <ClInclude Include="..\..\cairo\src\cairo-gstate-private.h" />
     <ClInclude Include="..\..\cairo\src\cairo-hash-private.h" />
     <ClInclude Include="..\..\cairo\src\cairo-image-info-private.h" />
@@ -301,7 +309,7 @@
     <ClInclude Include="..\..\cairo\src\test-null-compositor-surface.h" />
     <ClInclude Include="..\..\cairo\src\test-paginated-surface.h" />
     <ClInclude Include="..\..\cairo\src\win32\cairo-win32-private.h" />
-    <ClInclude Include="cairo-features.h" />
+    <ClInclude Include="..\..\glew\include\GL\glew.h" />
     <ClInclude Include="src\cairo-features.h" />
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +352,19 @@
     <ClCompile Include="..\..\cairo\src\cairo-freed-pool.c" />
     <ClCompile Include="..\..\cairo\src\cairo-freelist.c" />
     <ClCompile Include="..\..\cairo\src\cairo-ft-font.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-composite.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-device.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-dispatch.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-glyphs.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-gradient.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-info.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-msaa-compositor.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-operand.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-shaders.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-source.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-spans-compositor.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-surface.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-gl-traps-compositor.c" />
     <ClCompile Include="..\..\cairo\src\cairo-gstate.c" />
     <ClCompile Include="..\..\cairo\src\cairo-hash.c" />
     <ClCompile Include="..\..\cairo\src\cairo-hull.c" />
@@ -429,6 +450,7 @@
     <ClCompile Include="..\..\cairo\src\cairo-unicode.c" />
     <ClCompile Include="..\..\cairo\src\cairo-user-font.c" />
     <ClCompile Include="..\..\cairo\src\cairo-version.c" />
+    <ClCompile Include="..\..\cairo\src\cairo-wgl-context.c" />
     <ClCompile Include="..\..\cairo\src\cairo-wideint.c" />
     <ClCompile Include="..\..\cairo\src\cairo.c" />
     <ClCompile Include="..\..\cairo\src\test-base-compositor-surface.c" />
@@ -443,6 +465,7 @@
     <ClCompile Include="..\..\cairo\src\win32\cairo-win32-printing-surface.c" />
     <ClCompile Include="..\..\cairo\src\win32\cairo-win32-surface.c" />
     <ClCompile Include="..\..\cairo\src\win32\cairo-win32-system.c" />
+    <ClCompile Include="..\..\glew\src\glew.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
