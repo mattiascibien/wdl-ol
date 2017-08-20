@@ -298,12 +298,12 @@ public:
   double GetHandleValueHeadroom() const { return (double) mHandleHeadroom / (double) mLen; }
   // Where is the handle right now?
   IRECT GetHandleRECT(double value = -1.0) const;
-
-  void AfterGUIResize(double guiScaleRatio);
-
+  
   virtual void OnMouseDown(int x, int y, IMouseMod* pMod);
   virtual void OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod);
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d);
+
+  void AfterGUIResize(double guiScaleRatio);
 
   virtual bool Draw(IGraphics* pGraphics);
   
@@ -312,7 +312,7 @@ public:
  
 protected:
   virtual void SnapToMouse(int x, int y);
-  int mLen, mHandleHeadroom, defaultLen, defaultHandleHeadroom;
+  int mLen, mHandleHeadroom;
   EDirection mDirection;
   bool mOnlyHandle; // if true only by clicking on the handle do you click the slider
   IBitmap *mBitmap;
