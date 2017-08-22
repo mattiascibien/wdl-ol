@@ -1325,6 +1325,9 @@ void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 
 void IGraphics::OnMouseUp(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseUp(x, y, pMod);
+
 	int c = GetMouseControlIdx(x, y);
 	mMouseCapture = mMouseX = mMouseY = -1;
 	if (c >= 0)
