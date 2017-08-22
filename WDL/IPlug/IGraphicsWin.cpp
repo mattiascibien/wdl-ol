@@ -977,11 +977,11 @@ void IGraphicsWin::CreateTextEntry(IControl* pControl, IText* pText, IRECT* pTex
     default:                  editStyle = ES_CENTER; break;
   }
 
-  mParamEditWnd = CreateWindow("EDIT", pString, ES_AUTOHSCROLL /*only works for left aligned text*/ | WS_CHILD | WS_VISIBLE | ES_MULTILINE | editStyle,
+  mParamEditWnd = CreateWindowW(L"EDIT", utf8_to_utf16(pString).c_str(), ES_AUTOHSCROLL /*only works for left aligned text*/ | WS_CHILD | WS_VISIBLE | ES_MULTILINE | editStyle,
                                pTextRect->L, pTextRect->T, pTextRect->W()+1, pTextRect->H()+1,
                                mPlugWnd, (HMENU) PARAM_EDIT_ID, mHInstance, 0);
 
-  HFONT font = CreateFont(pText->mSize, 0, 0, 0, pText->mStyle == IText::kStyleBold ? FW_BOLD : 0, pText->mStyle == IText::kStyleItalic ? TRUE : 0, 0, 0, 0, 0, 0, 0, 0, pText->mFont);
+  HFONT font = CreateFontW(pText->mSize, 0, 0, 0, pText->mStyle == IText::kStyleBold ? FW_BOLD : 0, pText->mStyle == IText::kStyleItalic ? TRUE : 0, 0, 0, 0, 0, 0, 0, 0, utf8_to_utf16(pText->mFont).c_str());
 
   SendMessage(mParamEditWnd, EM_LIMITTEXT, (WPARAM) pControl->GetTextEntryLength(), 0);
   SendMessage(mParamEditWnd, WM_SETFONT, (WPARAM) font, 0);
@@ -1003,21 +1003,22 @@ void IGraphicsWin::CreateTextEntry(IControl* pControl, IText* pText, IRECT* pTex
 void GetModulePath(HMODULE hModule, WDL_String* pPath)
 {
   pPath->Set("");
-  char pathCStr[MAX_PATH_LEN];
+  WCHAR pathCStr[MAX_PATH_LEN];
   pathCStr[0] = '\0';
-  if (GetModuleFileName(hModule, pathCStr, MAX_PATH_LEN))
+  if (GetModuleFileNameW(hModule, pathCStr, MAX_PATH_LEN))
   {
     int s = -1;
-    for (int i = 0; i < strlen(pathCStr); ++i)
+    for (int i = 0; i < wcslen(pathCStr); ++i)
     {
       if (pathCStr[i] == '\\')
       {
         s = i;
       }
     }
-    if (s >= 0 && s + 1 < strlen(pathCStr))
+    if (s >= 0 && s + 1 < wcslen(pathCStr))
     {
-      pPath->Set(pathCStr, s + 1);
+	  Windows_UTF_Converter convert;
+      pPath->Set(convert.utf16_to_utf8(pathCStr).c_str(), s + 1);
     }
   }
 }
@@ -1035,34 +1036,34 @@ void IGraphicsWin::PluginPath(WDL_String* pPath)
 void IGraphicsWin::DesktopPath(WDL_String* pPath)
 {
   #ifndef __MINGW_H // TODO: alternative for gcc?
-  TCHAR strPath[MAX_PATH_LEN];
-  SHGetSpecialFolderPath( 0, strPath, CSIDL_DESKTOP, FALSE );
-  pPath->Set(strPath, MAX_PATH_LEN);
+  WCHAR strPath[MAX_PATH_LEN];
+  SHGetSpecialFolderPathW( 0, strPath, CSIDL_DESKTOP, FALSE );
+  pPath->Set(utf16_to_utf8(strPath).c_str(), MAX_PATH_LEN);
   #endif
 }
 
 void IGraphicsWin::DocumentsPath(WDL_String* pPath)
 {
 #ifndef __MINGW_H // TODO: alternative for gcc?
-	TCHAR strPath[MAX_PATH_LEN];
+	WCHAR strPath[MAX_PATH_LEN];
 
-	SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, strPath);
+	SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, strPath);
 
-	pPath->Set(strPath, MAX_PATH_LEN);
+	pPath->Set(utf16_to_utf8(strPath).c_str(), MAX_PATH_LEN);
 #endif
 }
 
 void IGraphicsWin::AppSupportPath(WDL_String* pPath, bool isSystem)
 {
 #ifndef __MINGW_H // TODO: alternative for gcc?
-  TCHAR strPath[MAX_PATH_LEN];
+  WCHAR strPath[MAX_PATH_LEN];
 
   if (isSystem)
-    SHGetFolderPathA(NULL, CSIDL_COMMON_APPDATA, NULL, 0, strPath);
+    SHGetFolderPathW(NULL, CSIDL_COMMON_APPDATA, NULL, 0, strPath);
   else
-    SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, strPath);
+    SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, strPath);
 
-  pPath->Set(strPath, MAX_PATH_LEN);
+  pPath->Set(utf16_to_utf8(strPath).c_str(), MAX_PATH_LEN);
 #endif
 }
 
