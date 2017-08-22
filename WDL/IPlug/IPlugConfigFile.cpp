@@ -307,7 +307,7 @@ void IPlugConfigFile::ReadFromPath(string filePath)
 	if (myfile.is_open())
 	{
 		myfile.seekg(0, std::ios::end);
-		outputString.reserve(myfile.tellg());
+		outputString.reserve((unsigned int)myfile.tellg());
 		myfile.seekg(0, std::ios::beg);
 
 		outputString.assign((std::istreambuf_iterator<char>(myfile)),
