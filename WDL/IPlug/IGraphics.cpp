@@ -1268,6 +1268,9 @@ void IGraphics::SetStrictDrawing(bool strict)
 
 void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseDown(x, y, pMod);
+		
 	ReleaseMouseCapture();
 	int c = GetMouseControlIdx(x, y);
 	if (c >= 0)

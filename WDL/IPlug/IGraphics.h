@@ -166,7 +166,7 @@ public:
 	int* AttachControl(IControl* pControl);
 
 	// This will create control group. This will allow you to easily move or hide/show multiple controls at once. You can have groups inside groups too.
-	IControlGroup* CreateControlGroup(IRECT groupRECT);
+	IControlGroup* CreateControlGroup();
 
 	void MoveControlLayers(int fromIndex, int toIndex);
 	void SwapControlLayers(int fromIndex, int toIndex);
