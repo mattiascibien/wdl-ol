@@ -26,7 +26,8 @@ public:
       mValDisplayControl(0), mNameDisplayControl(0), mTooltip("") {}
 
   virtual ~IControl() {}
-
+  
+  // These functions will be called only if you interact with current control
   virtual void OnMouseDown(int x, int y, IMouseMod* pMod);
   virtual void OnMouseUp(int x, int y, IMouseMod* pMod) {}
   virtual void OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod) {}
@@ -34,9 +35,22 @@ public:
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d) {};
   virtual bool OnKeyDown(int x, int y, int key) { return false; }
 
+  // These will be called if you interact with anything insude your plugin
+  virtual void OnGlobalMouseDown(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseUp(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseDblClick(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseWheel(int x, int y, IMouseMod* pMod, int d) {};
+  virtual bool OnGlobalKeyDown(int x, int y, int key) { return false; }
+
   // For efficiency, mouseovers/mouseouts are ignored unless you call IGraphics::HandleMouseOver.
+  // These functions will be called only if you interact with current control
   virtual void OnMouseOver(int x, int y, IMouseMod* pMod) {}
   virtual void OnMouseOut() {}
+
+  // These will be called if you interact with anything insude your plugin
+  //virtual void OnGlobalMouseOver(int x, int y, IMouseMod* pMod) {}
+  //virtual void OnGlobalMouseOut() {}
 
   // By default, mouse double click has its own handler.  A control can set mDblAsSingleClick to true to change,
   // which maps double click to single click for this control (and also causes the mouse to be

@@ -1378,6 +1378,9 @@ void IGraphics::OnMouseOut()
 
 void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseDrag(x, y, x - mMouseX, y - mMouseY, pMod);
+
 	int c = mMouseCapture;
 	if (c >= 0)
 	{
@@ -1394,6 +1397,11 @@ void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 
 bool IGraphics::OnMouseDblClick(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) 
+		if (mControls.Get(i)->MouseDblAsSingleClick()) mControls.Get(i)->OnGlobalMouseDown(x, y, pMod);
+		else mControls.Get(i)->OnGlobalMouseDblClick(x, y, pMod);
+
 	ReleaseMouseCapture();
 	bool newCapture = false;
 	int c = GetMouseControlIdx(x, y);
@@ -1418,6 +1426,9 @@ bool IGraphics::OnMouseDblClick(int x, int y, IMouseMod* pMod)
 
 void IGraphics::OnMouseWheel(int x, int y, IMouseMod* pMod, int d)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseWheel(x, y, pMod, d);
+
 	int c = GetMouseControlIdx(x, y);
 	if (c >= 0)
 	{
@@ -1432,6 +1443,9 @@ void IGraphics::ReleaseMouseCapture()
 
 bool IGraphics::OnKeyDown(int x, int y, int key)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalKeyDown(x, y, key);
+
 	int c = GetMouseControlIdx(x, y);
 	if (c > 0)
 		return mControls.Get(c)->OnKeyDown(x, y, key);
