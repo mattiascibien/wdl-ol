@@ -535,9 +535,9 @@ int* IGraphics::AttachControl(IControl* pControl)
 	return pControl->GetLayerPosition();
 }
 
-IControlGroup * IGraphics::CreateControlGroup(IRECT groupRECT)
+IControlGroup * IGraphics::CreateControlGroup()
 {
-	IControlGroup* pControlGroup = new IControlGroup(mPlug, groupRECT);
+	IControlGroup* pControlGroup = new IControlGroup(mPlug);
 	mControlGroups.Add(pControlGroup);
 
 	return pControlGroup;
