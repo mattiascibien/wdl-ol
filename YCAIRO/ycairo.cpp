@@ -250,7 +250,7 @@ ycairo_gui::ycairo_gui(ycairo_base * ycairo_base, IControl *pControl)
 {
 	if (ycairo_base->GetIPlugBase()->GetGUIResize())
 	{
-		draw_rect = pControl->GetNonScaledDrawRECT();
+		non_scaled_draw_rect = pControl->GetNonScaledDrawRECT();
 	}
 	else
 	{
@@ -262,12 +262,19 @@ ycairo_gui::ycairo_gui(ycairo_base * ycairo_base, IControl *pControl)
 
 void ycairo_gui::ycairo_reset_clip(cairo_t * cr)
 {
-	ycairo_reset_clip_to(cr, *draw_rect);
+	if (ycairo->GetIPlugBase()->GetGUIResize())
+	{
+		ycairo_reset_clip_to(cr, *non_scaled_draw_rect);
+	}
+	else
+	{
+		ycairo_reset_clip_to(cr, *draw_rect);
+	}
 }
 
 void ycairo_helper::ycairo_reset_clip_to(cairo_t *cr, IRECT rect)
 {
-	//cairo_new_path(cr);
+	cairo_new_path(cr);
 	cairo_reset_clip(cr);
 	cairo_rectangle(cr, rect.L, rect.T, rect.W(), rect.H());
 	cairo_clip(cr);
@@ -341,7 +348,7 @@ void ycairo_drop_shadow::_ycairo_draw_drop_shadow_fast(cairo_t * cr, bool stroke
 	if (surface_width < 1) surface_width++;
 	if (surface_height < 1) surface_height++;
 
-	cairo_surface_t *shadow_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, surface_width, surface_height);
+	cairo_surface_t *shadow_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, (int)surface_width, (int)surface_height);
 	cairo_t *shadow_cr = cairo_create(shadow_surface);
 
 	cairo_translate(shadow_cr, -x1 / props[props_index].shadow_radius, -y1 / props[props_index].shadow_radius);
@@ -414,7 +421,7 @@ void ycairo_drop_shadow::_ycairo_draw_drop_shadow(cairo_t * cr, bool stroke, dou
 	if (surface_width < 1) surface_width++;
 	if (surface_height < 1) surface_height++;
 
-	cairo_surface_t *shadow_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, surface_width, surface_height);
+	cairo_surface_t *shadow_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, (int)surface_width, (int)surface_height);
 	cairo_t *shadow_cr = cairo_create(shadow_surface);
 
 	cairo_translate(shadow_cr, (-x1 + props[props_index].shadow_radius) / downsample, (-y1 + props[props_index].shadow_radius) / downsample);
@@ -434,7 +441,7 @@ void ycairo_drop_shadow::_ycairo_draw_drop_shadow(cairo_t * cr, bool stroke, dou
 	cairo_translate(shadow_cr, (x1 - props[props_index].shadow_radius) / downsample, (y1 - props[props_index].shadow_radius) / downsample);
 
 	// Destination surface
-	_ycairo_blur_surface_channel_offseted_minus_radius(shadow_surface, props[props_index].shadow_radius / downsample, 3);
+	_ycairo_blur_surface_channel_offseted_minus_radius(shadow_surface, int(props[props_index].shadow_radius / downsample), 3);
 
 	cairo_scale(cr, downsample, downsample);
 
@@ -472,7 +479,16 @@ void ycairo_gui::ycairo_prepare_draw()
 	
 	//Adding new path and new clip region
 	cairo_new_path(cr);
-	cairo_rectangle(cr, draw_rect->L, draw_rect->T, draw_rect->W(), draw_rect->H());
+
+	if (ycairo->GetIPlugBase()->GetGUIResize())
+	{
+		cairo_rectangle(cr, non_scaled_draw_rect->L, non_scaled_draw_rect->T, non_scaled_draw_rect->W(), non_scaled_draw_rect->H());
+	}
+	else
+	{
+		cairo_rectangle(cr, draw_rect->L, draw_rect->T, draw_rect->W(), draw_rect->H());
+	}
+		
 	cairo_clip(cr);
 }
 
@@ -604,7 +620,7 @@ void ycairo_text::ycairo_set_text(cairo_t * cr, const char * text)
 	draw_text = text;
 }
 
-void ycairo_text::ycairo_set_text_position(cairo_t * cr, IRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
+void ycairo_text::ycairo_set_text_position(cairo_t * cr, DRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
 {
 	width_aligement = w_aligement;
 	height_aligement = h_aligement;
@@ -626,7 +642,7 @@ void ycairo_text::ycairo_set_text_position(cairo_t * cr, IRECT rect, ycairo_text
 		break;
 
 	case YCAIRO_TEXT_W_ALIGN_CENTER:
-		x = text_rect.L + (((double)text_rect.W() - text_extents->width - text_extents->x_bearing) / 2.0);
+		x = text_rect.L + ((text_rect.W() - text_extents->width - text_extents->x_bearing) / 2.0);
 		break;
 
 	default:
@@ -973,7 +989,7 @@ inline void _ycairo_pixel_average::_average_channel_minus_radius(unsigned char *
 	//if (out == max_sum && *delayed == 255) return; // Prevent overdrawing 255
 	//if (out < size && *delayed == 0) return; // Prevent overdrawing 0
 
-	*delayed = unsigned char(out / size);
+	*delayed = (unsigned char)(out / size);
 }
 
 inline void _ycairo_pixel_average::_average_pixel_minus_radius(unsigned char * in, unsigned int size, unsigned int delay_stride)
@@ -985,10 +1001,10 @@ inline void _ycairo_pixel_average::_average_pixel_minus_radius(unsigned char * i
 	out3 = (out3 + *(in + 2) - *(delayed + 2));
 	out4 = (out4 + *(in + 3) - *(delayed + 3));
 	
-	*delayed = unsigned char(out1 / size);
-	*(delayed + 1) = unsigned char(out2 / size);
-	*(delayed + 2) = unsigned char(out3 / size);
-	*(delayed + 3) = unsigned char(out4 / size);
+	*delayed = (unsigned char)(out1 / size);
+	*(delayed + 1) = (unsigned char)(out2 / size);
+	*(delayed + 2) = (unsigned char)(out3 / size);
+	*(delayed + 3) = (unsigned char)(out4 / size);
 }
 
 inline void _ycairo_pixel_average::_average_pixel(unsigned char * in, unsigned int start_index, unsigned int size, unsigned int delay_stride)
@@ -1009,10 +1025,10 @@ inline void _ycairo_pixel_average::_average_pixel(unsigned char * in, unsigned i
 		out3 = (out3 + *(in + 2) - *(delayed + 2));
 		out4 = (out4 + *(in + 3) - *(delayed + 3));
 
-		*delayed = unsigned char(out1 / size);
-		*(delayed + 1) = unsigned char(out2 / size);
-		*(delayed + 2) = unsigned char(out3 / size);
-		*(delayed + 3) = unsigned char(out4 / size);
+		*delayed = (unsigned char)(out1 / size);
+		*(delayed + 1) = (unsigned char)(out2 / size);
+		*(delayed + 2) = (unsigned char)(out3 / size);
+		*(delayed + 3) = (unsigned char)(out4 / size);
 	}
 }
 
@@ -1026,7 +1042,7 @@ inline void _ycairo_pixel_average::_average_channel(unsigned char * in, unsigned
 	{
 		unsigned char *delayed = in - delay_stride;
 		out1 = ((out1 + *(in + 0)) - *(delayed + 0));
-		*delayed = unsigned char(out1 / size);
+		*delayed = (unsigned char)(out1 / size);
 	}
 }
 
@@ -1039,7 +1055,7 @@ inline void _ycairo_pixel_average::_average_channel_bit_shift(unsigned char *in,
 	//if (out == max_sum && *delayed == 255) return; // Prevent overdrawing 255
 	//if (out < shift && *delayed == 0) return; // Prevent overdrawing 0
 
-	*delayed = unsigned char(out >> shift);
+	*delayed = (unsigned char)(out >> shift);
 }
 
 inline void _ycairo_pixel_average::_average_pixel_bit_shift(unsigned char * in, unsigned int shift, unsigned int delay_stride)
@@ -1051,10 +1067,10 @@ inline void _ycairo_pixel_average::_average_pixel_bit_shift(unsigned char * in, 
 	out3 = (out3 + *(in + 2) - *(delayed + 2));
 	out4 = (out4 + *(in + 3) - *(delayed + 3));
 	
-	*delayed = unsigned char(out1 >> shift);
-	*(delayed + 1) = unsigned char(out2 >> shift);
-	*(delayed + 2) = unsigned char(out3 >> shift);
-	*(delayed + 3) = unsigned char(out4 >> shift);
+	*delayed = (unsigned char)(out1 >> shift);
+	*(delayed + 1) = (unsigned char)(out2 >> shift);
+	*(delayed + 2) = (unsigned char)(out3 >> shift);
+	*(delayed + 3) = (unsigned char)(out4 >> shift);
 }
 
 inline void _ycairo_pixel_average::_reset()

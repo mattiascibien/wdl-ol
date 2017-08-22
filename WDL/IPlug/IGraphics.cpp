@@ -1091,7 +1091,7 @@ bool IGraphics::IsDirty(IRECT* pR)
 	bool dirty = false;
 	int i, n = mControls.GetSize();
 	IControl** ppControl = mControls.GetList();
-	IRECT nonScaledDrawRECT; // TODO: change this to DRECT and find a better way to detect dirty area
+	DRECT nonScaledDrawRECT; // TODO: Find a better way to detect dirty area
 
 	for (i = 0; i < n; ++i, ++ppControl)
 	{

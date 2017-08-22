@@ -82,8 +82,8 @@ public:
   IRECT* GetTargetRECT() { return &mTargetRECT; } 
   void SetTargetRECT(IRECT pR) { mTargetRECT = pR; }
   // The draw area that is unaffected by GUI scaling.
-  IRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; } 
-  void SetNonScaledDrawRECT(IRECT pR) { mNonScaledDrawRECT = pR; } 
+  DRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; }
+  void SetNonScaledDrawRECT(DRECT pR) { mNonScaledDrawRECT = pR; }
     
   virtual void Hide(bool hide);
   bool IsHidden() const { return mHide; }
@@ -146,7 +146,8 @@ protected:
   int mTextEntryLength;
   IText mText;
   IPlugBase* mPlug;
-  IRECT mDrawRECT, mTargetRECT, mNonScaledDrawRECT;
+  IRECT mDrawRECT, mTargetRECT;
+  DRECT mNonScaledDrawRECT;
   int mParamIdx;
   int mLayerPosition = 0;
   

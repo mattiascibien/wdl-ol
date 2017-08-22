@@ -223,7 +223,6 @@ public:
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor *color);
 
 	void ycairo_reset_clip_to(cairo_t *cr, IRECT rect);
-
 };
 
 class ycairo_text
@@ -241,7 +240,7 @@ public:
 
 	void ycairo_set_text(cairo_t *cr, const char *text);
 
-	void ycairo_set_text_position(cairo_t *cr, IRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
+	void ycairo_set_text_position(cairo_t *cr, DRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
 
 	void ycairo_calculate_extents(cairo_t *cr);
 
@@ -292,6 +291,7 @@ public:
 
 private:
 	IRECT *draw_rect;
+	DRECT *non_scaled_draw_rect;
 	ycairo_base *ycairo;
 
 protected:
