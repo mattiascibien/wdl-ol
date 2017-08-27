@@ -8,17 +8,11 @@
 #include <fstream>
 #include <algorithm>
 
-
 /*
 E - Toggle edit mode
 
-
+By Youlean
 */
-
-
-
-
-
 
 
 #define GUI_EDIT_START 0x00000001
@@ -350,7 +344,7 @@ public:
 
 	void DrawResizeHandles()
 	{
-		for (int i = 1; i < GetNumberOfControls(); i++)
+		for (int i = GetNumberOfControls() - 1; i > -1; i--)
 		{
 			// Skip hidden controls is needed
 			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
@@ -364,7 +358,7 @@ public:
 
 	bool IsMouseOverHandle(int x, int y)
 	{
-		for (int i = 1; i < GetNumberOfControls(); i++)
+		for (int i = GetNumberOfControls() - 1; i > -1; i--)
 		{
 			// Skip hidden controls is needed
 			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
@@ -373,7 +367,8 @@ public:
 
 			IRECT handle = IRECT(drawRect->R - RESIZE_HANDLE_SIZE, drawRect->B - RESIZE_HANDLE_SIZE, drawRect->R, drawRect->B);
 
-			if (handle.Contains(x, y)) return true;
+			if (drawRect->Contains(x, y) && handle.Contains(x, y)) return true;
+			else if (drawRect->Contains(x, y) && !handle.Contains(x, y)) return false;
 		}
 
 		return false;
