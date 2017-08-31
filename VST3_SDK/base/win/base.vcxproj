@@ -19,6 +19,108 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\pluginterfaces\base\conststringtable.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\falignpop.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\falignpush.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\fplatform.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\fstrdefs.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ftypes.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\funknown.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\futils.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\fvariant.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\geoconstants.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ibstream.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\icloneable.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ierrorcontext.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ipersistent.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ipluginbase.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\istringresult.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\iupdatehandler.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\keycodes.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\pluginbasefwd.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\smartpointer.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ucolorspec.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\ustring.h" />
+    <ClInclude Include="..\..\pluginterfaces\gui\iplugview.h" />
+    <ClInclude Include="..\..\pluginterfaces\gui\iplugviewcontentscalesupport.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstattributes.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstaudioprocessor.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstautomationstate.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstchannelcontextinfo.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstcomponent.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstcontextmenu.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivsteditcontroller.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstevents.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivsthostapplication.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstinterappaudio.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstmessage.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstmidicontrollers.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstnoteexpression.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstparameterchanges.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstplugview.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstprefetchablesupport.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstprocesscontext.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstrepresentation.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\ivstunits.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\vstpresetkeys.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\vstpshpack4.h" />
+    <ClInclude Include="..\..\pluginterfaces\vst\vsttypes.h" />
+    <ClInclude Include="..\..\public.sdk\source\common\pluginview.h" />
+    <ClInclude Include="..\..\public.sdk\source\main\pluginfactoryvst3.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstaudioeffect.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstbus.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstbypassprocessor.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstcomponent.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstcomponentbase.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vsteditcontroller.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstnoteexpressiontypes.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstparameters.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstpresetfile.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstrepresentation.h" />
+    <ClInclude Include="..\source\classfactoryhelpers.h" />
+    <ClInclude Include="..\source\fbuffer.h" />
+    <ClInclude Include="..\source\fcleanup.h" />
+    <ClInclude Include="..\source\fcommandline.h" />
+    <ClInclude Include="..\source\fdebug.h" />
+    <ClInclude Include="..\source\fdynlib.h" />
+    <ClInclude Include="..\source\flock.h" />
+    <ClInclude Include="..\source\fobject.h" />
+    <ClInclude Include="..\source\fstdmethods.h" />
+    <ClInclude Include="..\source\fstreamer.h" />
+    <ClInclude Include="..\source\fstring.h" />
+    <ClInclude Include="..\source\hexbinary.h" />
+    <ClInclude Include="..\source\timer.h" />
+    <ClInclude Include="..\source\updatehandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\pluginterfaces\base\conststringtable.cpp" />
+    <ClCompile Include="..\..\pluginterfaces\base\funknown.cpp" />
+    <ClCompile Include="..\..\pluginterfaces\base\ustring.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\common\pluginview.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\main\pluginfactoryvst3.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstaudioeffect.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstbus.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstbypassprocessor.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstcomponent.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstcomponentbase.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vsteditcontroller.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstinitiids.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstnoteexpressiontypes.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstparameters.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstpresetfile.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstrepresentation.cpp" />
+    <ClCompile Include="..\source\baseiids.cpp" />
+    <ClCompile Include="..\source\fbuffer.cpp" />
+    <ClCompile Include="..\source\fdebug.cpp" />
+    <ClCompile Include="..\source\fdynlib.cpp" />
+    <ClCompile Include="..\source\flock.cpp" />
+    <ClCompile Include="..\source\fobject.cpp" />
+    <ClCompile Include="..\source\fstreamer.cpp" />
+    <ClCompile Include="..\source\fstring.cpp" />
+    <ClCompile Include="..\source\timer.cpp" />
+    <ClCompile Include="..\source\updatehandler.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>base</ProjectName>
     <ProjectGuid>{5755CC40-C699-491B-BD7C-5D841C26C28D}</ProjectGuid>
@@ -196,78 +298,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\source\baseiids.cpp" />
-    <ClCompile Include="..\source\classfactory.cpp" />
-    <ClCompile Include="..\source\fatomic.cpp" />
-    <ClCompile Include="..\source\fbitset.cpp" />
-    <ClCompile Include="..\source\fbuffer.cpp" />
-    <ClCompile Include="..\source\fcpu.cpp" />
-    <ClCompile Include="..\source\fdebug.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\source\fdynlib.cpp" />
-    <ClCompile Include="..\source\finitializer.cpp" />
-    <ClCompile Include="..\source\fmemory.cpp" />
-    <ClCompile Include="..\source\fobject.cpp" />
-    <ClCompile Include="..\source\fpoint.cpp" />
-    <ClCompile Include="..\source\frect.cpp" />
-    <ClCompile Include="..\source\fstreamer.cpp" />
-    <ClCompile Include="..\source\fstring.cpp" />
-    <ClCompile Include="..\source\fthread.cpp" />
-    <ClCompile Include="..\source\timer.cpp" />
-    <ClCompile Include="..\source\updatehandler.cpp" />
-    <ClCompile Include="..\..\pluginterfaces\base\conststringtable.cpp" />
-    <ClCompile Include="..\..\pluginterfaces\base\funknown.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\source\classfactory.h" />
-    <ClInclude Include="..\source\fatomic.h" />
-    <ClInclude Include="..\source\fbitset.h" />
-    <ClInclude Include="..\source\fbuffer.h" />
-    <ClInclude Include="..\source\fcleanup.h" />
-    <ClInclude Include="..\source\fcommandline.h" />
-    <ClInclude Include="..\source\fcontainer.h" />
-    <ClInclude Include="..\source\fcpu.h" />
-    <ClInclude Include="..\source\fdebug.h" />
-    <ClInclude Include="..\source\fdynlib.h" />
-    <ClInclude Include="..\source\finitializer.h" />
-    <ClInclude Include="..\source\fmemory.h" />
-    <ClInclude Include="..\source\fobject.h" />
-    <ClInclude Include="..\source\fpoint.h" />
-    <ClInclude Include="..\source\frect.h" />
-    <ClInclude Include="..\source\fstreamer.h" />
-    <ClInclude Include="..\source\fstring.h" />
-    <ClInclude Include="..\source\fthread.h" />
-    <ClInclude Include="..\source\timer.h" />
-    <ClInclude Include="..\source\updatehandler.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\conststringtable.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\fplatform.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\fstrdefs.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\ftypes.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\funknown.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\futils.h" />
-    <ClInclude Include="..\..\pluginterfaces\base\iupdatehandler.h" />
-    <ClInclude Include="..\source\tarray.h" />
-    <ClInclude Include="..\source\tassociation.h" />
-    <ClInclude Include="..\source\tbag.h" />
-    <ClInclude Include="..\source\tbinarytree.h" />
-    <ClInclude Include="..\source\tbtree.h" />
-    <ClInclude Include="..\source\tbtreedictionary.h" />
-    <ClInclude Include="..\source\tbtreeset.h" />
-    <ClInclude Include="..\source\tcontainer.h" />
-    <ClInclude Include="..\source\tdeque.h" />
-    <ClInclude Include="..\source\tdictionary.h" />
-    <ClInclude Include="..\source\tdlist.h" />
-    <ClInclude Include="..\source\thashset.h" />
-    <ClInclude Include="..\source\thashtable.h" />
-    <ClInclude Include="..\source\tlist.h" />
-    <ClInclude Include="..\source\tqueue.h" />
-    <ClInclude Include="..\source\tringbuffer.h" />
-    <ClInclude Include="..\source\tstack.h" />
-    <ClInclude Include="..\source\tvector.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
