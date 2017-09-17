@@ -29,6 +29,8 @@ public:
   void* OpenWindow(void* pParentWnd);
   void CloseWindow();
   bool WindowIsOpen() { return (mPlugWnd); }
+
+  double GetSystemGUIScaleRatio();
   
   void UpdateTooltips() {}
 

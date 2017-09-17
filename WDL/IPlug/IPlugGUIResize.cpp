@@ -1392,6 +1392,9 @@ void IPlugGUIResize::ResizeAtGUIOpen()
 	}
 
 	gui_scale_ratio = GetDoubleFromFile("guiscale");
+
+	if (mGraphics->IsUsingSystemGUIScaling()) gui_scale_ratio *= mGraphics->GetSystemGUIScaleRatio();
+
 	mGraphics->guiScaleRatio = gui_scale_ratio;
 
 	plugin_width = (int)(window_width_normalized * gui_scale_ratio);
@@ -1427,6 +1430,8 @@ void IPlugGUIResize::ResizeGraphics()
 {
 	bool window_resizing = false;
 
+	if (mGraphics->IsUsingSystemGUIScaling()) gui_scale_ratio /= mGraphics->GetSystemGUIScaleRatio();
+
 	if (double_equals(GetDoubleFromFile("guiscale"), gui_scale_ratio))
 	{
 		window_resizing = true;
@@ -1435,6 +1440,8 @@ void IPlugGUIResize::ResizeGraphics()
 	{
 		SetDoubleToFile("guiscale", gui_scale_ratio);
 	}
+
+	if (mGraphics->IsUsingSystemGUIScaling()) gui_scale_ratio *= mGraphics->GetSystemGUIScaleRatio();
 
 	mGraphics->guiScaleRatio = gui_scale_ratio;
 

@@ -13,7 +13,26 @@ inline NSRect ToNSRect(IGraphics* pGraphics, IRECT* pR)
 inline IRECT ToIRECT(IGraphics* pGraphics, NSRect* pR)
 {
   int x = pR->origin.x, y = pR->origin.y, w = pR->size.width, h = pR->size.height, gh = pGraphics->Height();
-  return IRECT(x, gh - (y + h), x + w, gh - y);
+    IRECT outRECT;
+    
+    if (pGraphics->GetPlug()->GetGUIResize() && pGraphics->IsUsingSystemGUIScaling())
+    {
+        double systemScaleRatio = pGraphics->GetSystemGUIScaleRatio();
+        
+        outRECT = IRECT(x, gh / systemScaleRatio - (y + h), x + w, gh / systemScaleRatio - y);
+        
+        outRECT.L *= systemScaleRatio;
+        outRECT.T *= systemScaleRatio;
+        outRECT.R *= systemScaleRatio;
+        outRECT.B *= systemScaleRatio;
+        
+    }
+    else
+    {
+        outRECT = IRECT(x, gh - (y + h), x + w, gh - y);
+    }
+    
+    return outRECT;
 }
 
 inline NSColor* ToNSColor(IColor* pColor)

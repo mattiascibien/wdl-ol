@@ -798,6 +798,20 @@ void IGraphicsWin::CloseWindow()
   }
 }
 
+double IGraphicsWin::GetSystemGUIScaleRatio()
+{
+	HDC screen = GetDC(0);
+
+	int dpiX = GetDeviceCaps(screen, LOGPIXELSX);
+	int dpiY = GetDeviceCaps(screen, LOGPIXELSY);
+
+	ReleaseDC(0, screen);
+
+	int dpi = IPMAX(dpiX, dpiY);
+
+	return (double)dpi / 96.0;
+}
+
 IPopupMenu* IGraphicsWin::GetItemMenu(long idx, long &idxInMenu, long &offsetIdx, IPopupMenu* pMenu)
 {
   long oldIDx = offsetIdx;

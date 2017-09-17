@@ -23,8 +23,10 @@ bool ycairo_background::Draw(IGraphics * pGraphics)
 	bg_surface = ycairo->get_surface();
 	bg_cr = ycairo->get_cr();
 
-	if (GetGUIResize())
-		cairo_surface_set_device_scale(bg_surface, GetGUIResize()->GetGUIScaleRatio(), GetGUIResize()->GetGUIScaleRatio());
+    if (GetGUIResize())
+    {
+        cairo_surface_set_device_scale(bg_surface, GetGUIResize()->GetGUIScaleRatio(), GetGUIResize()->GetGUIScaleRatio());
+    }
 
 	cairo_reset_clip(bg_cr);
 	cairo_new_path(bg_cr);
@@ -177,14 +179,11 @@ void ycairo_base::create_global_font_from_memory(int name, int type, const char 
 
 void ycairo_base::bind_to_lice(IGraphics * pGraphics)
 {
-	base_width = pGraphics->Width();
-	base_height = pGraphics->Height();
-
-	int w = base_width;
-	w = (w + 3)&~3; // Always keep backing store a multiple of 4px wide // Same as LICE System Bitmap
+	base_width = pGraphics->GetDrawBitmap()->getWidth();
+	base_height = pGraphics->GetDrawBitmap()->getHeight();
 
 	surface = cairo_image_surface_create_for_data((unsigned char*)pGraphics->GetBits(),
-		CAIRO_FORMAT_RGB24, base_width, base_height, cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, w));
+		CAIRO_FORMAT_RGB24, base_width, base_height, cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, pGraphics->GetDrawBitmap()->getRowSpan()));
 
 	cr = cairo_create(surface);
 

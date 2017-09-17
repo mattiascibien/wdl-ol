@@ -477,7 +477,16 @@ void IGraphics::Resize(int w, int h)
 	DELETE_NULL(mDrawBitmap);
 	DELETE_NULL(mTmpBitmap);
 	PrepDraw();
-	mPlug->ResizeGraphics(w, h);
+    
+#ifdef __APPLE__
+    if (mPlug->GetGUIResize() && IsUsingSystemGUIScaling())
+    {
+        w /= GetSystemGUIScaleRatio();
+        h /= GetSystemGUIScaleRatio();
+    }
+#endif  
+
+    mPlug->ResizeGraphics(w, h);
 }
 
 void IGraphics::SetFromStringAfterPrompt(IControl* pControl, IParam* pParam, char *txt)

@@ -152,6 +152,12 @@ public:
 	void RescaleBitmaps(double guiScaleRatio);
 	void SetBitmapOversample(unsigned oversample) { bitmapOversample = oversample; }
 	//--------------------------------------------------------------------------------------------------------
+
+	virtual double GetSystemGUIScaleRatio() = 0;
+
+	// This is only active if IPlugGUIResizing is active
+	bool IsUsingSystemGUIScaling() { return useSystemGUIScaling; }
+	void UseSystemGUIScaling() { useSystemGUIScaling = true; }
 	
 	IPlugBase* GetPlug() { return mPlug; }
 
@@ -295,6 +301,7 @@ private:
 	bool mHandleMouseOver, mStrict, mEnableTooltips, mShowControlBounds;
 	IControl* mKeyCatcher;
 
+	bool useSystemGUIScaling = false;
 	unsigned bitmapOversample = 1;
 	double guiScaleRatio = 1.0;
 	int viewMode = 0;
