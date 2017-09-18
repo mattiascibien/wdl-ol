@@ -3,13 +3,6 @@
 #include "IControl.h"
 #include "resource.h"
 
-const int kNumPrograms = 1;
-
-enum EParams
-{
-	kGain = 0,
-	kNumParams
-};
 
 enum ELayout
 {
@@ -20,7 +13,7 @@ enum ELayout
 };
 
 IPlugEffectGUILiveEdit::IPlugEffectGUILiveEdit(IPlugInstanceInfo instanceInfo)
-	: IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo)
+	: IPLUG_CTOR(kNumPublicParams, kNumPrivateParams, kNumPrograms, instanceInfo)
 {
 	TRACE;
 

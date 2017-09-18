@@ -4,23 +4,20 @@
 
 
 
-IControlGroup::IControlGroup(IPlugBase * pPlug, DRECT GroupRect)
+IControlGroup::IControlGroup(IPlugBase * pPlug)
 {
 	mPlug = pPlug;
-	groupRECT = GroupRect;
 
-	if (pPlug->GetGUIResize())
+	if (mPlug->GetGUIResize())
 	{
-		for (int i = 0; i < pPlug->GetGUIResize()->GetViewModeSize(); i++)
+		for (int i = 0; i < mPlug->GetGUIResize()->GetViewModeSize(); i++)
 		{
 			originalGroupRECTs.Add(new DRECT());
-			*originalGroupRECTs.Get(i) = groupRECT;
 		}
 	}
 	else
 	{
 		originalGroupRECTs.Add(new DRECT());
-		*originalGroupRECTs.Get(0) = groupRECT;
 	}
 }
 
@@ -30,19 +27,30 @@ IControlGroup::~IControlGroup()
 	originalGroupRECTs.Empty(true);
 }
 
-IControl* IControlGroup::AddControl(IControl* pControl, bool moveControlRelativeToGroup)
+IControl* IControlGroup::AddControl(IControl* pControl)
 {
-
 	controlProps.Add(new IControlProperties(pControl, *pControl->GetDrawRECT(), *pControl->GetTargetRECT()));
-	if (moveControlRelativeToGroup) MoveControlRelativeToGroup(pControl);
+	//if (moveControlRelativeToGroup) MoveControlRelativeToGroup(pControl);
+
+	if (mPlug->GetGUIResize())
+	{
+		for (int i = 0; i < mPlug->GetGUIResize()->GetViewModeSize(); i++)
+		{
+			*originalGroupRECTs.Get(i) = originalGroupRECTs.Get(i)->Union(pControl->GetNonScaledDrawRECT());
+		}
+	}
+	else
+	{
+		*originalGroupRECTs.Get(0) = originalGroupRECTs.Get(0)->Union(pControl->GetNonScaledDrawRECT());
+	}
 
 	return pControl;
 }
 
-void IControlGroup::AttachSubgroup(IControlGroup * pControlGroup, bool moveSubgroupRelativeToGroup)
+void IControlGroup::AttachSubgroup(IControlGroup * pControlGroup)
 {
 	controlSubgroups.Add(pControlGroup);
-	if (moveSubgroupRelativeToGroup) MoveSubgroupRelativeToGroup(pControlGroup);
+	//if (moveSubgroupRelativeToGroup) MoveSubgroupRelativeToGroup(pControlGroup);
 }
 
 DRECT IControlGroup::GetGroupRECT()
@@ -52,7 +60,6 @@ DRECT IControlGroup::GetGroupRECT()
 
 void IControlGroup::SetGroupRECT(DRECT GroupRECT)
 {
-	DRECT prevGroupRECT = groupRECT;
 	groupRECT = GroupRECT;
 
 	MoveAllControlsRelativeToGroup();
@@ -175,8 +182,6 @@ void IControlGroup::RelativelyMoveGroupVertically(double y)
 
 void IControlGroup::RelativelyMoveGroupLeftEdge(double L)
 {
-	DRECT prevGroupRECT = groupRECT;
-
 	groupRECT.L += L;
 	MoveAllControlsRelativeToGroup();
 }
@@ -250,8 +255,6 @@ IControl * IControlGroup::GetControl(int index)
 
 IControl * IControlGroup::GetControlIncludingSubgroups(int index)
 {
-	IControl *pControl;
-
 	if (index < controlProps.GetSize()) return controlProps.Get(index)->control;
 	else index -= controlProps.GetSize();
 

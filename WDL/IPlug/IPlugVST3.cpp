@@ -75,7 +75,8 @@ protected:
 };
 
 IPlugVST3::IPlugVST3(IPlugInstanceInfo instanceInfo,
-                     int nParams,
+	                 int nPublicParams,
+	                 int nPrivateParams,
                      const char* channelIOStr,
                      int nPresets,
                      const char* effectName,
@@ -89,7 +90,8 @@ IPlugVST3::IPlugVST3(IPlugInstanceInfo instanceInfo,
                      bool plugDoesChunks,
                      bool plugIsInst,
                      int plugScChans)
-  : IPlugBase(nParams,
+  : IPlugBase(nPublicParams,
+	          nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,
@@ -263,7 +265,7 @@ tresult PLUGIN_API IPlugVST3::terminate ()
 {
   TRACE;
 
-  viewsArray.removeAll();
+  viewsArray.resize(0);
   return SingleComponentEffect::terminate();
 }
 
@@ -290,7 +292,8 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
   // if existing input bus has a different number of channels to the input bus being connected
   if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumInputChannels)
   {
-    audioInputs.remove(bus);
+
+    audioInputs.erase(audioInputs.begin()); // We are erasing at 0 because bus is actually at 0
     addAudioInput(USTRING("Input"), getSpeakerArrForChans(reqNumInputChannels));
   }
 
@@ -299,7 +302,7 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
   // if existing output bus has a different number of channels to the output bus being connected
   if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumOutputChannels)
   {
-    audioOutputs.remove(bus);
+    audioOutputs.erase(audioOutputs.begin()); // We are erasing at 0 because bus is actually at 0
     addAudioOutput(USTRING("Output"), getSpeakerArrForChans(reqNumOutputChannels));
   }
 
@@ -316,8 +319,8 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
 
     if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumSideChainChannels)
     {
-      audioInputs.remove(bus);
-      addAudioInput(USTRING("Sidechain Input"), getSpeakerArrForChans(reqNumSideChainChannels), kAux, 0); // either mono or stereo
+		audioOutputs.erase(audioOutputs.begin() + 1); // We are erasing at 0 because bus is actually at 1
+		addAudioInput(USTRING("Sidechain Input"), getSpeakerArrForChans(reqNumSideChainChannels), kAux, 0); // either mono or stereo
     }
 
     return kResultTrue;
@@ -808,16 +811,16 @@ tresult PLUGIN_API IPlugVST3::getParamValueByString (ParamID tag, TChar* string,
 
 void IPlugVST3::addDependentView(IPlugVST3View* view)
 {
-  viewsArray.add(view);
+  viewsArray.push_back(view);
 }
 
 void IPlugVST3::removeDependentView(IPlugVST3View* view)
 {
-  for (int32 i = 0; i < viewsArray.total(); i++)
+  for (int32 i = 0; i < viewsArray.size(); i++)
   {
-    if (viewsArray.at(i) == view)
+    if (viewsArray[i] == view)
     {
-      viewsArray.removeAt(i);
+      viewsArray.erase(viewsArray.begin() + i);
       break;
     }
   }
@@ -1009,7 +1012,7 @@ void IPlugVST3::ResizeGraphics(int w, int h)
 {
     if (GetGUI())
     {
-        viewsArray.at(0)->resize(w, h);
+        viewsArray[0]->resize(w, h);
         
         OnWindowResize();
         
@@ -1029,7 +1032,7 @@ void IPlugVST3::SetLatency(int latency)
 
 void IPlugVST3::PopupHostContextMenuForParam(int param, int x, int y)
 {
-  if (componentHandler == 0 || viewsArray.at(0) == 0)
+  if (componentHandler == 0 || viewsArray[0] == 0)
     return;
 
   FUnknownPtr<IComponentHandler3>handler(componentHandler);
@@ -1039,7 +1042,7 @@ void IPlugVST3::PopupHostContextMenuForParam(int param, int x, int y)
 
   ParamID p = param;
 
-  IContextMenu* menu = handler->createContextMenu(viewsArray.at(0), &p);
+  IContextMenu* menu = handler->createContextMenu(viewsArray[0], &p);
 
   if (menu)
   {

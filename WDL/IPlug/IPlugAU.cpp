@@ -1861,7 +1861,8 @@ void IPlugAU::ClearConnections()
 #pragma mark IPlugAU Constructor
 
 IPlugAU::IPlugAU(IPlugInstanceInfo instanceInfo,
-                 int nParams,
+                 int nPublicParams,
+                 int nPrivateParams,
                  const char* channelIOStr,
                  int nPresets,
                  const char* effectName,
@@ -1875,7 +1876,8 @@ IPlugAU::IPlugAU(IPlugInstanceInfo instanceInfo,
                  bool plugDoesChunks,
                  bool plugIsInst,
                  int plugScChans)
-  : IPlugBase(nParams,
+: IPlugBase(nPublicParams,
+              nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,

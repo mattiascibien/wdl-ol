@@ -430,16 +430,20 @@ IFaderControl::IFaderControl(IPlugBase* pPlug, int x, int y, int len, int paramI
 		mHandleHeadroom = mBitmap->W;
 		mDrawRECT = mTargetRECT = IRECT(x, y, x + len, y + mBitmap->H);
 	}
-	defaultLen = mLen;
-	defaultHandleHeadroom = mHandleHeadroom;
-
-	AfterGUIResize(1.0);
 }
 
 void IFaderControl::AfterGUIResize(double guiScaleRatio)
 {
-	mHandleHeadroom = int((double)defaultHandleHeadroom * guiScaleRatio);
-	mLen = int((double)defaultLen * guiScaleRatio);
+	if (mDirection == kVertical)
+	{
+		mHandleHeadroom = mBitmap->H;
+		mLen = mDrawRECT.H();
+	}
+	else
+	{
+		mHandleHeadroom = mBitmap->W;
+		mLen = mDrawRECT.W();
+	}
 }
 
 IRECT IFaderControl::GetHandleRECT(double value) const
@@ -457,7 +461,7 @@ IRECT IFaderControl::GetHandleRECT(double value) const
   }
   else
   {
-    int offs = int(value * (double) (mLen - mHandleHeadroom));
+    int offs = int(value * (double)(mLen - mHandleHeadroom));
     r.L += offs;
     r.R += offs;
   }

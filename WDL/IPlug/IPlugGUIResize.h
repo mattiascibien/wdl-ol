@@ -279,7 +279,7 @@ private:
 	int FindLayoutPointerPosition(int viewMode, IControl* pControl);
 	void RearrangeLayers();
 
-	void SetIntToFile(const char *name, int x);
+	void SetIntToFile(const char *name, unsigned int x);
 	int GetIntFromFile(const char *name);
 	void SetDoubleToFile(const char *name, double x);
 	double GetDoubleFromFile(const char *name);

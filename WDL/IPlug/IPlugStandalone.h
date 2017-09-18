@@ -29,7 +29,8 @@ class IPlugStandalone : public IPlugBase
 {
 public:
   IPlugStandalone(IPlugInstanceInfo instanceInfo,
-                  int nParams,
+	              int nPublicParams,
+	              int nPrivateParams,
                   const char* channelIOStr,
                   int nPresets,
                   const char* effectName,

@@ -6,8 +6,9 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <winuser.h>
+#include "UTF_Helper.h"
 
-class IGraphicsWin : public IGraphics
+class IGraphicsWin : public IGraphics, Windows_UTF_Converter
 {
 public:
   IGraphicsWin(IPlugBase* pPlug, int w, int h, int refreshFPS);
@@ -28,6 +29,8 @@ public:
   void* OpenWindow(void* pParentWnd);
   void CloseWindow();
   bool WindowIsOpen() { return (mPlugWnd); }
+
+  double GetSystemGUIScaleRatio();
   
   void UpdateTooltips() {}
 

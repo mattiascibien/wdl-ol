@@ -26,7 +26,8 @@ public:
       mValDisplayControl(0), mNameDisplayControl(0), mTooltip("") {}
 
   virtual ~IControl() {}
-
+  
+  // These functions will be called only if you interact with current control
   virtual void OnMouseDown(int x, int y, IMouseMod* pMod);
   virtual void OnMouseUp(int x, int y, IMouseMod* pMod) {}
   virtual void OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod) {}
@@ -34,9 +35,22 @@ public:
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d) {};
   virtual bool OnKeyDown(int x, int y, int key) { return false; }
 
+  // These will be called if you interact with anything insude your plugin
+  virtual void OnGlobalMouseDown(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseUp(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseDblClick(int x, int y, IMouseMod* pMod) {}
+  virtual void OnGlobalMouseWheel(int x, int y, IMouseMod* pMod, int d) {};
+  virtual bool OnGlobalKeyDown(int x, int y, int key) { return false; }
+
   // For efficiency, mouseovers/mouseouts are ignored unless you call IGraphics::HandleMouseOver.
+  // These functions will be called only if you interact with current control
   virtual void OnMouseOver(int x, int y, IMouseMod* pMod) {}
   virtual void OnMouseOut() {}
+
+  // These will be called if you interact with anything insude your plugin
+  //virtual void OnGlobalMouseOver(int x, int y, IMouseMod* pMod) {}
+  //virtual void OnGlobalMouseOut() {}
 
   // By default, mouse double click has its own handler.  A control can set mDblAsSingleClick to true to change,
   // which maps double click to single click for this control (and also causes the mouse to be
@@ -82,8 +96,8 @@ public:
   IRECT* GetTargetRECT() { return &mTargetRECT; } 
   void SetTargetRECT(IRECT pR) { mTargetRECT = pR; }
   // The draw area that is unaffected by GUI scaling.
-  IRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; } 
-  void SetNonScaledDrawRECT(IRECT pR) { mNonScaledDrawRECT = pR; } 
+  DRECT* GetNonScaledDrawRECT() { return &mNonScaledDrawRECT; }
+  void SetNonScaledDrawRECT(DRECT pR) { mNonScaledDrawRECT = pR; }
     
   virtual void Hide(bool hide);
   bool IsHidden() const { return mHide; }
@@ -146,7 +160,8 @@ protected:
   int mTextEntryLength;
   IText mText;
   IPlugBase* mPlug;
-  IRECT mDrawRECT, mTargetRECT, mNonScaledDrawRECT;
+  IRECT mDrawRECT, mTargetRECT;
+  DRECT mNonScaledDrawRECT;
   int mParamIdx;
   int mLayerPosition = 0;
   
@@ -298,12 +313,12 @@ public:
   double GetHandleValueHeadroom() const { return (double) mHandleHeadroom / (double) mLen; }
   // Where is the handle right now?
   IRECT GetHandleRECT(double value = -1.0) const;
-
-  void AfterGUIResize(double guiScaleRatio);
-
+  
   virtual void OnMouseDown(int x, int y, IMouseMod* pMod);
   virtual void OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod);
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d);
+
+  void AfterGUIResize(double guiScaleRatio);
 
   virtual bool Draw(IGraphics* pGraphics);
   
@@ -312,7 +327,7 @@ public:
  
 protected:
   virtual void SnapToMouse(int x, int y);
-  int mLen, mHandleHeadroom, defaultLen, defaultHandleHeadroom;
+  int mLen, mHandleHeadroom;
   EDirection mDirection;
   bool mOnlyHandle; // if true only by clicking on the handle do you click the slider
   IBitmap *mBitmap;

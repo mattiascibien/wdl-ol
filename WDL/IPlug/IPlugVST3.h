@@ -8,6 +8,7 @@
 #include "pluginterfaces/vst/ivstprocesscontext.h"
 #include "pluginterfaces/vst/vsttypes.h"
 #include "pluginterfaces/vst/ivstcontextmenu.h"
+#include <vector>
 //#include "IMidiQueue.h"
 
 struct IPlugInstanceInfo
@@ -23,7 +24,8 @@ class IPlugVST3 : public IPlugBase
 {
 public:
   IPlugVST3(IPlugInstanceInfo instanceInfo,
-            int nParams,
+	        int nPublicParams,
+	        int nPrivateParams,
             const char* channelIOStr,
             int nPresets,
             const char* effectName,
@@ -135,7 +137,7 @@ private:
   bool mSidechainActive;
 //  IMidiQueue mMidiOutputQueue;
   Steinberg::Vst::ProcessContext mProcessContext;
-  Steinberg::TArray <IPlugVST3View*> viewsArray;
+  std::vector<IPlugVST3View*> viewsArray;
 
   friend class IPlugVST3View;
 };

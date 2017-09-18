@@ -228,8 +228,20 @@ inline int GetMouseOver(IGraphicsMac* pGraphics)
   mGraphics = pGraphics;
   NSRect r;
   r.origin.x = r.origin.y = 0.0f;
-  r.size.width = (float) pGraphics->Width();
-  r.size.height = (float) pGraphics->Height();
+    
+    if (mGraphics->GetPlug()->GetGUIResize() && mGraphics->IsUsingSystemGUIScaling())
+    {
+        double systemScaleRatio = mGraphics->GetSystemGUIScaleRatio();
+        
+        r.size.width = (float) pGraphics->Width() / systemScaleRatio;
+        r.size.height = (float) pGraphics->Height() / systemScaleRatio;
+    }
+    else
+    {
+        r.size.width = (float) pGraphics->Width();
+        r.size.height = (float) pGraphics->Height();
+    }
+
   self = [super initWithFrame:r];
 
   double sec = 1.0 / (double) pGraphics->FPS();
@@ -287,8 +299,28 @@ inline int GetMouseOver(IGraphicsMac* pGraphics)
   if (mGraphics)
   {
     NSPoint pt = [self convertPoint:[pEvent locationInWindow] fromView:nil];
-    *pX = (int) pt.x - 2;
-    *pY = mGraphics->Height() - (int) pt.y - 3;
+      
+      pt.x -= 1;
+      pt.y -= 1;
+
+      if (mGraphics->GetPlug()->GetGUIResize() && mGraphics->IsUsingSystemGUIScaling())
+      {
+          double systemScaleRatio = mGraphics->GetSystemGUIScaleRatio();
+          
+          double x = pt.x * systemScaleRatio;
+          *pX = (int)ceil(x);
+          
+          double y = mGraphics->Height() - ((pt.y + 3) * systemScaleRatio);
+          *pY =  int(y);
+      }
+      else
+      {
+        *pX = int(pt.x);
+          
+        *pY = mGraphics->Height() - (int) pt.y - 4;
+      }
+
+      
     mPrevX = *pX;
     mPrevY = *pY;
   }

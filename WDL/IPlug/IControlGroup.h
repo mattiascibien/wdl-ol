@@ -9,12 +9,12 @@ class IControl;
 class IControlGroup
 {
 public:
-	IControlGroup(IPlugBase *pPlug, DRECT GroupRect);
+	IControlGroup(IPlugBase *pPlug);
 	~IControlGroup();
 
-	IControl* AddControl(IControl* pControl, bool moveControlRelativeToGroup = false);
-	void AttachSubgroup(IControlGroup* pControlGroup, bool moveSubgroupRelativeToGroup = false);
-
+	IControl* AddControl(IControl* pControl);
+	void AttachSubgroup(IControlGroup* pControlGroup);
+	
 	DRECT GetGroupRECT();
 	void SetGroupRECT(DRECT GroupRECT);
 
@@ -46,7 +46,7 @@ public:
 	int GetNumberOfSubgroups();
 	int GetNumberOfControls();
 	int GetNumberOfControlsIncludingSubgroups();
-
+	
 	double L();
 	double T();
 	double R();
@@ -77,9 +77,11 @@ private:
 	};
 
 	IPlugBase *mPlug;
-	DRECT groupRECT;
+	DRECT groupRECT = DRECT(999999, 999999, 0, 0);
 	WDL_PtrList<IControlGroup> controlSubgroups;
 	WDL_PtrList<IControlProperties> controlProps;
 	WDL_PtrList<DRECT> originalGroupRECTs;
+	bool moveControlRelativeToGroup = false;
+	bool moveSubgroupRelativeToGroup = false;
 };
 #endif

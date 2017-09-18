@@ -477,7 +477,16 @@ void IGraphics::Resize(int w, int h)
 	DELETE_NULL(mDrawBitmap);
 	DELETE_NULL(mTmpBitmap);
 	PrepDraw();
-	mPlug->ResizeGraphics(w, h);
+    
+#ifdef __APPLE__
+    if (mPlug->GetGUIResize() && IsUsingSystemGUIScaling())
+    {
+        w /= GetSystemGUIScaleRatio();
+        h /= GetSystemGUIScaleRatio();
+    }
+#endif  
+
+    mPlug->ResizeGraphics(w, h);
 }
 
 void IGraphics::SetFromStringAfterPrompt(IControl* pControl, IParam* pParam, char *txt)
@@ -535,9 +544,9 @@ int* IGraphics::AttachControl(IControl* pControl)
 	return pControl->GetLayerPosition();
 }
 
-IControlGroup * IGraphics::CreateControlGroup(IRECT groupRECT)
+IControlGroup * IGraphics::CreateControlGroup()
 {
-	IControlGroup* pControlGroup = new IControlGroup(mPlug, groupRECT);
+	IControlGroup* pControlGroup = new IControlGroup(mPlug);
 	mControlGroups.Add(pControlGroup);
 
 	return pControlGroup;
@@ -1091,7 +1100,7 @@ bool IGraphics::IsDirty(IRECT* pR)
 	bool dirty = false;
 	int i, n = mControls.GetSize();
 	IControl** ppControl = mControls.GetList();
-	IRECT nonScaledDrawRECT; // TODO: change this to DRECT and find a better way to detect dirty area
+	DRECT nonScaledDrawRECT; // TODO: Find a better way to detect dirty area
 
 	for (i = 0; i < n; ++i, ++ppControl)
 	{
@@ -1268,6 +1277,9 @@ void IGraphics::SetStrictDrawing(bool strict)
 
 void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseDown(x, y, pMod);
+		
 	ReleaseMouseCapture();
 	int c = GetMouseControlIdx(x, y);
 	if (c >= 0)
@@ -1322,6 +1334,9 @@ void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 
 void IGraphics::OnMouseUp(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseUp(x, y, pMod);
+
 	int c = GetMouseControlIdx(x, y);
 	mMouseCapture = mMouseX = mMouseY = -1;
 	if (c >= 0)
@@ -1372,6 +1387,9 @@ void IGraphics::OnMouseOut()
 
 void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseDrag(x, y, x - mMouseX, y - mMouseY, pMod);
+
 	int c = mMouseCapture;
 	if (c >= 0)
 	{
@@ -1388,6 +1406,11 @@ void IGraphics::OnMouseDrag(int x, int y, IMouseMod* pMod)
 
 bool IGraphics::OnMouseDblClick(int x, int y, IMouseMod* pMod)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) 
+		if (mControls.Get(i)->MouseDblAsSingleClick()) mControls.Get(i)->OnGlobalMouseDown(x, y, pMod);
+		else mControls.Get(i)->OnGlobalMouseDblClick(x, y, pMod);
+
 	ReleaseMouseCapture();
 	bool newCapture = false;
 	int c = GetMouseControlIdx(x, y);
@@ -1412,6 +1435,9 @@ bool IGraphics::OnMouseDblClick(int x, int y, IMouseMod* pMod)
 
 void IGraphics::OnMouseWheel(int x, int y, IMouseMod* pMod, int d)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalMouseWheel(x, y, pMod, d);
+
 	int c = GetMouseControlIdx(x, y);
 	if (c >= 0)
 	{
@@ -1426,6 +1452,9 @@ void IGraphics::ReleaseMouseCapture()
 
 bool IGraphics::OnKeyDown(int x, int y, int key)
 {
+	// Call globaly
+	for (int i = 1; i < mControls.GetSize(); i++) mControls.Get(i)->OnGlobalKeyDown(x, y, key);
+
 	int c = GetMouseControlIdx(x, y);
 	if (c > 0)
 		return mControls.Get(c)->OnKeyDown(x, y, key);

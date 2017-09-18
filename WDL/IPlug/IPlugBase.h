@@ -30,7 +30,8 @@ class IPlugBase
 {
 public:
 	// Use IPLUG_CTOR instead of calling directly (defined in IPlug_include_in_plug_src.h).
-	IPlugBase(int nParams,
+	IPlugBase(int nPublicParams,
+		int nPrivateParams,
 		const char* channelIOStr,
 		int nPresets,
 		const char* effectName,
@@ -348,6 +349,7 @@ protected:
 	ycairo_base *ycairo;
 
 private:
+	int numPublicParams, numPrivateParams;
 	IGraphics* mGraphics;
 	IPlugGUIResize* mGUIResize = NULL;
 	WDL_PtrList<IParam> mParams;

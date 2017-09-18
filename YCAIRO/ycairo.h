@@ -1,5 +1,4 @@
-#ifndef YCAIRO_H
-#define YCAIRO_H
+#pragma once
 
 /*
  Youlean - ycairo - small library for enabling Cairo graphics support in IPlug
@@ -56,8 +55,8 @@
 #include FT_FREETYPE_H
 
 #include <string>
+#include <math.h>
 #include "../WDL/IPlug/IControl.h"
-
 
 typedef enum _ycairo_text_w_aligement { YCAIRO_TEXT_W_ALIGN_LEFT, YCAIRO_TEXT_W_ALIGN_RIGHT, YCAIRO_TEXT_W_ALIGN_CENTER } ycairo_text_w_aligement;
 typedef enum _ycairo_text_h_aligement { YCAIRO_TEXT_H_ALIGN_CENTER, YCAIRO_TEXT_H_ALIGN_TOP, YCAIRO_TEXT_H_ALIGN_BOTTOM } ycairo_text_h_aligement;
@@ -137,49 +136,93 @@ private:
 #endif
 };
 
-class ycairo_gui
+class _ycairo_pixel_average
+{
+protected:
+	// Internal framework functions. --------------------------------------------------------------------------------------------------------------------------------
+	inline void _average_channel(unsigned char * in, unsigned int start_index, unsigned int size, unsigned int delay_stride);
+	inline void _average_pixel(unsigned char * in, unsigned int start_index, unsigned int size, unsigned int delay_stride);
+
+	inline void _average_channel_minus_radius(unsigned char *in, unsigned int size, unsigned int delay_stride, unsigned int max_sum);
+	inline void _average_pixel_minus_radius(unsigned char *in, unsigned int size, unsigned int delay_stride);
+	
+	inline void _average_channel_bit_shift(unsigned char *in, unsigned int size, unsigned int delay_stride, unsigned int max_sum);
+	inline void _average_pixel_bit_shift(unsigned char *in, unsigned int size, unsigned int delay_stride);
+
+	inline void _reset();
+
+	int out = 0, out1 = 0, out2 = 0, out3 = 0, out4 = 0;
+};
+
+class ycairo_blur : public _ycairo_pixel_average
+{
+protected:
+	// Internal framework functions. --------------------------------------------------------------------------------------------------------------------------------
+	void _ycairo_blur_surface_offseted_minus_radius(cairo_surface_t * src_surface, unsigned int radius, unsigned int channels_num = 4);	
+	void _ycairo_blur_surface_channel_offseted_minus_radius(cairo_surface_t * src_surface, unsigned int radius, unsigned int channel, int unsigned channels_num = 4);
+	
+	void _ycairo_blur_surface_offseted(cairo_surface_t * src_surface, unsigned int radius, unsigned int channels_num = 4);
+	void _ycairo_blur_surface_channel_offseted(cairo_surface_t * src_surface, unsigned int radius, unsigned int channel, unsigned int channels_num = 4);
+
+	inline unsigned int _get_bit_shift(unsigned int radius);
+};
+
+class ycairo_drop_shadow : public ycairo_blur
 {
 public:
 
-	ycairo_gui(ycairo_base *ycairo_base, IControl *pControl);
+	// Set shadow properties
+	void ycairo_drop_shadow_set_opacity(cairo_t *cr, double opacity);
+	void ycairo_drop_shadow_set_radius(cairo_t *cr, double radius);
+	void ycairo_drop_shadow_set_distance(cairo_t *cr, double distance);
+	void ycairo_drop_shadow_set_angle(cairo_t *cr, double angle);
 	
-	//void ycairo_update_draw_rect(IRECT rect)
-	//{
-	//	draw_rect = rect;
-	//}
+	// Use downsample to improve shadow speed. Ussualy going below 4x (8x with bigger radius) doesn't give you more performance improvement.
+	// If you want to go below 4x use fast shadow instead but you won't get much more performance improvement (~20%).
+	// Using radius of size 2, 4, 8, 16, 32, 64, 128, 256, 512 and 1024 will improve performance by ~(25% / downsample).
+	void ycairo_drop_shadow_fill(cairo_t *cr, double downsample = 4);
 
+	// Fast drop shadow is ~4x faster (with downsample == 1), but it can be used on non moving objects or with small radius with good results only.
+	void ycairo_drop_shadow_fill_fast(cairo_t *cr);
+
+	void ycairo_drop_shadow_stroke(cairo_t *cr, double downsample = 4);
+	void ycairo_drop_shadow_stroke_fast(cairo_t * cr);
+
+private:
+	void _ycairo_draw_drop_shadow_fast(cairo_t *cr, bool stroke);
+	void _ycairo_draw_drop_shadow(cairo_t *cr, bool stroke, double downsample);
+	void _calculate_shadow_offset(int props_index);
+	int _get_props_index(cairo_t *cr);
+
+	struct shadow_properties
+	{
+		cairo_t * cr = NULL;
+
+		double shadow_opacity = 0.5;
+		double shadow_radius = 16;
+		double shadow_distance = 0.0;
+		double shadow_angle = 90;
+
+		double shadow_offset_x = 0;
+		double shadow_offset_y = 0;
+	};
+
+	vector<shadow_properties> props;
+};
+
+class ycairo_helper
+{
+public:
 	void ycairo_rounded_rectangle(cairo_t *cr, double x, double y, double width, double height, double corner);
 	void ycairo_circle(cairo_t *cr, double x, double y, double radius);
 	void ycairo_triangle(cairo_t *cr, double x0, double y0, double x1, double y1, double x2, double y2);
 
-	void ycairo_reset_clip(cairo_t *cr);
-	
 	void ycairo_set_source_rgba(cairo_t *cr, IColor color);
 	void ycairo_set_source_rgba(cairo_t *cr, IColor *color);
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor color);
 	void ycairo_set_source_rgba_fast(cairo_t *cr, IColor *color);
-	void ycairo_convert_colors_to_grayscale(cairo_t *cr)
-	{
 
-	}
-	
-	void ycairo_prepare_draw();
-	void ycairo_draw();
-
-private:
-	IRECT *draw_rect;
-	int size;
-	int base_width, base_height;
-	unsigned char *surface_out_test;
-
-	ycairo_base *ycairo;
-
-protected:
-	cairo_surface_t *surface;
-	cairo_surface_t *surface_out;
-	cairo_t *cr;
-	cairo_t *cr_out;
-	IControl *mControl;
+	void ycairo_reset_clip_to(cairo_t *cr, IRECT rect);
 };
 
 class ycairo_text
@@ -187,10 +230,8 @@ class ycairo_text
 
 public:
 	ycairo_text(ycairo_base *ycairo_base);
-
 	~ycairo_text();
-
-
+	
 	void ycairo_create_font_from_path(const char* path);
 	void ycairo_create_font_from_memory(int name, int type, const char* relative_path);
 
@@ -199,7 +240,7 @@ public:
 
 	void ycairo_set_text(cairo_t *cr, const char *text);
 
-	void ycairo_set_text_position(cairo_t *cr, IRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
+	void ycairo_set_text_position(cairo_t *cr, DRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
 
 	void ycairo_calculate_extents(cairo_t *cr);
 
@@ -239,4 +280,21 @@ private:
 
 };
 
-#endif
+class ycairo_gui : public ycairo_helper
+{
+public:
+	ycairo_gui(ycairo_base *ycairo_base, IControl *pControl);
+
+	void ycairo_reset_clip(cairo_t *cr);
+	void ycairo_prepare_draw();
+	void ycairo_draw();
+
+private:
+	IRECT *draw_rect;
+	DRECT *non_scaled_draw_rect;
+	ycairo_base *ycairo;
+
+protected:
+	cairo_surface_t *surface;
+	cairo_t *cr;
+};

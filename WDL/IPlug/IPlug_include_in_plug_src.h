@@ -216,8 +216,8 @@ END_FACTORY
 
 #define PUBLIC_NAME PLUG_NAME
 
-#define IPLUG_CTOR(nParams, nPresets, instanceInfo) \
-  IPlug(instanceInfo, nParams, PLUG_CHANNEL_IO, nPresets, \
+#define IPLUG_CTOR(nPublicParams, nPrivateParams, nPresets, instanceInfo) \
+  IPlug(instanceInfo, nPublicParams, nPrivateParams, PLUG_CHANNEL_IO, nPresets, \
     PUBLIC_NAME, "", PLUG_MFR, PLUG_VER, PLUG_UNIQUE_ID, PLUG_MFR_ID, \
     PLUG_LATENCY, PLUG_DOES_MIDI, PLUG_DOES_STATE_CHUNKS, PLUG_IS_INST, PLUG_SC_CHANS)
 

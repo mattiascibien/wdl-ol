@@ -3,7 +3,8 @@
 extern HWND gHWND;
 
 IPlugStandalone::IPlugStandalone(IPlugInstanceInfo instanceInfo,
-                                 int nParams,
+	                             int nPublicParams,
+	                             int nPrivateParams,
                                  const char* channelIOStr,
                                  int nPresets,
                                  const char* effectName,
@@ -17,7 +18,8 @@ IPlugStandalone::IPlugStandalone(IPlugInstanceInfo instanceInfo,
                                  bool plugDoesChunks,
                                  bool plugIsInst,
                                  int plugScChans)
-  : IPlugBase(nParams,
+  : IPlugBase(nPublicParams,
+	          nPrivateParams,
               channelIOStr,
               nPresets,
               effectName,
@@ -54,8 +56,9 @@ void IPlugStandalone::ResizeGraphics(int w, int h)
     #define TITLEBAR_BODGE 22
     RECT r;
     GetWindowRect(gHWND, &r);
-    SetWindowPos(gHWND, 0, r.left, r.bottom - pGraphics->Height() - TITLEBAR_BODGE, pGraphics->Width(), pGraphics->Height() + TITLEBAR_BODGE, 0);
+    SetWindowPos(gHWND, 0, r.left, r.bottom - h - TITLEBAR_BODGE, w, h + TITLEBAR_BODGE, 0);
     #endif
+
     OnWindowResize();
 
 #ifdef USING_YCAIRO

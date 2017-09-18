@@ -152,6 +152,12 @@ public:
 	void RescaleBitmaps(double guiScaleRatio);
 	void SetBitmapOversample(unsigned oversample) { bitmapOversample = oversample; }
 	//--------------------------------------------------------------------------------------------------------
+
+	virtual double GetSystemGUIScaleRatio() = 0;
+
+	// This is only active if IPlugGUIResizing is active
+	bool IsUsingSystemGUIScaling() { return useSystemGUIScaling; }
+	void UseSystemGUIScaling() { useSystemGUIScaling = true; }
 	
 	IPlugBase* GetPlug() { return mPlug; }
 
@@ -166,7 +172,7 @@ public:
 	int* AttachControl(IControl* pControl);
 
 	// This will create control group. This will allow you to easily move or hide/show multiple controls at once. You can have groups inside groups too.
-	IControlGroup* CreateControlGroup(IRECT groupRECT);
+	IControlGroup* CreateControlGroup();
 
 	void MoveControlLayers(int fromIndex, int toIndex);
 	void SwapControlLayers(int fromIndex, int toIndex);
@@ -295,6 +301,7 @@ private:
 	bool mHandleMouseOver, mStrict, mEnableTooltips, mShowControlBounds;
 	IControl* mKeyCatcher;
 
+	bool useSystemGUIScaling = false;
 	unsigned bitmapOversample = 1;
 	double guiScaleRatio = 1.0;
 	int viewMode = 0;
