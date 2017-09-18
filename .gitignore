@@ -57,3 +57,6 @@ WDL/lice/glew/include/GL/WGLEXT.H
 *.opendb
 *.db-shm
 *.db-wal
+YCAIRO/Cairo_Graphics/Lib-Win/cairo-Win32-Debug.lib
+YCAIRO/Cairo_Graphics/Lib-Win/cairo-Win32-Release.lib
+YCAIRO/Cairo_Graphics/Lib-Win/cairo-x64-Release.lib
