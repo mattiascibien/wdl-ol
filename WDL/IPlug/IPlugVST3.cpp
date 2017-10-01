@@ -43,14 +43,14 @@ public:
     info.unitId = unitID;
   }
   
-  virtual void toString (ParamValue valueNormalized, String128 string) const
+  virtual void toString (ParamValue valueNormalized, String128 string) const override
   {
     char disp[MAX_PARAM_DISPLAY_LEN];
     mIPlugParam->GetDisplayForHost(valueNormalized, true, disp);
     Steinberg::UString(string, 128).fromAscii(disp);
   }
   
-  virtual bool fromString (const TChar* string, ParamValue& valueNormalized) const
+  virtual bool fromString (const TChar* string, ParamValue& valueNormalized) const override
   {
     String str ((TChar*)string);
     valueNormalized = mIPlugParam->GetNormalized(atof(str.text8()));
@@ -58,12 +58,12 @@ public:
     return true;
   }
   
-  virtual Steinberg::Vst::ParamValue toPlain (ParamValue valueNormalized) const
+  virtual Steinberg::Vst::ParamValue toPlain (ParamValue valueNormalized) const override
   {
     return mIPlugParam->GetNonNormalized(valueNormalized);
   }
   
-  virtual Steinberg::Vst::ParamValue toNormalized (ParamValue plainValue) const
+  virtual Steinberg::Vst::ParamValue toNormalized (ParamValue plainValue) const override
   {
     return mIPlugParam->GetNormalized(valueNormalized);
   }
@@ -287,7 +287,7 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
   }
 
   // handle input
-  AudioBus* bus = FCast<AudioBus>(audioInputs.at(0));
+  AudioBus* bus = FCast<AudioBus>(audioInputs[0]);
 
   // if existing input bus has a different number of channels to the input bus being connected
   if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumInputChannels)
@@ -298,7 +298,7 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
   }
 
   // handle output
-  bus = FCast<AudioBus>(audioOutputs.at(0));
+  bus = FCast<AudioBus>(audioOutputs[0]);
   // if existing output bus has a different number of channels to the output bus being connected
   if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumOutputChannels)
   {
@@ -315,11 +315,11 @@ tresult PLUGIN_API IPlugVST3::setBusArrangements(SpeakerArrangement* inputs, int
   {
     int32 reqNumSideChainChannels = SpeakerArr::getChannelCount(inputs[1]);  //requested # sidechain input channels
 
-    bus = FCast<AudioBus>(audioInputs.at(1));
+    bus = FCast<AudioBus>(audioInputs[1]);
 
     if (bus && SpeakerArr::getChannelCount(bus->getArrangement()) != reqNumSideChainChannels)
     {
-		audioOutputs.erase(audioOutputs.begin() + 1); // We are erasing at 0 because bus is actually at 1
+		audioInputs.erase(audioInputs.begin() + 1); // We are erasing at 1 because bus is actually at 1
 		addAudioInput(USTRING("Sidechain Input"), getSpeakerArrForChans(reqNumSideChainChannels), kAux, 0); // either mono or stereo
     }
 
@@ -849,13 +849,13 @@ tresult IPlugVST3::endEdit(ParamID tag)
 
 AudioBus* IPlugVST3::getAudioInput (int32 index)
 {
-  AudioBus* bus = FCast<AudioBus> (audioInputs.at(index));
+  AudioBus* bus = FCast<AudioBus> (audioInputs[index]);
   return bus;
 }
 
 AudioBus* IPlugVST3::getAudioOutput (int32 index)
 {
-  AudioBus* bus = FCast<AudioBus> (audioOutputs.at(index));
+  AudioBus* bus = FCast<AudioBus> (audioOutputs[index]);
   return bus;
 }
 
