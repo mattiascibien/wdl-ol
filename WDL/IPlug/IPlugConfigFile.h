@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-Copyright (C) 2016 and later, Youlean
+Copyright (C) 2017 and later, Youlean
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -16,6 +16,25 @@ claim that you wrote the original software. If you use this software
 in a product, an acknowledgment in the product documentation would be
 appreciated but is not required.
 2. This notice may not be removed or altered from any source distribution.
+
+
+HOW TO USE:
+
+IPlugConfigFile cf;
+
+If you are using encryption
+--------------------------------
+cf.UseEncryption(true);
+cf.SetEncriptionKey("12345");
+--------------------------------
+
+cf.SetFilePath("C:/Test.txt");
+cf.ReadFile();
+
+cf.WriteValue("value", 1024);
+int out = cf.ReadValue<int>("value", 0);
+
+cf.WriteFile();
 
 */
 
@@ -33,8 +52,9 @@ class IPlugConfigFile
 {
 public:
 	IPlugConfigFile();
+
 	void UseEncryption(bool value);
-	void SetEncriptionKey(unsigned numberOfValues, ...);
+	void SetEncriptionKey(string _key);
 	
 	void SetFilePath(string _filePath);
 
@@ -42,29 +62,29 @@ public:
 	void WriteFile();
 
 	template<typename ValueType>
-	void WriteValue(string groupName, string valueName, ValueType value, string comment = "")
+	void WriteValue(string valueName, ValueType value, string groupName = "Default Group")
 	{
-		WriteString(groupName, valueName, T_to_string(value), comment);
+		WriteString(groupName, valueName, T_to_string(value));
 	}
 
 	template<typename ValueType>
-	ValueType ReadValue(string groupName, string valueName, ValueType defaultValue)
+	ValueType ReadValue(string valueName, ValueType defaultValue, string groupName = "Default Group")
 	{
-		return string_to_T<ValueType>(ReadString(groupName, valueName, T_to_string(defaultValue)));
+		return string_to_T<string>(ReadString(groupName, valueName, T_to_string(defaultValue)));
 	}
-	
-	
+		
 private:
+	vector<string> outStringVector;
+
 	struct GroupProps
 	{
 		string groupName;
-		size_t groupStart;
-		size_t groupEnd;
+		int groupLineIndex;
+		int groupLastValueIndex;
 	};
 
 	string key;
 	vector<GroupProps> groupPropsVector;
-	string outputString;
 	
 	bool useEncryption = false;
 	string filePath;
@@ -98,17 +118,20 @@ private:
 	}
 #endif // __WIN32
 
-	void EncryptDecryptString(string *workingString);
-	void WriteString(string groupName, string valueName, string value, string comment = "");
-	string ReadString(string groupName, string valueName, string defaultValue);
-	void UpdateValue(size_t groupPropsPos, string valueName, string value, string comment = "");
-	string GetValue(size_t groupPropsPos, string valueName, string defaultValue);
-	void UpdateGroupPos(size_t fromGroup, size_t move);
-	size_t FindGroupPropsPos(string groupName);
+	void EncryptDecryptStringVector(vector<string> *workingVector);
+
+	void CreateGroup(string groupName);
 	bool GetGroupProps();
-	size_t GetGroupLabelStartPosition(size_t openBracePos, size_t closedBracePos);
+
+	void WriteString(string groupName, string valueName, string value);
+	string ReadString(string groupName, string valueName, string defaultValue);
+
+	void UpdateValue(size_t groupPropsPos, string valueName, string value);
+	string GetValue(size_t groupPropsPos, string valueName, string defaultValue);
+
+	void UpdateGroupPos(size_t fromGroup, size_t move);
+	int FindGroupPropsPos(string groupName);
+	
 	void ReadFromPath(string filePath);
 	void WriteToPath(string filePath);
-	void RemoveComment(string *line);
-	void CreateGroup(string groupName);
 };

@@ -23,29 +23,9 @@ void IPlugConfigFile::UseEncryption(bool value)
 	}
 }
 
-void IPlugConfigFile::SetEncriptionKey(unsigned numberOfValues, ...)
+void IPlugConfigFile::SetEncriptionKey(string _key)
 {
-	key.resize(0);
-
-	va_list vl;
-	va_start(vl, numberOfValues);
-	for (int i = 0; i < numberOfValues; i++)
-	{
-		unsigned tmp = va_arg(vl, unsigned);
-
-		for (int s = 0; s < 31; s++)
-		{
-			unsigned char tmpChar = (unsigned char)(tmp >> s);
-
-			while (tmpChar < 128)
-			{
-				tmpChar += (s + 1);
-			}
-
-			key.push_back(tmpChar);
-		}
-	}
-	va_end(vl);
+	key = _key;
 }
 
 void IPlugConfigFile::SetFilePath(string _filePath)
@@ -57,43 +37,53 @@ void IPlugConfigFile::ReadFile()
 {
 	ReadFromPath(filePath);
 
-	if (useEncryption) EncryptDecryptString(&outputString);
+	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
 
-	// If file is not valid, rewrite the file
 	if (!GetGroupProps())
 	{
-		outputString.resize(0);
+		outStringVector.resize(0);
 		WriteFile();
 	}
 }
 
 void IPlugConfigFile::WriteFile()
 {
-	if (useEncryption) EncryptDecryptString(&outputString);
+	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
 
 	WriteToPath(filePath);
 
-	if (useEncryption) EncryptDecryptString(&outputString);
+	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
 }
 
-void IPlugConfigFile::EncryptDecryptString(string * workingString)
+void IPlugConfigFile::EncryptDecryptStringVector(vector<string>* workingVector)
 {
 	if (key.size() > 0)
 	{
 		int keyPos = 0;
-		for (int i = 0; i < workingString->size(); i++)
-		{
-			(*workingString)[i] = (*workingString)[i] ^ (i + key[keyPos]);
 
-			keyPos++;
-			if (keyPos >= key.size()) keyPos = 0;
+		for (int i = 0; i < workingVector->size(); i++)
+		{
+			for (int j = 0; j < (*workingVector)[i].size(); j++)
+			{
+				char in = (*workingVector)[i][j];
+				char out = in ^ char((i + j) + key[keyPos]);
+
+				if (in == '\n' || in == '\r' || out == '\n' || out == '\r' || out == '\0') continue;
+				else
+				{
+					(*workingVector)[i][j] = out;
+				}
+
+				keyPos++;
+				if (keyPos >= key.size()) keyPos = 0;
+			}
 		}
 	}
 }
 
-void IPlugConfigFile::WriteString(string groupName, string valueName, string value, string comment)
+void IPlugConfigFile::WriteString(string groupName, string valueName, string value)
 {
-	size_t groupPropsPos = FindGroupPropsPos(groupName);
+	int groupPropsPos = FindGroupPropsPos(groupName);
 
 	if (groupPropsPos == -1)
 	{
@@ -101,121 +91,65 @@ void IPlugConfigFile::WriteString(string groupName, string valueName, string val
 		groupPropsPos = groupPropsVector.size() - 1;
 	}
 
-	UpdateValue(groupPropsPos, valueName, value, comment);
+	UpdateValue(groupPropsPos, valueName, value);
 }
 
 string IPlugConfigFile::ReadString(string groupName, string valueName, string defaultValue)
 {
-	size_t groupPropsPos = FindGroupPropsPos(groupName);
+	int groupPropsPos = FindGroupPropsPos(groupName);
 
 	if (groupPropsPos == -1) return defaultValue;
 
 	return GetValue(groupPropsPos, valueName, defaultValue);
 }
 
-void IPlugConfigFile::UpdateValue(size_t groupPropsPos, string valueName, string value, string comment)
+void IPlugConfigFile::UpdateValue(size_t groupPropsPos, string valueName, string value)
 {
-	bool valueExist = true;
+	int groupLineIndex = groupPropsVector[groupPropsPos].groupLineIndex;
+	int groupLastValueIndex = groupPropsVector[groupPropsPos].groupLastValueIndex;
 
-	size_t groupStartPos = groupPropsVector[groupPropsPos].groupStart;
-	size_t groupEndPos = groupPropsVector[groupPropsPos].groupEnd;
-
-	size_t valueStartPos = groupStartPos;
-	size_t firstEqualPos = 0;
-	size_t firstNewLinePos = 0;
-
-	while (valueStartPos < groupEndPos)
+	if (groupLineIndex != groupLastValueIndex)
 	{
-		valueStartPos = outputString.find(valueName, valueStartPos + 1);
-		if (valueStartPos > groupEndPos)
+		for (int i = groupLineIndex + 1; i <= groupLastValueIndex; i++)
 		{
-			valueExist = false;
-			continue;
+			size_t pos = outStringVector[i].find(valueName + string("="));
+
+			if (pos != string::npos)
+			{
+				outStringVector[i] = valueName + string("=") + value;
+				return;
+			}
 		}
-
-		firstEqualPos = outputString.find('=', valueStartPos);
-		firstNewLinePos = outputString.find('\n', valueStartPos);
-
-		if (firstEqualPos > firstNewLinePos)
-		{
-			valueExist = false;
-			continue;
-		}
-
-		if (valueExist) break;
 	}
 
-	string valueString;
-	valueString.append(valueName);
-	valueString.append(" = ");
-	valueString.append(value);
-	valueString.append(" ");
+	int pushNewValueToIndex = groupPropsVector[groupPropsPos].groupLastValueIndex + 1;
 
-	if (comment.size() > 0)
-	{
-		valueString.append("// ");
-		valueString.append(comment);
-	}
-
-	if (valueExist)
-	{
-		size_t replaceSize = firstNewLinePos - valueStartPos;
-		outputString.replace(valueStartPos, replaceSize, valueString);
-
-		UpdateGroupPos(groupPropsPos, valueString.size() - replaceSize);
-	}
+	if (pushNewValueToIndex >= outStringVector.size())
+		outStringVector.push_back(valueName + string("=") + value);
 	else
-	{
-		valueString.append("\n");
-		outputString.insert(groupEndPos, valueString);
+		outStringVector.insert(outStringVector.begin() + pushNewValueToIndex, valueName + string("=") + value);
 
-		UpdateGroupPos(groupPropsPos, valueString.size());
-	}
-
+	UpdateGroupPos(groupPropsPos, 1);
 }
 
 string IPlugConfigFile::GetValue(size_t groupPropsPos, string valueName, string defaultValue)
 {
-	bool valueExist = true;
+	int groupLineIndex = groupPropsVector[groupPropsPos].groupLineIndex;
+	int groupLastValueIndex = groupPropsVector[groupPropsPos].groupLastValueIndex;
 
-	size_t groupStartPos = groupPropsVector[groupPropsPos].groupStart;
-	size_t groupEndPos = groupPropsVector[groupPropsPos].groupEnd;
-
-	size_t valueStartPos = groupStartPos;
-	size_t firstEqualPos = 0;
-	size_t firstCommentPos = 0;
-	size_t firstNewLinePos = 0;
-
-	while (valueStartPos < groupEndPos)
+	if (groupLineIndex != groupLastValueIndex)
 	{
-		valueStartPos = outputString.find(valueName, valueStartPos + 1);
-		if (valueStartPos > groupEndPos)
+		for (int i = groupLineIndex + 1; i <= groupLastValueIndex; i++)
 		{
-			valueExist = false;
-			continue;
+			size_t pos = outStringVector[i].find(valueName + string("="));
+
+			if (pos != string::npos)
+			{
+				size_t valueStart = pos + valueName.size() + 1;
+
+				return outStringVector[i].substr(valueStart, outStringVector[i].size() - valueStart);
+			}
 		}
-
-		firstEqualPos = outputString.find('=', valueStartPos);
-		firstCommentPos = outputString.find('/', valueStartPos);
-		firstNewLinePos = outputString.find('\n', valueStartPos);
-
-		if (firstEqualPos > firstNewLinePos)
-		{
-			valueExist = false;
-			continue;
-		}
-
-		if (valueExist) break;
-	}
-
-	if (valueExist)
-	{
-		size_t valueStart = firstEqualPos + 2;
-		size_t valueEnd = IPMIN(firstNewLinePos, firstCommentPos) - 1;
-
-		string outValue(outputString.begin() + valueStart, outputString.begin() + valueEnd);
-
-		return outValue;
 	}
 
 	return defaultValue;
@@ -223,18 +157,18 @@ string IPlugConfigFile::GetValue(size_t groupPropsPos, string valueName, string 
 
 void IPlugConfigFile::UpdateGroupPos(size_t fromGroup, size_t move)
 {
-	groupPropsVector[fromGroup].groupEnd += move;
+	groupPropsVector[fromGroup].groupLastValueIndex += move;
 
 	for (size_t i = fromGroup + 1; i < groupPropsVector.size(); i++)
 	{
-		groupPropsVector[i].groupStart += move;
-		groupPropsVector[i].groupEnd += move;
+		groupPropsVector[i].groupLineIndex += move;
+		groupPropsVector[i].groupLastValueIndex += move;
 	}
 }
 
-size_t IPlugConfigFile::FindGroupPropsPos(string groupName)
+int IPlugConfigFile::FindGroupPropsPos(string groupName)
 {
-	for (size_t i = 0; i < groupPropsVector.size(); i++)
+	for (int i = 0; i < groupPropsVector.size(); i++)
 	{
 		if (groupPropsVector[i].groupName == groupName) return i;
 	}
@@ -246,111 +180,80 @@ bool IPlugConfigFile::GetGroupProps()
 {
 	groupPropsVector.resize(0);
 
-	// Get open and closed brace
-	size_t openBracePosition = 0;
-	size_t nextOpenBracePosition = 0;
-	size_t closedBracePosition = 0;
-
-	while (true)
+	for (int i = 0; i < outStringVector.size(); i++)
 	{
-		openBracePosition = outputString.find('{', openBracePosition + 1);
-		if (openBracePosition != string::npos) nextOpenBracePosition = outputString.find('{', openBracePosition + 1);
-		closedBracePosition = outputString.find('}', closedBracePosition + 1);
+		size_t groupPos = outStringVector[i].find("[");
 
-		// Check if braces are valid
-		if (openBracePosition > closedBracePosition) return false;
-		if (closedBracePosition > nextOpenBracePosition) return false;
-		if (openBracePosition == string::npos && closedBracePosition != string::npos) return false;
-		if (openBracePosition != string::npos && closedBracePosition == string::npos) return false;
-
-		if (openBracePosition != string::npos && closedBracePosition != string::npos)
+		if (groupPos != string::npos)
 		{
-			groupPropsVector.resize(groupPropsVector.size() + 1);
+			GroupProps props;
 
-			groupPropsVector.back().groupStart = openBracePosition;
-			groupPropsVector.back().groupEnd = closedBracePosition;
+			props.groupName = outStringVector[i].substr(1, outStringVector[i].size() - 2);
+			props.groupLineIndex = i;
+			props.groupLastValueIndex = 0;
+
+			groupPropsVector.push_back(props);
 		}
-		else break;
 	}
 
-	// Get group names
-	for (size_t i = 0; i < groupPropsVector.size(); i++)
+	if (groupPropsVector.size() > 0)
 	{
-		size_t groupStartPos = GetGroupLabelStartPosition(groupPropsVector[i].groupStart, groupPropsVector[i].groupEnd);
-		size_t groupEndPos = groupPropsVector[i].groupStart - 1;
+		// Set last value index in the props
+		groupPropsVector.back().groupLastValueIndex = outStringVector.size() - 1;
 
-		groupPropsVector[i].groupName = string(outputString.begin() + groupStartPos, outputString.begin() + groupEndPos);
+		for (int i = groupPropsVector.size() - 1; i > 0; i--)
+		{
+			groupPropsVector[i - 1].groupLastValueIndex = groupPropsVector[i].groupLineIndex - 1;
+		}
+
+		return true;
 	}
 
-	return true;
-}
-
-size_t IPlugConfigFile::GetGroupLabelStartPosition(size_t openBracePos, size_t closedBracePos)
-{
-	size_t position = openBracePos - 2;
-
-	while (position > 0 && position < closedBracePos)
-	{
-		if (outputString[position] == '\n') return position + 1;
-		else position--;
-	}
-
-	return 0;
+	return false;
 }
 
 void IPlugConfigFile::ReadFromPath(string filePath)
 {
-	outputString.resize(0);
+	outStringVector.resize(0);
 
 	ifstream myfile(filePath);
 
-	if (myfile.is_open())
+	string line;
+	while (getline(myfile, line))
 	{
-		myfile.seekg(0, std::ios::end);
-		outputString.reserve((unsigned int)myfile.tellg());
-		myfile.seekg(0, std::ios::beg);
-
-		outputString.assign((std::istreambuf_iterator<char>(myfile)),
-			std::istreambuf_iterator<char>());
-		myfile.close();
+		outStringVector.push_back(line);
 	}
 }
 
 void IPlugConfigFile::WriteToPath(string filePath)
 {
+	string output;
+
+	for (int i = 0; i < outStringVector.size(); i++)
+	{
+		output.append(outStringVector[i]);
+		output.append("\n");
+	}
+
 	ofstream myfile;
 	myfile.open(filePath);
 	if (myfile.is_open())
 	{
-		myfile << outputString;
+		myfile << output;
 		myfile.close();
 	}
 }
 
-void IPlugConfigFile::RemoveComment(string * line)
-{
-	if (line->find("//") != line->npos)
-		line->erase(line->find("//"));
-}
-
 void IPlugConfigFile::CreateGroup(string groupName)
 {
-	groupPropsVector.resize(groupPropsVector.size() + 1);
+	outStringVector.push_back(string("[") + groupName + string("]"));
 
-	groupPropsVector.back().groupName = groupName;
-
-	if (outputString.size() != 0)
-	{
-		outputString.append("\n");
-	}
-
-	outputString.append(groupName);
-
-	groupPropsVector.back().groupStart = outputString.size();
-	outputString.append("\n{\n");
-
-	groupPropsVector.back().groupEnd = outputString.size();
-	outputString.append("}\n");
+	GroupProps props;
+	props.groupName = groupName;
+	props.groupLineIndex = outStringVector.size() - 1;
+	props.groupLastValueIndex = outStringVector.size() - 1;
+	
+	groupPropsVector.push_back(props);
 }
 
 #ifdef __APPLE__
