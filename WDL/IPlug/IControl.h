@@ -35,7 +35,7 @@ public:
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d) {};
   virtual bool OnKeyDown(int x, int y, int key) { return false; }
 
-  // These will be called if you interact with anything insude your plugin
+  // These will be called if you interact with anything inside your plugin
   virtual void OnGlobalMouseDown(int x, int y, IMouseMod* pMod) {}
   virtual void OnGlobalMouseUp(int x, int y, IMouseMod* pMod) {}
   virtual void OnGlobalMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod) {}
@@ -86,6 +86,36 @@ public:
   void SetText(IText* txt) { mText = *txt; }
   int GetTextEntryLength() { return mTextEntryLength; }
   void SetTextEntryLength(int len) { mTextEntryLength = len;  }
+
+  void SetTextEntryCharLimits(std::string chars, bool restrictChars = true)
+  {
+	  textEntryRestrictChars = restrictChars;
+	  textEntryCharLimits = chars;
+  }
+  bool IsTextEntryCharAllowed(std::string check_char)
+  {
+	  if (textEntryCharLimits.size() == 0) return true;
+
+	  bool charIsInBuffer = false;
+	  size_t pos = textEntryCharLimits.find(check_char);
+	  if (pos != std::string::npos)
+	  {
+		  charIsInBuffer = true;
+	  }
+
+	  if (textEntryRestrictChars)
+	  {
+		  if (charIsInBuffer) return false;
+		  else return true;
+	  }
+	  else
+	  {
+		  if (charIsInBuffer) return true;
+		  else return false;
+	  }
+
+	  return false;
+  }
 
   virtual void TextFromTextEntry(const char* txt) { return; } // does nothing by default
 
@@ -172,6 +202,10 @@ protected:
   IControl* mValDisplayControl;
   IControl* mNameDisplayControl;
   WDL_String mTooltip;
+
+private:
+  bool textEntryRestrictChars = false;
+  std::string textEntryCharLimits;
 };
 
 enum EDirection { kVertical, kHorizontal };
