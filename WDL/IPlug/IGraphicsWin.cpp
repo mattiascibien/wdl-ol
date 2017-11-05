@@ -61,7 +61,6 @@ LRESULT CALLBACK IGraphicsWin::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
   }
 
   IGraphicsWin* pGraphics = (IGraphicsWin*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
-  char txt[MAX_PARAM_LEN];
   double v;
 
   if (!pGraphics || hWnd != pGraphics->mPlugWnd)
@@ -92,7 +91,14 @@ LRESULT CALLBACK IGraphicsWin::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
           {
             case kCommit:
             {
-              SendMessage(pGraphics->mParamEditWnd, WM_GETTEXT, MAX_PARAM_LEN, (LPARAM) txt);
+			  int charNumber = pGraphics->mEdControl->GetTextEntryLength();
+
+			  std::wstring txt;
+			  txt.resize(charNumber);
+
+			  Windows_UTF_Converter convert;
+
+              SendMessageW(pGraphics->mParamEditWnd, WM_GETTEXT, charNumber, (LPARAM) txt.c_str());
 
               if(pGraphics->mEdParam)
               {
@@ -101,12 +107,12 @@ LRESULT CALLBACK IGraphicsWin::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
                 if ( type == IParam::kTypeEnum || type == IParam::kTypeBool)
                 {
                   int vi = 0;
-                  pGraphics->mEdParam->MapDisplayText(txt, &vi);
+                  pGraphics->mEdParam->MapDisplayText((char*)convert.utf16_to_utf8(txt).c_str(), &vi);
                   v = (double) vi;
                 }
                 else
                 {
-                  v = atof(txt);
+                  v = atof((char*)convert.utf16_to_utf8(txt).c_str());
                   if (pGraphics->mEdParam->DisplayIsNegated())
                   {
                     v = -v;
@@ -116,7 +122,7 @@ LRESULT CALLBACK IGraphicsWin::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARA
               }
               else
               {
-                pGraphics->mEdControl->TextFromTextEntry(txt);
+                pGraphics->mEdControl->TextFromTextEntry((char*)convert.utf16_to_utf8(txt).c_str());
               }
               // Fall through.
             }
@@ -427,6 +433,18 @@ LRESULT CALLBACK IGraphicsWin::ParamEditProc(HWND hWnd, UINT msg, WPARAM wParam,
               break;
           }
         }
+		else
+		{
+			// Set char limits
+			std::wstring c;
+			c.push_back(wParam);
+
+			Windows_UTF_Converter convert;
+			std::string check_char = convert.utf16_to_utf8(c);
+
+			if (pGraphics->mEdControl->IsTextEntryCharAllowed(check_char)) break;
+			else return 0;
+		}
         break;
       }
       case WM_KEYDOWN:
@@ -1000,11 +1018,11 @@ void IGraphicsWin::CreateTextEntry(IControl* pControl, IText* pText, IRECT* pTex
   SendMessage(mParamEditWnd, EM_LIMITTEXT, (WPARAM) pControl->GetTextEntryLength(), 0);
   SendMessage(mParamEditWnd, WM_SETFONT, (WPARAM) font, 0);
   SendMessage(mParamEditWnd, EM_SETSEL, 0, -1);
-
+  
   SetFocus(mParamEditWnd);
 
-  mDefEditProc = (WNDPROC) SetWindowLongPtr(mParamEditWnd, GWLP_WNDPROC, (LONG_PTR) ParamEditProc);
-  SetWindowLongPtr(mParamEditWnd, GWLP_USERDATA, 0xdeadf00b);
+  mDefEditProc = (WNDPROC) SetWindowLongPtrW(mParamEditWnd, GWLP_WNDPROC, (LONG_PTR) ParamEditProc);
+  SetWindowLongPtrW(mParamEditWnd, GWLP_USERDATA, 0xdeadf00b);
 
   //DeleteObject(font);
 
