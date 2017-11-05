@@ -1281,9 +1281,35 @@ double IPlugGUIResize::GetWidnowSizeHeightRatio()
 	return window_height_normalized / (double)default_gui_height;
 }
 
+double IPlugGUIResize::GetWidnowWidthNormalized()
+{
+	return window_width_normalized;
+}
+
+double IPlugGUIResize::GetWidnowHeightNormalized()
+{
+	return window_height_normalized;
+}
+
 bool IPlugGUIResize::IsAttachedToIPlugBase() 
 { 
 	return attachedToIPlugBase; 
+}
+
+DRECT IPlugGUIResize::GetOriginalDrawRECTForControl(IControl * pControl)
+{
+	int index = FindLayoutPointerPosition(current_view_mode, pControl);
+	if (index < 0) return DRECT();
+
+	return layout_container[current_view_mode].org_draw_area[index];
+}
+
+DRECT IPlugGUIResize::GetOriginalTargetRECTForControl(IControl * pControl)
+{
+	int index = FindLayoutPointerPosition(current_view_mode, pControl);
+	if (index < 0) return DRECT();
+
+	return layout_container[current_view_mode].org_target_area[index];
 }
 
 void IPlugGUIResize::ResizeControlRects()
@@ -1380,7 +1406,7 @@ void IPlugGUIResize::ResizeAtGUIOpen()
 	if (!presets_loaded)
 	{
 		if (guiResizeParameters.Get(0)->Value() > -0.5)
-			current_view_mode = IPMIN((int)guiResizeParameters.Get(0)->Value(), view_container.view_mode.size());
+			current_view_mode = IPMIN((int)guiResizeParameters.Get(0)->Value(), (int)view_container.view_mode.size());
 
 		if (guiResizeParameters.Get(1)->Value() > -0.5)
 			window_width_normalized = guiResizeParameters.Get(1)->Value();

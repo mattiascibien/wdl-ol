@@ -222,21 +222,11 @@ public:
 	bool CurrentlyFastResizing();
 	double GetWidnowSizeWidthRatio();
 	double GetWidnowSizeHeightRatio();
+	double GetWidnowWidthNormalized();
+	double GetWidnowHeightNormalized();
 	bool IsAttachedToIPlugBase();
-	DRECT GetOriginalDrawRECTForControl(IControl *pControl)
-	{
-		int index = FindLayoutPointerPosition(current_view_mode, pControl);
-		if (index < 0) return DRECT();
-		
-		return layout_container[current_view_mode].org_draw_area[index];
-	}
-	DRECT GetOriginalTargetRECTForControl(IControl *pControl)
-	{
-		int index = FindLayoutPointerPosition(current_view_mode, pControl);
-		if (index < 0) return DRECT();
-
-		return layout_container[current_view_mode].org_target_area[index];
-	}
+	DRECT GetOriginalDrawRECTForControl(IControl *pControl);
+	DRECT GetOriginalTargetRECTForControl(IControl *pControl);
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------
 		
 	
