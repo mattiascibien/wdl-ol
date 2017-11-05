@@ -134,7 +134,7 @@ IPlugGUIResize::IPlugGUIResize(IPlugBase* pPlug, IGraphics* pGraphics, bool useH
 	plugin_height = pGraphics->Height();
 
 	// Set settings.ini file path
-	pGraphics->DocumentsPath(&settings_ini_path);
+	pGraphics->AppSupportPath(&settings_ini_path);
 	settings_ini_path.Append("/");
 	settings_ini_path.Append(pPlug->GetMfrName());
 
