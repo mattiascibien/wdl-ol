@@ -1554,6 +1554,8 @@ bool IGraphics::DrawIText(IText* pTxt, char* str, IRECT* pR, bool measure)
 	font->SetTextColor(color);
 
 	UINT fmt = DT_NOCLIP;
+	fmt |= DT_VCENTER;
+	fmt |= DT_SINGLELINE;
 	if (LICE_GETA(color) < 255) fmt |= LICE_DT_USEFGALPHA;
 	if (pTxt->mAlign == IText::kAlignNear)
 		fmt |= DT_LEFT;
