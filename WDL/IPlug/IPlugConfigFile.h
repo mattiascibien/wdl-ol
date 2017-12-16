@@ -70,7 +70,7 @@ public:
 	template<typename ValueType>
 	ValueType ReadValue(string valueName, ValueType defaultValue, string groupName = "Default Group")
 	{
-		return string_to_T<string>(ReadString(groupName, valueName, T_to_string(defaultValue)));
+		return string_to_T<ValueType>(ReadString(groupName, valueName, T_to_string(defaultValue)));
 	}
 		
 private:
@@ -118,7 +118,7 @@ private:
 	}
 #endif // __WIN32
 
-	void EncryptDecryptStringVector(vector<string> *workingVector);
+	void EncryptDecryptString(string &workingString);
 
 	void CreateGroup(string groupName);
 	bool GetGroupProps();

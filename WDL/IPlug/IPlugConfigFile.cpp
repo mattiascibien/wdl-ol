@@ -37,8 +37,6 @@ void IPlugConfigFile::ReadFile()
 {
 	ReadFromPath(filePath);
 
-	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
-
 	if (!GetGroupProps())
 	{
 		outStringVector.resize(0);
@@ -48,37 +46,7 @@ void IPlugConfigFile::ReadFile()
 
 void IPlugConfigFile::WriteFile()
 {
-	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
-
 	WriteToPath(filePath);
-
-	if (useEncryption) EncryptDecryptStringVector(&outStringVector);
-}
-
-void IPlugConfigFile::EncryptDecryptStringVector(vector<string>* workingVector)
-{
-	if (key.size() > 0)
-	{
-		int keyPos = 0;
-
-		for (int i = 0; i < workingVector->size(); i++)
-		{
-			for (int j = 0; j < (*workingVector)[i].size(); j++)
-			{
-				char in = (*workingVector)[i][j];
-				char out = in ^ char((i + j) + key[keyPos]);
-
-				if (in == '\n' || in == '\r' || out == '\n' || out == '\r' || out == '\0') continue;
-				else
-				{
-					(*workingVector)[i][j] = out;
-				}
-
-				keyPos++;
-				if (keyPos >= key.size()) keyPos = 0;
-			}
-		}
-	}
 }
 
 void IPlugConfigFile::WriteString(string groupName, string valueName, string value)
@@ -212,14 +180,50 @@ bool IPlugConfigFile::GetGroupProps()
 	return false;
 }
 
+void IPlugConfigFile::EncryptDecryptString(string &workingString)
+{
+	if (key.size() > 0)
+	{
+		int keyPos = 0;
+
+		for (int i = 0; i < workingString.size(); i++)
+		{
+			char in = workingString[i];
+
+			int keyChar = (int)key[keyPos];
+			char encryptChar = char((i + keyChar) % 128);
+
+			char out = in ^ encryptChar;
+
+			workingString[i] = out;
+
+			keyPos++;
+			if (keyPos >= key.size()) keyPos = 0;
+		}
+	}
+}
+
 void IPlugConfigFile::ReadFromPath(string filePath)
 {
+	string input;
 	outStringVector.resize(0);
 
-	ifstream myfile(filePath);
+	ifstream myfile(filePath, ios::in | ios::binary | ios::ate);
+
+	streampos size = myfile.tellg();
+	input.resize(size);
+
+	myfile.seekg(0, ios::beg);
+	myfile.read(&input[0], size);
+	myfile.close();
+
+	// Put encryption function here
+	if (useEncryption) EncryptDecryptString(input);
+	
+	istringstream iss(input);
 
 	string line;
-	while (getline(myfile, line))
+	while (getline(iss, line))
 	{
 		outStringVector.push_back(line);
 	}
@@ -235,11 +239,14 @@ void IPlugConfigFile::WriteToPath(string filePath)
 		output.append("\n");
 	}
 
+	// Put encryption function here
+	if (useEncryption) EncryptDecryptString(output);
+	
 	ofstream myfile;
-	myfile.open(filePath);
+	myfile.open(filePath, ios::binary);
 	if (myfile.is_open())
 	{
-		myfile << output;
+		myfile.write(&output[0], output.size());
 		myfile.close();
 	}
 }
