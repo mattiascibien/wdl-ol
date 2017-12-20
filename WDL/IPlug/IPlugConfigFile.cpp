@@ -210,12 +210,15 @@ void IPlugConfigFile::ReadFromPath(string filePath)
 
 	ifstream myfile(filePath, ios::in | ios::binary | ios::ate);
 
-	streampos size = myfile.tellg();
-	input.resize(size);
+	if (myfile.is_open())
+	{
+		streampos size = myfile.tellg();
+		input.resize(size);
 
-	myfile.seekg(0, ios::beg);
-	myfile.read(&input[0], size);
-	myfile.close();
+		myfile.seekg(0, ios::beg);
+		myfile.read(&input[0], size);
+		myfile.close();
+	}
 
 	// Put encryption function here
 	if (useEncryption) EncryptDecryptString(input);
