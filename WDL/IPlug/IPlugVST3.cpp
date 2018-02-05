@@ -374,7 +374,7 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
     //it is possible to get a finer resolution of control here by retrieving more values (points) from the queue
     //for now we just grab the last one
 
-    for (int32 i = 0; i < NParams() > 0; i++)
+    for (int32 i = 0; i < NParams() > 0 && numParamsChanged > 0; i++)
     {
       IParamValueQueue* paramQueue = paramChanges->getParameterData(i);
       if (paramQueue)
