@@ -7,7 +7,6 @@
 #include <windowsx.h>
 #include <winuser.h>
 #include "UTF_Helper.h"
-
 class IGraphicsWin : public IGraphics, Windows_UTF_Converter
 {
 public:
@@ -43,6 +42,7 @@ public:
   void SandboxSafeAppSupportPath(WDL_String* pPath) { AppSupportPath(pPath, false); }
 
   void PromptForFile(WDL_String* pFilename, EFileAction action = kFileOpen, WDL_String* pDir = 0, char* extensions = "");   // extensions = "txt wav" for example.
+  void PromptForFolder(WDL_String * pFolderPath, const char* title);
   bool PromptForColor(IColor* pColor, char* prompt = "");
 
   IPopupMenu* GetItemMenu(long idx, long &idxInMenu, long &offsetIdx, IPopupMenu* pMenu);

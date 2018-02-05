@@ -661,6 +661,7 @@ bool IGraphicsWin::DrawScreen(IRECT* pR)
   return true;
 }
 
+
 void* IGraphicsWin::OpenWindow(void* pParentWnd)
 {
   int x = 0, y = 0, w = Width(), h = Height();
@@ -695,6 +696,7 @@ void* IGraphicsWin::OpenWindow(void* pParentWnd)
   }
   else
   {
+	IGraphics::OnGUIOpen();
     SetAllControlsDirty();
   }
 
@@ -798,6 +800,8 @@ void IGraphicsWin::CloseWindow()
 {
   if (mPlugWnd)
   {
+	  IGraphics::OnGUIClose();
+
     if (mTooltipWnd)
     {
       DestroyWindow(mTooltipWnd);
@@ -997,6 +1001,9 @@ IPopupMenu* IGraphicsWin::CreateIPopupMenu(IPopupMenu* pMenu, IRECT* pAreaRect)
 
 void IGraphicsWin::CreateTextEntry(IControl* pControl, IText* pText, IRECT* pTextRect, const char* pString, IParam* pParam)
 {
+
+// https://stackoverflow.com/questions/20568167/load-custom-font-file-from-application-specific-folder
+
   if (!pControl || mParamEditWnd) return;
 
   DWORD editStyle;
@@ -1005,12 +1012,12 @@ void IGraphicsWin::CreateTextEntry(IControl* pControl, IText* pText, IRECT* pTex
   {
     case IText::kAlignNear:   editStyle = ES_LEFT;   break;
     case IText::kAlignFar:    editStyle = ES_RIGHT;  break;
-    case IText::kAlignCenter:
+    case IText::kAlignCenter: editStyle = ES_CENTER; break;
     default:                  editStyle = ES_CENTER; break;
   }
 
   mParamEditWnd = CreateWindowW(L"EDIT", utf8_to_utf16(pString).c_str(), ES_AUTOHSCROLL /*only works for left aligned text*/ | WS_CHILD | WS_VISIBLE | ES_MULTILINE | editStyle,
-                               pTextRect->L, pTextRect->T, pTextRect->W()+1, pTextRect->H()+1,
+                               pTextRect->L, pTextRect->T, pTextRect->W(), pTextRect->H(),
                                mPlugWnd, (HMENU) PARAM_EDIT_ID, mHInstance, 0);
 
   HFONT font = CreateFontW(pText->mSize, 0, 0, 0, pText->mStyle == IText::kStyleBold ? FW_BOLD : 0, pText->mStyle == IText::kStyleItalic ? TRUE : 0, 0, 0, 0, 0, 0, 0, 0, utf8_to_utf16(pText->mFont).c_str());
@@ -1227,6 +1234,54 @@ void IGraphicsWin::PromptForFile(WDL_String* pFilename, EFileAction action, WDL_
   {
     pFilename->Set("");
   }
+}
+
+static int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if (uMsg == BFFM_INITIALIZED)
+	{
+		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+	}
+
+	return 0;
+}
+
+void IGraphicsWin::PromptForFolder(WDL_String* pFolderPath, const char* title)
+{
+	WCHAR pathBuffer[MAX_PATH];
+	WCHAR titleString[MAX_PATH];
+	LPWSTR path = pathBuffer;
+
+	// Convert char to wchar_t. Title must be in ANSI
+	mbstowcs(&titleString[0], title, MAX_PATH);
+	
+	std::wstring path_param = utf8_to_utf16(pFolderPath->Get());
+
+	BROWSEINFOW bi = { 0 };
+	bi.lpszTitle = titleString;
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.lpfn = BrowseCallbackProc;
+
+	LPITEMIDLIST pidl = SHBrowseForFolderW(&bi);
+
+	if (pidl != 0)
+	{
+		//get the name of the folder and put it in path
+		SHGetPathFromIDListW(pidl, path);
+
+		//free memory used
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+
+		pFolderPath->Set(utf16_to_utf8(path).c_str());
+		return;
+	}
+
+	pFolderPath->Set("");
 }
 
 UINT_PTR CALLBACK CCHookProc(HWND hdlg, UINT uiMsg, WPARAM wParam, LPARAM lParam)
