@@ -220,6 +220,7 @@ public:
 	int GetViewMode();
 	int GetViewModeSize();
 	bool CurrentlyFastResizing();
+	int GetHandleSize();
 	double GetWidnowSizeWidthRatio();
 	double GetWidnowSizeHeightRatio();
 	double GetWidnowWidthNormalized();
@@ -289,6 +290,8 @@ private:
 	void OnMouseUp(int x, int y, IMouseMod* pMod);
 	// ---------------------------------------------------------------------------------------------------------------------------------------------
 
+    int mouse_down_x = 0;
+    int mouse_down_y = 0;
 
 	int current_view_mode;
 

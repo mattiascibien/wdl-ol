@@ -147,7 +147,7 @@ IPlugGUIResize::IPlugGUIResize(IPlugBase* pPlug, IGraphics* pGraphics, bool useH
 	// Create directory if it doesn't exist
 	CreateDirectory(settings_ini_path.Get(), NULL);
 
-	settings_ini_path.Append("/Settings.ini");
+	settings_ini_path.Append("/GuiScale.ini");
 
 	gui_scale_ratio = GetDoubleFromFile("guiscale");
 
@@ -171,6 +171,18 @@ IPlugGUIResize::IPlugGUIResize(IPlugBase* pPlug, IGraphics* pGraphics, bool useH
 	guiResizeParameters.Add(new IParam);
 	guiResizeParameters.Get(2)->InitDouble("", -1.0, -1.0, 1000000, 1.0);
 	guiResizeParameters.Get(2)->SetCanAutomate(false);
+	guiResizeParameters.Add(new IParam);
+	guiResizeParameters.Get(3)->InitDouble("", -1.0, -1.0, 1000000, 1.0);
+	guiResizeParameters.Get(3)->SetCanAutomate(false);
+	guiResizeParameters.Add(new IParam);
+	guiResizeParameters.Get(4)->InitDouble("", -1.0, -1.0, 1000000, 1.0);
+	guiResizeParameters.Get(4)->SetCanAutomate(false);
+	guiResizeParameters.Add(new IParam);
+	guiResizeParameters.Get(5)->InitDouble("", -1.0, -1.0, 1000000, 1.0);
+	guiResizeParameters.Get(5)->SetCanAutomate(false);
+	guiResizeParameters.Add(new IParam);
+	guiResizeParameters.Get(6)->InitDouble("", -1.0, -1.0, 1000000, 1.0);
+	guiResizeParameters.Get(6)->SetCanAutomate(false);
 }
 
 bool IPlugGUIResize::Draw(IGraphics * pGraphics)
@@ -1271,6 +1283,11 @@ bool IPlugGUIResize::CurrentlyFastResizing()
 	return currentlyFastResizing;
 }
 
+int IPlugGUIResize::GetHandleSize()
+{
+	return IPMAX(min_control_size, control_size);
+}
+
 double IPlugGUIResize::GetWidnowSizeWidthRatio()
 {
 	return window_width_normalized / (double)default_gui_width;
@@ -1414,6 +1431,18 @@ void IPlugGUIResize::ResizeAtGUIOpen()
 		if (guiResizeParameters.Get(2)->Value() > -0.5)
 			window_height_normalized = guiResizeParameters.Get(2)->Value();
 
+		if (guiResizeParameters.Get(3)->Value() > -0.5)
+			view_container.min_window_width_normalized[current_view_mode] = guiResizeParameters.Get(3)->Value();
+
+		if (guiResizeParameters.Get(4)->Value() > -0.5)
+			view_container.max_window_width_normalized[current_view_mode] = guiResizeParameters.Get(4)->Value();
+
+		if (guiResizeParameters.Get(5)->Value() > -0.5)
+			view_container.min_window_height_normalized[current_view_mode] = guiResizeParameters.Get(5)->Value();
+
+		if (guiResizeParameters.Get(6)->Value() > -0.5)
+			view_container.max_window_height_normalized[current_view_mode] = guiResizeParameters.Get(6)->Value();
+
 		presets_loaded = true;
 	}
 
@@ -1475,6 +1504,10 @@ void IPlugGUIResize::ResizeGraphics()
 	guiResizeParameters.Get(0)->Set(current_view_mode);
 	guiResizeParameters.Get(1)->Set(window_width_normalized);
 	guiResizeParameters.Get(2)->Set(window_height_normalized);
+	guiResizeParameters.Get(3)->Set(view_container.min_window_width_normalized[current_view_mode]);
+	guiResizeParameters.Get(4)->Set(view_container.max_window_width_normalized[current_view_mode]);
+	guiResizeParameters.Get(5)->Set(view_container.min_window_height_normalized[current_view_mode]);
+	guiResizeParameters.Get(6)->Set(view_container.max_window_height_normalized[current_view_mode]);
 
 	plugin_width = (int)(window_width_normalized * gui_scale_ratio);
 	plugin_height = (int)(window_height_normalized * gui_scale_ratio);
@@ -1559,8 +1592,13 @@ void IPlugGUIResize::MoveHandle()
 	MoveControl(index, x, y);
 }
 
+
+
 void IPlugGUIResize::OnMouseDrag(int x, int y, int dX, int dY, IMouseMod * pMod)
 {
+    //x = mouse_down_x += dX;
+    //y = mouse_down_y += dY;
+    
 	if (!gui_should_be_closed)
 	{
 		SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
@@ -1577,6 +1615,7 @@ void IPlugGUIResize::OnMouseDrag(int x, int y, int dX, int dY, IMouseMod * pMod)
 		}
 		else
 		{
+            
 			window_width_normalized = (double)x / gui_scale_ratio;
 			window_height_normalized = (double)y / gui_scale_ratio;
 
@@ -1626,10 +1665,16 @@ void IPlugGUIResize::OnMouseDown(int x, int y, IMouseMod * pMod)
 		currentlyFastResizing = true;
 	}
 
-	if (pMod->R)
+	if (pMod->L)
 	{
-		DoPopupMenu();
+        mouse_down_x = x;
+        mouse_down_y = y;
 	}
+    
+    if (pMod->R)
+    {
+        DoPopupMenu();
+    }
 }
 
 void IPlugGUIResize::OnMouseDblClick(int x, int y, IMouseMod* pMod)
