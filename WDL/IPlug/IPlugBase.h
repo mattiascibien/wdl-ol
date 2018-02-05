@@ -10,6 +10,7 @@
 #include "Hosts.h"
 #include "Log.h"
 #include "NChanDelay.h"
+#include <vector>
 
 // Uncomment to enable IPlug::OnIdle() and IGraphics::OnGUIIdle().
 // #define USE_IDLE_CALLS
@@ -29,6 +30,14 @@ class ycairo_base;
 class IPlugBase
 {
 public:
+	enum ParamChangeFrom 
+	{ 
+		kSystem, // OnParamChange was called from DAW
+		kLoading, // OnParamChange was called from OnParamReset. OnParamReset is called when plugin is loading
+		kGui, // OnParamChange was called from GUI
+		kOther, // This is for custom implementation
+	};
+
 	// Use IPLUG_CTOR instead of calling directly (defined in IPlug_include_in_plug_src.h).
 	IPlugBase(int nPublicParams,
 		int nPrivateParams,
@@ -54,7 +63,7 @@ public:
 
 	// Implementations should set a mutex lock like in the no-op!
 	virtual void Reset() { TRACE; IMutexLock lock(this); }
-	virtual void OnParamChange(int paramIdx) { IMutexLock lock(this); }
+	virtual void OnParamChange(int paramIdx, ParamChangeFrom changeFrom = kSystem) { IMutexLock lock(this); }
 
 	// Default passthrough.  Inputs and outputs are [nChannel][nSample].
 	// Mutex is already locked.
@@ -103,8 +112,8 @@ public:
 	// --------------------------------------------------------------------------------------------------------------------------------
 	// Your plugin class, or a control class, can call these functions.
 
-	int NParams() { return mParams.GetSize(); }
-	IParam* GetParam(int idx) { return mParams.Get(idx); }
+	int NParams() { return mParams.size(); }
+	IParam* GetParam(int idx) { return &mParams[idx]; }
 	IGraphics* GetGUI() { return mGraphics; }
 
 #ifdef USING_YCAIRO
@@ -131,6 +140,9 @@ public:
 	int GetMfrID() { return mMfrID; }
 
 	virtual void SetParameterFromGUI(int idx, double normalizedValue);
+	// Using non normalized values
+	void SetParameter(int idx, double value);
+
 	// If a parameter change comes from the GUI, midi, or external input,
 	// the host needs to be informed in case the changes are being automated.
 	virtual void BeginInformHostOfParamChange(int idx) = 0;
@@ -182,7 +194,7 @@ protected:
 	// ----------------------------------------
 	// Useful stuff for your plugin class to call, implemented here or in the API class, or partly in both.
 
-	// for labelling individual inputs/outputs (VST2)
+	// for labeling individual inputs/outputs (VST2)
 	void SetInputLabel(int idx, const char* pLabel);
 	void SetOutputLabel(int idx, const char* pLabel);
 
@@ -216,6 +228,7 @@ protected:
 
 	// If latency changes after initialization (often not supported by the host).
 	virtual void SetLatency(int samples);
+
 
 	// set to 0xffffffff for infinite tail (VST3), or 0 for none (default)
 	// for VST2 setting to 1 means no tail, but it would be better i think to leave it at 0, the default
@@ -352,7 +365,7 @@ private:
 	int numPublicParams, numPrivateParams;
 	IGraphics* mGraphics;
 	IPlugGUIResize* mGUIResize = NULL;
-	WDL_PtrList<IParam> mParams;
+	std::vector<IParam> mParams;
 	WDL_PtrList<IPreset> mPresets;
 	WDL_TypedBuf<double*> mInData, mOutData;
 	WDL_PtrList<InChannel> mInChannels;

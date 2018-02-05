@@ -96,7 +96,7 @@ IPlugBase::IPlugBase(int nPublicParams,
 
 	for (int i = 0; i < nPublicParams + nPrivateParams; ++i)
 	{
-		mParams.Add(new IParam);
+		mParams.push_back(IParam());
 	}
 
 	for (int i = 0; i < nPresets; ++i)
@@ -159,7 +159,6 @@ IPlugBase::~IPlugBase()
 {
 	TRACE;
 	DELETE_NULL(mGraphics);
-	mParams.Empty(true);
 	mPresets.Empty(true);
 	mInChannels.Empty(true);
 	mOutChannels.Empty(true);
@@ -247,7 +246,7 @@ void IPlugBase::AttachGraphics(IGraphics* pGraphics)
 			pGraphics->AttachControl(GetGUIResize()->AttachGUIResize());
 		}
 
-		int i, n = mParams.GetSize();
+		int i, n = mParams.size();
 
 		for (i = 0; i < n; ++i)
 		{
@@ -573,6 +572,15 @@ void IPlugBase::SetLatency(int samples)
 	}
 }
 
+void IPlugBase::SetParameter(int idx, double value)
+{
+	Trace(TRACELOC, "%d:%f", idx, value);
+	WDL_MutexLock lock(&mMutex);
+	GetParam(idx)->Set(value);
+	InformHostOfParamChange(idx, GetParam(idx)->GetNormalized());
+	OnParamChange(idx, ParamChangeFrom::kGui);
+}
+
 // this is over-ridden for AAX
 void IPlugBase::SetParameterFromGUI(int idx, double normalizedValue)
 {
@@ -580,14 +588,14 @@ void IPlugBase::SetParameterFromGUI(int idx, double normalizedValue)
 	WDL_MutexLock lock(&mMutex);
 	GetParam(idx)->SetNormalized(normalizedValue);
 	InformHostOfParamChange(idx, normalizedValue);
-	OnParamChange(idx);
+	OnParamChange(idx, ParamChangeFrom::kGui);
 }
 
 void IPlugBase::OnParamReset()
 {
-	for (int i = 0; i < mParams.GetSize(); ++i)
+	for (int i = 0; i < mParams.size(); ++i)
 	{
-		OnParamChange(i);
+		OnParamChange(i, ParamChangeFrom::kLoading);
 	}
 	//Reset();
 }
@@ -688,7 +696,7 @@ void IPlugBase::MakePreset(char* name, ...)
 			}
 		}
 
-		int i, n = mParams.GetSize();
+		int i, n = mParams.size();
 		double v = 0.0;
 		va_list vp;
 		va_start(vp, name);
@@ -727,7 +735,7 @@ void IPlugBase::MakePresetFromNamedParams(char* name, int nParamsNamed, ...)
 			}
 		}
 
-		int i = 0, n = mParams.GetSize();
+		int i = 0, n = mParams.size();
 
 		WDL_TypedBuf<double> vals;
 		vals.Resize(n);
@@ -986,7 +994,7 @@ bool IPlugBase::SerializeParams(ByteChunk* pChunk)
 	// Save public parameters
 	for (int i = 0; i < numPublicParams && savedOK; ++i)
 	{
-		IParam* pParam = mParams.Get(i);
+		IParam* pParam = &mParams[i];
 		Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
 		double v = pParam->Value();
 		savedOK &= (pChunk->Put(&v) > 0);
@@ -995,7 +1003,7 @@ bool IPlugBase::SerializeParams(ByteChunk* pChunk)
 	// Save private parameters
 	for (int i = numPublicParams; i < (numPublicParams + numPrivateParams) && savedOK; ++i)
 	{
-		IParam* pParam = mParams.Get(i);
+		IParam* pParam = &mParams[i];
 		Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
 		double v = pParam->Value();
 		savedOK &= (pChunk->Put(&v) > 0);
@@ -1036,7 +1044,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	// Load public parameters
 	for (int i = 0; i < nStoredPublicParams && pos >= 0; ++i)
 	{
-		IParam* pParam = mParams.Get(i);
+		IParam* pParam = &mParams[i];
 		double v = 0.0;
 		Trace(TRACELOC, "%d %s %f", i, pParam->GetNameForHost(), pParam->Value());
 		pos = pChunk->Get(&v, pos);
@@ -1046,7 +1054,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	// Load private parameters
 	for (int i = 0; i < nStoredPrivateParams && pos >= 0; ++i)
 	{
-		IParam* pParam = mParams.Get(i + numPublicParams);
+		IParam* pParam = &mParams[i + numPublicParams];
 		double v = 0.0;
 		Trace(TRACELOC, "%d %s %f", i + numPublicParams, pParam->GetNameForHost(), pParam->Value());
 		pos = pChunk->Get(&v, pos);
@@ -1080,10 +1088,10 @@ void IPlugBase::RedrawParamControls()
 {
 	if (mGraphics)
 	{
-		int i, n = mParams.GetSize();
+		int i, n = mParams.size();
 		for (i = 0; i < n; ++i)
 		{
-			double v = mParams.Get(i)->Value();
+			double v = mParams[i].Value();
 			mGraphics->SetParameterFromPlug(i, v, false);
 		}
 	}
@@ -1289,7 +1297,7 @@ bool IPlugBase::SaveProgramAsFXP(WDL_String* fileName)
 			for (int i = 0; i< NParams(); i++)
 			{
 				WDL_EndianFloat v32;
-				v32.f = (float)mParams.Get(i)->GetNormalized();
+				v32.f = (float)mParams[i].GetNormalized();
 				unsigned int swapped = WDL_bswap32(v32.int32);
 				pgm.Put(&swapped);
 			}
@@ -1392,7 +1400,7 @@ bool IPlugBase::SaveBankAsFXB(WDL_String* fileName)
 					pos = pPreset->mChunk.Get(&v, pos);
 
 					WDL_EndianFloat v32;
-					v32.f = (float)mParams.Get(i)->GetNormalized(v);
+					v32.f = (float)mParams[i].GetNormalized(v);
 					unsigned int swapped = WDL_bswap32(v32.int32);
 					bnk.Put(&swapped);
 				}
@@ -1482,7 +1490,7 @@ bool IPlugBase::LoadProgramFromFXP(WDL_String* fileName)
 					WDL_EndianFloat v32;
 					pos = pgm.Get(&v32.int32, pos);
 					v32.int32 = WDL_bswap_if_le(v32.int32);
-					mParams.Get(i)->SetNormalized((double)v32.f);
+					mParams[i].SetNormalized((double)v32.f);
 				}
 
 				ModifyCurrentPreset(prgName);
@@ -1614,7 +1622,7 @@ bool IPlugBase::LoadBankFromFXB(WDL_String* fileName)
 						WDL_EndianFloat v32;
 						pos = bnk.Get(&v32.int32, pos);
 						v32.int32 = WDL_bswap_if_le(v32.int32);
-						mParams.Get(j)->SetNormalized((double)v32.f);
+						mParams[j].SetNormalized((double)v32.f);
 					}
 
 					ModifyCurrentPreset(prgName);
