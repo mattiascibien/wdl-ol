@@ -230,18 +230,22 @@ void IPlugVST::AttachGraphics(IGraphics* pGraphics)
 void IPlugVST::ResizeGraphics(int w, int h)
 {
   IGraphics* pGraphics = GetGUI();
-
+    
+    
+    
   if (pGraphics)
   {
-    mEditRect.left = mEditRect.top = 0;
-    mEditRect.right = w;
-    mEditRect.bottom = h;
-      
+      mEditRect.left = 0;
+      mEditRect.top = 0;
+      mEditRect.right = w;
+      mEditRect.bottom = h;
+
     OnWindowResize();
 
 #ifdef USING_YCAIRO
 	ResizeCairoSurface();
 #endif
+      mHostCallback(&mAEffect, audioMasterSizeWindow, w, h, 0, 0.f);
   }
 }
 
