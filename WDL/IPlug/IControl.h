@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include "IPlugBase.h"
 #include "IGraphics.h"
+#include <string>
 
 // A control is anything on the GUI, it could be a static bitmap, or
 // something that moves or changes.  The control could manipulate
@@ -159,6 +160,10 @@ public:
   // IPlugBase::OnIdle which is called from the audio processing thread.
   // Only active if USE_IDLE_CALLS is defined.
   virtual void OnGUIIdle() {}
+
+  // This will be called before GUI opens or before GUI closes. 
+  virtual void OnGUIOpen() {}
+  virtual void OnGUIClose() {}
   
   // a struct that contain a parameter index and normalized value
   struct AuxParam 
@@ -205,7 +210,7 @@ protected:
 
 private:
   bool textEntryRestrictChars = false;
-  std::string textEntryCharLimits;
+  std::string textEntryCharLimits = "";
 };
 
 enum EDirection { kVertical, kHorizontal };
@@ -381,6 +386,8 @@ public:
   void SetGearing(double gearing) { mGearing = gearing; }
   virtual void OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod);
   virtual void OnMouseWheel(int x, int y, IMouseMod* pMod, int d);
+  virtual void OnMouseDown(int x, int y, IMouseMod* pMod);
+  virtual void OnMouseDblClick(int x, int y, IMouseMod* pMod);
 
 protected:
   EDirection mDirection;

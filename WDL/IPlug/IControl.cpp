@@ -549,6 +549,18 @@ bool IFaderControl::IsHit(int x, int y)
   }
 }
 
+void IKnobControl::OnMouseDown(int x, int y, IMouseMod * pMod)
+{
+	mValue = mPlug->GetParam(mParamIdx)->GetNormalized();
+}
+
+void IKnobControl::OnMouseDblClick(int x, int y, IMouseMod * pMod)
+{
+	mDefaultValue = mPlug->GetParam(mParamIdx)->GetDefaultNormalized();
+	mValue = mDefaultValue;
+	SetDirty();
+}
+
 void IKnobControl::OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod)
 {
   double gearing = mGearing;
@@ -577,6 +589,8 @@ void IKnobControl::OnMouseDrag(int x, int y, int dX, int dY, IMouseMod* pMod)
 
 void IKnobControl::OnMouseWheel(int x, int y, IMouseMod* pMod, int d)
 {
+	mValue = mPlug->GetParam(mParamIdx)->GetNormalized();
+
 #ifdef PROTOOLS
   if (pMod->C)
   {
