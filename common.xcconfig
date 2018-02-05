@@ -13,8 +13,8 @@ COMPILER = com.apple.compilers.llvm.clang.1_0 // or this with xcode4+/10.7+
 //BASE_SDK = macosx10.8
 //BASE_SDK = macosx10.9
 //BASE_SDK = macosx10.10
-BASE_SDK = macosx10.11
-//BASE_SDK = macosx10.12
+//BASE_SDK = macosx10.11
+BASE_SDK = macosx
 
 CLANG_CXX_LANGUAGE_STANDARD = c++11
 CLANG_CXX_LIBRARY = libc++
