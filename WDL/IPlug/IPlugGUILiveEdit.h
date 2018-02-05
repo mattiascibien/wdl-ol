@@ -10,6 +10,7 @@
 
 /*
 E - Toggle edit mode
+I - Toggle info
 
 By Youlean
 */
@@ -21,7 +22,7 @@ By Youlean
 #define NEW_LAYER 0x00000003
 #define END 0x00000004
 
-#define DRAW_RECT(a) a
+#define DRAW_RECT(L, T, R, B) IRECT(L, T, R, B)
 
 using namespace std;
 
@@ -42,14 +43,11 @@ public:
 	{
 		clickedOnControl = ControlIndexContaining(x, y);
 
-		// Skip hidden controls is needed
-		if (!drawHiddenControl && mGraphics->GetControl(clickedOnControl)->IsHidden()) return;
+		if (clickedOnControl == -1) return;
 
-		if (clickedOnControl > -1)
-		{
-			mouseDownDrawRECT = selectedDrawRECT = *mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
-			mouseDownTargetRECT = selectedTargetRECT = *mGraphics->GetControl(clickedOnControl)->GetTargetRECT();
-		}
+		mouseDownDrawRECT = selectedDrawRECT = *mGraphics->GetControl(clickedOnControl)->GetDrawRECT();
+		mouseDownTargetRECT = selectedTargetRECT = *mGraphics->GetControl(clickedOnControl)->GetTargetRECT();
+
 
 		if (IsMouseOverHandle(x, y))
 		{
@@ -83,10 +81,14 @@ public:
 		{
 			mouseIsDragging = true;
 
-			if (mouseClickedOnResizeHandle) ResizeSelectedControl(x, y);
-
-			// Move controls, but don't move background
-			if (pMod->L && clickedOnControl > 0 && !mouseClickedOnResizeHandle) MoveSelectedControl(x, y);
+			if (mouseClickedOnResizeHandle)
+			{
+				ResizeSelectedControl(x, y);
+			}
+			else if (pMod->L && clickedOnControl > 0)
+			{
+				MoveSelectedControl(x, y); // Move controls, but don't move background
+			}
 
 			if (clickedOnControl > -1)
 			{
@@ -147,14 +149,16 @@ public:
 
 	int ControlIndexContaining(int x, int y)
 	{
-		for (int i = GetNumberOfControls() - 1; i > -1; i--)
+		for (int i = GetNumberOfControls() - 1; i > 0; i--)
 		{
+			// Skip hidden controls is needed
+			if (!drawHiddenControl && mGraphics->GetControl(i)->IsHidden()) continue;
+
 			// We are including resize handle here
 			IRECT controlRECT = *mGraphics->GetControl(i)->GetDrawRECT();
-			controlRECT.L = IPMIN(controlRECT.L, controlRECT.R - RESIZE_HANDLE_SIZE);
-			controlRECT.T = IPMIN(controlRECT.T, controlRECT.B - RESIZE_HANDLE_SIZE);
 
-			if (controlRECT.Contains(x, y)) return i;
+			if (controlRECT.Contains(x, y))
+				return i;
 		}
 
 		return -1;
@@ -411,29 +415,26 @@ public:
 	bool FindIfLineIsCommentedOut(string *code, size_t startPosition, size_t endPosition, size_t layerPosition)
 	{
 		// TODO: Add ability to check multi line comments
-		char nL;
-		nL = '\n';
 
-		size_t findPos = layerPosition;
-		size_t newLinePosition = endPosition;
+		size_t newLinePosition = layerPosition;
 
-		while (findPos > startPosition)
+		while (newLinePosition > startPosition)
 		{
-			char c = (*code)[findPos];
+			char c = (*code)[newLinePosition];
 
-			if (c == nL)
-			{
-				newLinePosition = findPos;
-				break;
-			}
+			if (c == '\n' || c == '\r') break;
 
-			findPos--;
+			newLinePosition--;
 		}
 
-		size_t commentPostion = code->find("//", newLinePosition);
+		string before_NEW_LAYER = code->substr(newLinePosition, layerPosition - newLinePosition);
 
-		if ((commentPostion > newLinePosition) && (commentPostion < layerPosition)) return true;
-		else return false;
+		size_t commentPostion = before_NEW_LAYER.find("//");
+
+		if (commentPostion != string::npos)
+			return true;
+		else 
+			return false;
 	}
 
 	void PrepareSourceCode()
@@ -484,13 +485,14 @@ public:
 			startIndex = layerStartPosition + findLayerStart.size();
 		}
 
-		for (size_t i = 0; i < layerProperties.size(); i++)
+		for (size_t i = 0; i < layerProperties.size();)
 		{
 			if (FindIfLineIsCommentedOut(&sourceCode, positionOfGUIEditStart, positionOfGUIEditEnd, layerProperties[i].layerStartPosition))
 			{
 				layerProperties.erase(layerProperties.begin() + i);
 				numberOfLayersInCode--;
 			}
+			else i++;
 		}
 	}
 
@@ -546,7 +548,7 @@ public:
 		layerText.erase(drawRectStartPosition, drawRectEndPosition - drawRectStartPosition);
 
 		WDL_String drawRectValues;
-		drawRectValues.SetFormatted(128, "IRECT(%i, %i, %i, %i)", selectedDrawRECT.L, selectedDrawRECT.T, selectedDrawRECT.R, selectedDrawRECT.B);
+		drawRectValues.SetFormatted(128, "%i, %i, %i, %i", selectedDrawRECT.L, selectedDrawRECT.T, selectedDrawRECT.R, selectedDrawRECT.B);
 
 		layerText.insert(drawRectStartPosition, drawRectValues.Get());
 
@@ -586,6 +588,9 @@ public:
 		if (key == 19 && editModeActive == false) editModeActive = true;
 		else if (key == 19) editModeActive = false;
 
+		if (key == 23 && showInfo == false) showInfo = true;
+		else if (key == 23) showInfo = false;
+
 		return true; 
 	}
 
@@ -606,7 +611,8 @@ public:
 		DrawRect();
 		DrawResizeHandles();
 		OutlineSelectedControl();
-		DrawSelectedControlInfo();
+
+		if (showInfo) DrawSelectedControlInfo();
 
 		DrawGrid();
 
@@ -622,13 +628,17 @@ public:
 		{
 			DrawErrorMessageText();
 		}
+        
 		return true;
 	}
 
 	bool IsDirty() { return true; }
 
 private:
-	bool editModeActive = false;
+	bool editModeActive = true;
+	bool showInfo = false;
+
+
 	IGraphics* mGraphics;
 	const char* pathToSource;
 
@@ -637,7 +647,7 @@ private:
 
 	IColor DRAW_RECT_COLOR = IColor(255, 255, 255, 255);
 	IColor TEXT_COLOR = IColor(255, 255, 255, 255);
-	IColor TEXT_BACKGROUND = IColor(122, 0, 0, 0);
+	IColor TEXT_BACKGROUND = IColor(150, 0, 0, 0);
 	int TEXT_SIZE = 15;
 	int RESIZE_HANDLE_SIZE = 10;
 
