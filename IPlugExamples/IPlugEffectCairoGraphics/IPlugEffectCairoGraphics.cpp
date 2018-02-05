@@ -44,7 +44,7 @@ void IPlugEffectCairoGraphics::Reset()
   IMutexLock lock(this);
 }
 
-void IPlugEffectCairoGraphics::OnParamChange(int paramIdx)
+void IPlugEffectCairoGraphics::OnParamChange(int paramIdx, ParamChangeFrom changeFrom)
 {
   IMutexLock lock(this);
 

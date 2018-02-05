@@ -10,7 +10,7 @@ public:
   ~IPlugEffect();
 
   void Reset();
-  void OnParamChange(int paramIdx);
+  void OnParamChange(int paramIdx, ParamChangeFrom changeFrom);
   void ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames);
 
 private:

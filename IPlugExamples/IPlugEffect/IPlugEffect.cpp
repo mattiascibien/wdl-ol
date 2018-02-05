@@ -33,7 +33,7 @@ IPlugEffect::IPlugEffect(IPlugInstanceInfo instanceInfo)
  
   IColor textColor = IColor(255, 0, 0, 0);
   IText textProps4(24, &textColor, "Arial", IText::kStyleNormal, IText::kAlignCenter, 0, IText::kQualityDefault);
-  pGraphics->AttachControl(new ITextControl(this, DRAW_RECT(IRECT(80, 44, 220, 84)), &textProps4, "Hello IPlug!"));
+  pGraphics->AttachControl(new ITextControl(this, DRAW_RECT(80, 44, 220, 84), &textProps4, "Hello IPlug!"));
   
   AttachGraphics(pGraphics);
 
@@ -65,7 +65,7 @@ void IPlugEffect::Reset()
   IMutexLock lock(this);
 }
 
-void IPlugEffect::OnParamChange(int paramIdx)
+void IPlugEffect::OnParamChange(int paramIdx, ParamChangeFrom changeFrom)
 {
   IMutexLock lock(this);
 
