@@ -108,6 +108,7 @@ IPlugVST3::IPlugVST3(IPlugInstanceInfo instanceInfo,
   , mScChans(plugScChans)
   , mSidechainActive(false)
 {
+    mPublicParams = nPublicParams;
   SetInputChannelConnections(0, NInChannels(), true);
   SetOutputChannelConnections(0, NOutChannels(), true);
   
@@ -225,7 +226,7 @@ tresult PLUGIN_API IPlugVST3::initialize (FUnknown* context)
       parameters.addParameter(bypass);
     }
 
-    for (int i=0; i<NParams(); i++)
+    for (int i=0; i<mPublicParams; i++)
     {
       IParam *p = GetParam(i);
 
@@ -257,6 +258,7 @@ tresult PLUGIN_API IPlugVST3::initialize (FUnknown* context)
 
   OnHostIdentified();
   RestorePreset(0);
+  OnParamReset();
   
   return result;
 }
@@ -372,7 +374,7 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
     //it is possible to get a finer resolution of control here by retrieving more values (points) from the queue
     //for now we just grab the last one
 
-    for (int32 i = 0; i < numParamsChanged; i++)
+    for (int32 i = 0; i < NParams() && numParamsChanged > 0; i++)
     {
       IParamValueQueue* paramQueue = paramChanges->getParameterData(i);
       if (paramQueue)
@@ -571,59 +573,59 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
   return kResultOk;
 }
 
-//tresult PLUGIN_API IPlugVST3::setState(IBStream* state)
-//{
-//  TRACE;
-//  WDL_MutexLock lock(&mMutex);
-//
-//  ByteChunk chunk;
-//  SerializeState(&chunk); // to get the size
-//
-//  if (chunk.Size() > 0)
-//  {
-//    state->read(chunk.GetBytes(), chunk.Size());
-//    UnserializeState(&chunk, 0);
-//    RedrawParamControls();
-//    return kResultOk;
-//  }
-//
-//  return kResultFalse;
-//}
-//
-//tresult PLUGIN_API IPlugVST3::getState(IBStream* state)
-//{
-//  TRACE;
-//  WDL_MutexLock lock(&mMutex);
-//
-//  ByteChunk chunk;
-//
-//  if (SerializeState(&chunk))
-//  {
-//    state->write(chunk.GetBytes(), chunk.Size());
-//    return kResultOk;
-//  }
-//
-//  return kResultFalse;
-//}
+tresult PLUGIN_API IPlugVST3::setState(IBStream* state)
+{
+  TRACE;
+  WDL_MutexLock lock(&mMutex);
 
-//tresult PLUGIN_API IPlugVST3::setComponentState(IBStream *state)
-//{
-//  TRACE;
-//  WDL_MutexLock lock(&mMutex);
-//
-//  ByteChunk chunk;
-//  SerializeState(&chunk); // to get the size
-//
-//  if (chunk.Size() > 0)
-//  {
-//    state->read(chunk.GetBytes(), chunk.Size());
-//    UnserializeState(&chunk, 0);
-//    RedrawParamControls();
-//    return kResultOk;
-//  }
-//
-//  return kResultFalse;
-//}
+  ByteChunk chunk;
+  SerializeState(&chunk); // to get the size
+
+  if (chunk.Size() > 0)
+  {
+    state->read(chunk.GetBytes(), chunk.Size());
+    UnserializeState(&chunk, 0);
+    RedrawParamControls();
+    return kResultOk;
+  }
+
+  return kResultFalse;
+}
+
+tresult PLUGIN_API IPlugVST3::getState(IBStream* state)
+{
+  TRACE;
+  WDL_MutexLock lock(&mMutex);
+
+  ByteChunk chunk;
+
+  if (SerializeState(&chunk))
+  {
+    state->write(chunk.GetBytes(), chunk.Size());
+    return kResultOk;
+  }
+
+  return kResultFalse;
+}
+
+tresult PLUGIN_API IPlugVST3::setComponentState(IBStream *state)
+{
+  TRACE;
+  WDL_MutexLock lock(&mMutex);
+
+  ByteChunk chunk;
+  SerializeState(&chunk); // to get the size
+
+  if (chunk.Size() > 0)
+  {
+    state->read(chunk.GetBytes(), chunk.Size());
+    UnserializeState(&chunk, 0);
+    RedrawParamControls();
+    return kResultOk;
+  }
+
+  return kResultFalse;
+}
 
 tresult PLUGIN_API IPlugVST3::canProcessSampleSize(int32 symbolicSampleSize)
 {
@@ -653,14 +655,24 @@ Steinberg::uint32 PLUGIN_API IPlugVST3::getLatencySamples ()
 
 IPlugView* PLUGIN_API IPlugVST3::createView (const char* name)
 {
-  if (name && strcmp (name, "editor") == 0)
-  {
-    IPlugVST3View* view = new IPlugVST3View(this);
-    addDependentView(view);
-    return view;
-  }
-
-  return 0;
+//  if (name && strcmp (name, "editor") == 0)
+//  {
+//    IPlugVST3View* view = new IPlugVST3View(this);
+//    addDependentView(view);
+//    return view;
+//  }
+//
+//  return 0;
+    
+    if (name && strcmp (name, "editor") == 0)
+    {
+        IPlugVST3View* view = new IPlugVST3View(this);
+        addDependentView(view);
+        plugView = view; //<-added
+        return view;
+    }
+    plugView = nullptr;//<-added, but don't know if needed
+    return 0;
 }
 
 tresult PLUGIN_API IPlugVST3::setEditorState(IBStream* state)
@@ -757,6 +769,8 @@ ParamValue PLUGIN_API IPlugVST3::plainParamToNormalized(ParamID tag, ParamValue 
 
 ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
 {
+    if (tag > NParams()) return 0.0;
+    
   if (tag == kBypassParam) 
   {
     return (ParamValue) mIsBypassed;
@@ -778,6 +792,8 @@ ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
 
 tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
 {
+    if (tag > NParams()) return kResultFalse;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -791,6 +807,8 @@ tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
 
 tresult PLUGIN_API IPlugVST3::getParamStringByValue(ParamID tag, ParamValue valueNormalized, String128 string)
 {
+    if (tag > NParams()) return kResultFalse;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -871,7 +889,7 @@ SpeakerArrangement IPlugVST3::getSpeakerArrForChans(int32 chans)
     case 3:
       return SpeakerArr::k30Music;
     case 4:
-      return SpeakerArr::kBFormat1stOrder;
+      return SpeakerArr::k40Music;
     case 5:
       return SpeakerArr::k50;
     case 6:
@@ -1192,4 +1210,7 @@ void IPlugVST3View::resize(int w, int h)
   ViewRect newSize = ViewRect(0, 0, w, h);
   mExpectingNewSize = true;
   plugFrame->resizeView(this, &newSize);
+    
+    IPlugView* pV = mPlug->GetPlugView(); //<-added
+    if (pV != nullptr) pV->onSize(&newSize); //<-added, but don't know if there needs to be a nullptr check
 }

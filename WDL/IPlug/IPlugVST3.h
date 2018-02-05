@@ -22,7 +22,6 @@ struct IPlugInstanceInfo
 class IPlugVST3View;
 
 class IPlugVST3 : public IPlugBase
-                , public Steinberg::Vst::IUnitInfo
                 , public Steinberg::Vst::SingleComponentEffect
 {
 public:
@@ -52,9 +51,9 @@ public:
   Steinberg::tresult PLUGIN_API setActive(Steinberg::TBool state) override;
   Steinberg::tresult PLUGIN_API setupProcessing (Steinberg::Vst::ProcessSetup& newSetup) override;
   Steinberg::tresult PLUGIN_API process(Steinberg::Vst::ProcessData& data) override;
-//  Steinberg::tresult PLUGIN_API setState(IBStream* state) override;
-//  Steinberg::tresult PLUGIN_API getState(IBStream* state) override;
-//  Steinberg::tresult PLUGIN_API setComponentState(IBStream *state) override;
+  Steinberg::tresult PLUGIN_API setState(Steinberg::IBStream* state) override;
+  Steinberg::tresult PLUGIN_API getState(Steinberg::IBStream* state) override;
+  Steinberg::tresult PLUGIN_API setComponentState(Steinberg::IBStream *state) override;
   Steinberg::tresult PLUGIN_API canProcessSampleSize(Steinberg::int32 symbolicSampleSize) override;
   Steinberg::uint32 PLUGIN_API getLatencySamples () override;
   Steinberg::uint32 PLUGIN_API getTailSamples() override { return GetTailSize(); }
@@ -82,6 +81,7 @@ public:
   virtual Steinberg::tresult PLUGIN_API selectUnit(Steinberg::Vst::UnitID unitId) override {return Steinberg::kNotImplemented ;}
   virtual Steinberg::tresult PLUGIN_API getUnitByBus(Steinberg::Vst::MediaType type, Steinberg::Vst::BusDirection dir, Steinberg::int32 busIndex, Steinberg::int32 channel, Steinberg::Vst::UnitID& unitId) override {return Steinberg::kNotImplemented;}
   virtual Steinberg::tresult PLUGIN_API setUnitProgramData(Steinberg::int32 listOrUnitId, Steinberg::int32 programIndex, Steinberg::IBStream* data) override {return Steinberg::kNotImplemented;}
+  Steinberg::IPlugView* GetPlugView(){return plugView;}
   
   //IPlugBase
   virtual void BeginInformHostOfParamChange(int idx) override;
@@ -135,7 +135,9 @@ private:
   Steinberg::Vst::AudioBus* getAudioInput(Steinberg::int32 index);
   Steinberg::Vst::AudioBus* getAudioOutput(Steinberg::int32 index);
   Steinberg::Vst::SpeakerArrangement getSpeakerArrForChans(Steinberg::int32 chans);
-
+    Steinberg::IPlugView* plugView;
+   
+    int mPublicParams = 0;
   int mScChans;
   bool mSidechainActive;
 //  IMidiQueue mMidiOutputQueue;
