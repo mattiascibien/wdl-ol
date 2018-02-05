@@ -143,7 +143,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>
       </AdditionalOptions>
     </ClCompile>
@@ -161,7 +161,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -178,9 +178,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;..\..\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -199,7 +199,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -219,7 +219,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>TRACER_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -238,7 +238,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>TRACER_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\YCAIRO\Cairo_Graphics\projects\cairo\src\;..\..\YCAIRO;..\..\YCAIRO\Cairo_Graphics\cairo\src\;..\..\YCAIRO\Cairo_Graphics\freetype\include\;D:\IPlug-Youlean\YCAIRO\Cairo_Graphics\glew\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -260,6 +260,7 @@
     <ClCompile Include="IGraphicsWin.cpp" />
     <ClCompile Include="IParam.cpp" />
     <ClCompile Include="IPlugBase.cpp" />
+    <ClCompile Include="IPlugConfigFile.cpp" />
     <ClCompile Include="IPlugGUILiveEdit.cpp" />
     <ClCompile Include="IPlugGUIResize.cpp" />
     <ClCompile Include="IPlugStructs.cpp" />
@@ -277,12 +278,14 @@
     <ClInclude Include="IGraphicsWin.h" />
     <ClInclude Include="IParam.h" />
     <ClInclude Include="IPlugBase.h" />
+    <ClInclude Include="IPlugConfigFile.h" />
     <ClInclude Include="IPlugGUILiveEdit.h" />
     <ClInclude Include="IPlugGUIResize.h" />
     <ClInclude Include="IPlugOSDetect.h" />
     <ClInclude Include="IPlugStructs.h" />
     <ClInclude Include="IPopupMenu.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="UTF_Helper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
