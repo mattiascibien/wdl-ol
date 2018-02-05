@@ -154,6 +154,7 @@ IGraphicsMac::IGraphicsMac(IPlugBase* pPlug, int w, int h, int refreshFPS)
 mGraphicsCarbon(0),
 #endif
 mGraphicsCocoa(0),
+mPlugBaseHostDetect(pPlug),
 mColorSpace(NULL)
 {
     NSApplicationLoad();
@@ -364,11 +365,17 @@ void* IGraphicsMac::OpenCocoaWindow(void* pParentView)
     
     if (pParentView) // Cocoa VST host.
     {
+        cocoaVstHost = pParentView;
         [(NSView*) pParentView addSubview: (IGRAPHICS_COCOA*) mGraphicsCocoa];
+    }
+    else
+    {
+        cocoaVstHost = mGraphicsCocoa;
     }
 
     UpdateTooltips();
     
+    IGraphics::OnGUIOpen();
     return mGraphicsCocoa;
 }
 
@@ -380,6 +387,8 @@ void* IGraphicsMac::OpenCarbonWindow(void* pParentWnd, void* pParentControl, sho
     WindowRef pWnd = (WindowRef) pParentWnd;
     ControlRef pControl = (ControlRef) pParentControl;
     mGraphicsCarbon = new IGraphicsCarbon(this, pWnd, pControl, leftOffset, topOffset);
+    
+    IGraphics::OnGUIOpen();
     return mGraphicsCarbon->GetView();
 }
 #endif
@@ -447,12 +456,16 @@ void IGraphicsMac::CloseWindow()
 #ifndef IPLUG_NO_CARBON_SUPPORT
     if (mGraphicsCarbon)
     {
+        IGraphics::OnGUIClose();
+        
         DELETE_NULL(mGraphicsCarbon);
     }
     else
 #endif
         if (mGraphicsCocoa)
         {
+            IGraphics::OnGUIClose();
+            
             IGRAPHICS_COCOA* graphicscocoa = (IGRAPHICS_COCOA*)mGraphicsCocoa;
             [graphicscocoa removeAllToolTips];
             [graphicscocoa killTimer];
@@ -475,8 +488,44 @@ bool IGraphicsMac::WindowIsOpen()
 #endif
 }
 
-void IGraphicsMac::Resize(int w, int h)
+void IGraphicsMac::ResizePluginView(int w, int h, bool resizeSuperView)
 {
+    NSView *view = (IGRAPHICS_COCOA*) mGraphicsCocoa;
+    NSSize size = { static_cast<CGFloat>(w), static_cast<CGFloat>(h) };
+
+    [NSAnimationContext beginGrouping]; // Prevent animated resizing
+    [[NSAnimationContext currentContext] setDuration:0.0];
+    [view setFrameSize: size ];
+    [NSAnimationContext endGrouping];
+    
+//    NSPoint origin;
+//    origin.x = 0;
+//    origin.y = h;
+//    
+//    [view setFrameOrigin: origin ];
+    
+    if (resizeSuperView) [view.superview setFrameSize: size ];
+}
+
+void IGraphicsMac::ResizeWindowContainingPlugin(int w, int h)
+{
+    NSWindow *window = [(IGRAPHICS_COCOA*) mGraphicsCocoa window];
+    
+    NSRect frame = [window frame];
+    
+    CGFloat wd = w - frame.size.width;
+    CGFloat hd = h - frame.size.height;
+    
+    frame.size.width += wd;
+    
+    frame.origin.y -= hd;
+    frame.size.height += hd;
+    
+    [window setFrame : frame display: YES animate: NO];
+}
+
+void IGraphicsMac::Resize(int w, int h)
+{    
     if (w == Width() && h == Height()) return;
     
     IGraphics::Resize(w, h);
@@ -497,13 +546,34 @@ void IGraphicsMac::Resize(int w, int h)
                 dH /= GetSystemGUIScaleRatio();
             }
   
-            [NSAnimationContext beginGrouping]; // Prevent animated resizing
-            [[NSAnimationContext currentContext] setDuration:0.0f];
+//            // Get host and resize plugin
+//            EHost host = mPlugBaseHostDetect->GetHost();
+//            
+//            if (host == EHost::kHostAbletonLive)
+//            {
+//                ResizeWindowContainingPlugin(dW, dH);
+//                ResizePluginView(dW, dH);
+//            }
+//            else if (host == EHost::kHostStudioOne) // Doesn't work properly if plugin window is smaller than minimum window size
+//            {
+//                ResizePluginView(dW, dH, true);
+//            }
+//            else if (host == EHost::kHostFL)
+//            {
+//                ResizeWindowContainingPlugin(dW, dH);
+//                ResizePluginView(dW, dH);
+//            }
+//            else if (host == EHost::kHostArdour) // Height doesn't resize properly. Plugin view jumps for some reason.
+//            {
+//                ResizePluginView(dW, dH, true);
+//            }
+//            else
+//            {
+//                ResizePluginView(dW, dH);
+//            }
             
-            NSSize size = { static_cast<CGFloat>(dW), static_cast<CGFloat>(dH) };
-            [(IGRAPHICS_COCOA*) mGraphicsCocoa setFrameSize: size ];
             
-            [NSAnimationContext endGrouping];
+            ResizePluginView(dW, dH);
         }
 }
 
