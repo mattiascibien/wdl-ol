@@ -347,7 +347,7 @@ tresult PLUGIN_API IPlugVST3::setupProcessing (ProcessSetup& newSetup)
   if ((newSetup.symbolicSampleSize != kSample32) && (newSetup.symbolicSampleSize != kSample64)) return kResultFalse;
 
   mSampleRate = newSetup.sampleRate;
-  //mIsBypassed = false;
+  mIsBypassed = false;
   IPlugBase::SetBlockSize(newSetup.maxSamplesPerBlock);
   Reset();
 
@@ -367,14 +367,14 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
 
   //process parameters
   IParameterChanges* paramChanges = data.inputParameterChanges;
-  if (paramChanges)
+  if ( paramChanges)
   {
     int32 numParamsChanged = paramChanges->getParameterCount();
 
     //it is possible to get a finer resolution of control here by retrieving more values (points) from the queue
     //for now we just grab the last one
 
-    for (int32 i = 0; i < NParams() > 0 && numParamsChanged > 0; i++)
+    for (int32 i = 0; i < NParams() && numParamsChanged > 0; i++)
     {
       IParamValueQueue* paramQueue = paramChanges->getParameterData(i);
       if (paramQueue)
@@ -575,37 +575,82 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
 
 tresult PLUGIN_API IPlugVST3::setState(IBStream* state)
 {
-  TRACE;
-  WDL_MutexLock lock(&mMutex);
+	TRACE;
+	WDL_MutexLock lock(&mMutex);
 
-  ByteChunk chunk;
-  SerializeState(&chunk); // to get the size
+	ByteChunk chunk;
 
-  if (chunk.Size() > 0)
-  {
-    state->read(chunk.GetBytes(), chunk.Size());
-    UnserializeState(&chunk, 0);
-    RedrawParamControls();
-    return kResultOk;
-  }
+	// Get the chunk size
+	int chunkSize;
+	state->read(&chunkSize, sizeof(int));
 
-  return kResultFalse;
+	if (chunkSize > 0)
+	{
+		// Resize IPlug ByteChunk to fit all new information
+		chunk.Resize(chunkSize);
+
+		state->read(chunk.GetBytes(), chunk.Size());
+		UnserializeState(&chunk, 0);
+
+		int32 savedBypass = 0;
+
+		if (state->read(&savedBypass, sizeof(int32)) != kResultOk)
+		{
+			return kResultFalse;
+		}
+
+		mIsBypassed = (bool)savedBypass;
+
+		RedrawParamControls();
+		return kResultOk;
+	}
+
+	return kResultFalse;
 }
 
 tresult PLUGIN_API IPlugVST3::getState(IBStream* state)
 {
-  TRACE;
-  WDL_MutexLock lock(&mMutex);
+	TRACE;
+	WDL_MutexLock lock(&mMutex);
 
-  ByteChunk chunk;
+	ByteChunk chunk;
 
-  if (SerializeState(&chunk))
-  {
-    state->write(chunk.GetBytes(), chunk.Size());
-    return kResultOk;
-  }
+	int chunkSize = 0;
+	int64 stateStartPosition, stateEndPosition;
 
-  return kResultFalse;
+	// Get the position at the start
+	state->tell(&stateStartPosition);
+
+	// Leave room to write chunk size at the beginning. 
+	// Write dummy chunk size that will be overwritten at the end.
+	state->write(&chunkSize, sizeof(int));
+
+	if (SerializeState(&chunk))
+	{
+		state->write(chunk.GetBytes(), chunk.Size());
+	}
+	else
+	{
+		return kResultFalse;
+	}
+
+	// Get the position at the end
+	state->tell(&stateEndPosition);
+
+	// Move to beginning to write the chunk size
+	state->seek(stateStartPosition, IBStream::IStreamSeekMode::kIBSeekSet);
+
+	// Write chunk size at the beginning
+	chunkSize = chunk.Size();
+	state->write(&chunkSize, sizeof(int));
+
+	// Return position to the end
+	state->seek(stateEndPosition, IBStream::IStreamSeekMode::kIBSeekSet);
+
+	int32 toSaveBypass = mIsBypassed ? 1 : 0;
+	state->write(&toSaveBypass, sizeof(int32));
+
+	return kResultOk;
 }
 
 tresult PLUGIN_API IPlugVST3::setComponentState(IBStream *state)
