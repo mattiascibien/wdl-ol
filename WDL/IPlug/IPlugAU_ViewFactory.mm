@@ -2,6 +2,8 @@
 #include "../IPlug/IGraphicsCocoa.h"
 #include "resource.h"   // This is your plugin's resource.h.
 
+static const AudioUnitPropertyID kIPlugObjectPropertyID = UINT32_MAX-100;
+
 @interface VIEW_CLASS : NSObject <AUCocoaUIBase>
 {
   IPlugBase* mPlug;
@@ -24,17 +26,25 @@
 - (NSView*) uiViewForAudioUnit: (AudioUnit) audioUnit withSize: (NSSize) preferredSize
 {
   TRACE;
-  mPlug = (IPlugBase*) GetComponentInstanceStorage(audioUnit);
-  if (mPlug) {
-    IGraphics* pGraphics = mPlug->GetGUI();   
-    if (pGraphics) {
-      IGRAPHICS_COCOA* pView = (IGRAPHICS_COCOA*) pGraphics->OpenWindow(0);
-      mPlug->OnGUIOpen();
-	  mPlug->ResizeAtGUIOpen(pGraphics);
-      return pView;
+
+  void* pointers[1];
+  UInt32 propertySize = sizeof (pointers);
+  
+  if (AudioUnitGetProperty (audioUnit, kIPlugObjectPropertyID,
+                            kAudioUnitScope_Global, 0, pointers, &propertySize) == noErr)
+  {
+    mPlug = (IPlugBase*) pointers[0];
+    if (mPlug) {
+      IGraphics* pGraphics = mPlug->GetGUI();
+      if (pGraphics) {
+        IGRAPHICS_COCOA* pView = (IGRAPHICS_COCOA*) pGraphics->OpenWindow(0);
+        mPlug->OnGUIOpen();
+        mPlug->ResizeAtGUIOpen(pGraphics);
+        return pView;
+      }
     }
   }
-  return 0; 
+  return 0;
 }
 
 - (unsigned) interfaceVersion
@@ -48,5 +58,3 @@
 }
 
 @end
-
-
