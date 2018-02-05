@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\pluginterfaces\base\conststringtable.h" />
+    <ClInclude Include="..\..\pluginterfaces\base\doc.h" />
     <ClInclude Include="..\..\pluginterfaces\base\falignpop.h" />
     <ClInclude Include="..\..\pluginterfaces\base\falignpush.h" />
     <ClInclude Include="..\..\pluginterfaces\base\fplatform.h" />
@@ -66,25 +67,27 @@
     <ClInclude Include="..\..\pluginterfaces\vst\vstpresetkeys.h" />
     <ClInclude Include="..\..\pluginterfaces\vst\vstpshpack4.h" />
     <ClInclude Include="..\..\pluginterfaces\vst\vsttypes.h" />
+    <ClInclude Include="..\..\public.sdk\source\common\memorystream.h" />
     <ClInclude Include="..\..\public.sdk\source\common\pluginview.h" />
     <ClInclude Include="..\..\public.sdk\source\main\pluginfactoryvst3.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstaudioeffect.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstaudioprocessoralgo.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstbus.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstbypassprocessor.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstcomponent.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstcomponentbase.h" />
-    <ClInclude Include="..\..\public.sdk\source\vst\vsteditcontroller.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstnoteexpressiontypes.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstparameters.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstpresetfile.h" />
     <ClInclude Include="..\..\public.sdk\source\vst\vstrepresentation.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstsinglecomponenteffect.h" />
+    <ClInclude Include="..\..\public.sdk\source\vst\vstspeakerarray.h" />
     <ClInclude Include="..\source\classfactoryhelpers.h" />
     <ClInclude Include="..\source\fbuffer.h" />
     <ClInclude Include="..\source\fcleanup.h" />
     <ClInclude Include="..\source\fcommandline.h" />
     <ClInclude Include="..\source\fdebug.h" />
     <ClInclude Include="..\source\fdynlib.h" />
-    <ClInclude Include="..\source\flock.h" />
     <ClInclude Include="..\source\fobject.h" />
     <ClInclude Include="..\source\fstdmethods.h" />
     <ClInclude Include="..\source\fstreamer.h" />
@@ -92,34 +95,40 @@
     <ClInclude Include="..\source\hexbinary.h" />
     <ClInclude Include="..\source\timer.h" />
     <ClInclude Include="..\source\updatehandler.h" />
+    <ClInclude Include="..\thread\include\fcondition.h" />
+    <ClInclude Include="..\thread\include\flock.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\pluginterfaces\base\conststringtable.cpp" />
+    <ClCompile Include="..\..\pluginterfaces\base\coreiids.cpp" />
     <ClCompile Include="..\..\pluginterfaces\base\funknown.cpp" />
     <ClCompile Include="..\..\pluginterfaces\base\ustring.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\common\memorystream.cpp" />
     <ClCompile Include="..\..\public.sdk\source\common\pluginview.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\main\dllmain.cpp" />
     <ClCompile Include="..\..\public.sdk\source\main\pluginfactoryvst3.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstaudioeffect.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstbus.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstbypassprocessor.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstcomponent.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstcomponentbase.cpp" />
-    <ClCompile Include="..\..\public.sdk\source\vst\vsteditcontroller.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstinitiids.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstnoteexpressiontypes.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstparameters.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstpresetfile.cpp" />
     <ClCompile Include="..\..\public.sdk\source\vst\vstrepresentation.cpp" />
+    <ClCompile Include="..\..\public.sdk\source\vst\vstsinglecomponenteffect.cpp" />
     <ClCompile Include="..\source\baseiids.cpp" />
     <ClCompile Include="..\source\fbuffer.cpp" />
     <ClCompile Include="..\source\fdebug.cpp" />
     <ClCompile Include="..\source\fdynlib.cpp" />
-    <ClCompile Include="..\source\flock.cpp" />
     <ClCompile Include="..\source\fobject.cpp" />
     <ClCompile Include="..\source\fstreamer.cpp" />
     <ClCompile Include="..\source\fstring.cpp" />
     <ClCompile Include="..\source\timer.cpp" />
     <ClCompile Include="..\source\updatehandler.cpp" />
+    <ClCompile Include="..\thread\source\fcondition.cpp" />
+    <ClCompile Include="..\thread\source\flock.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>base</ProjectName>
