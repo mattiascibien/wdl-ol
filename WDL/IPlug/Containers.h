@@ -9,11 +9,13 @@
   #pragma warning(disable:4018 4267)	// size_t/signed/unsigned mismatch..
   #pragma warning(disable:4800)		// if (pointer) ...
   #pragma warning(disable:4805)		// Compare bool and BOOL.
+#define NOMINMAX // Prevent windows min/max
 #endif
 
 #include <math.h>
 #include <string.h>
 #include <vector>
+#include <deque>
 #include <stdio.h>
 #include <assert.h>
 #include "../mutex.h"
@@ -236,7 +238,7 @@ public:
   }
 
   template <typename T>
-  inline int PutStdVector(const std::vector<T> *data)
+  inline int PutStdContainer(const T *data)
   {
 	  int numItems = data->size();
 	  Put(&numItems);
@@ -246,7 +248,7 @@ public:
 	  	  
 	  for (int i = 0; i < numItems; i++)
 	  {
-		  T value = (*data)[i];
+		  typename T::value_type value = (*data)[i];
 		  Put(&value);
 	  }
 
@@ -254,7 +256,7 @@ public:
   }
 
   template <typename T>
-  inline int GetStdVector(std::vector<T> *data, int startPos)
+  inline int GetStdContainer(T *data, int startPos)
   {
 	  int size;
 	  startPos = Get(&size, startPos);
@@ -265,7 +267,7 @@ public:
 
 		  for (int i = 0; i < size; i++)
 		  {
-			  T value;
+			  typename T::value_type value;
 			  startPos = Get(&value, startPos);
 
 			  (*data)[i] = value;
