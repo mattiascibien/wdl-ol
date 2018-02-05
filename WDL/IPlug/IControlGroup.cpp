@@ -36,12 +36,12 @@ IControl* IControlGroup::AddControl(IControl* pControl)
 	{
 		for (int i = 0; i < mPlug->GetGUIResize()->GetViewModeSize(); i++)
 		{
-			*originalGroupRECTs.Get(i) = originalGroupRECTs.Get(i)->Union(pControl->GetNonScaledDrawRECT());
+			groupRECT = *originalGroupRECTs.Get(i) = originalGroupRECTs.Get(i)->Union(pControl->GetNonScaledDrawRECT());
 		}
 	}
 	else
 	{
-		*originalGroupRECTs.Get(0) = originalGroupRECTs.Get(0)->Union(pControl->GetNonScaledDrawRECT());
+		groupRECT = *originalGroupRECTs.Get(0) = originalGroupRECTs.Get(0)->Union(pControl->GetNonScaledDrawRECT());
 	}
 
 	return pControl;
