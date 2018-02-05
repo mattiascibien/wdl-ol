@@ -87,7 +87,7 @@ public:
   virtual void BeginInformHostOfParamChange(int idx) override;
   virtual void InformHostOfParamChange(int idx, double normalizedValue) override;
   virtual void EndInformHostOfParamChange(int idx) override;
-  virtual void InformHostOfProgramChange() override;;
+  virtual void InformHostOfProgramChange() override;
   
   virtual bool IsRenderingOffline() override { return (processSetup.processMode == Steinberg::Vst::kOffline); }
 
