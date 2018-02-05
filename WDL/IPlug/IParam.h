@@ -34,7 +34,13 @@ public:
   void InitInt(const char* name, int defaultVal, int minVal, int maxVal, const char* label = "", const char* group = "");
   void InitDouble(const char* name, double defaultVal, double minVal, double maxVal, double step, const char* label = "", const char* group = "", double shape = 1.);
 
-  void Set(double value) { mValue = BOUNDED(value, mMin, mMax); }
+  void Set(double value, bool setAsDefault = false) 
+  { 
+	  if (setAsDefault)
+		  mDefault = mValue = BOUNDED(value, mMin, mMax);
+	  else
+		  mValue = BOUNDED(value, mMin, mMax);
+  }
   void SetDisplayText(int value, const char* text);
   void SetCanAutomate(bool canAutomate) { mCanAutomate = canAutomate; }
   // The higher the shape, the more resolution around host value zero.
