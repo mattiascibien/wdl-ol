@@ -177,7 +177,7 @@ public:
 	void ycairo_drop_shadow_set_distance(cairo_t *cr, double distance);
 	void ycairo_drop_shadow_set_angle(cairo_t *cr, double angle);
 	
-	// Use downsample to improve shadow speed. Ussualy going below 4x (8x with bigger radius) doesn't give you more performance improvement.
+	// Use downsample to improve shadow speed. Usually going below 4x (8x with bigger radius) doesn't give you more performance improvement.
 	// If you want to go below 4x use fast shadow instead but you won't get much more performance improvement (~20%).
 	// Using radius of size 2, 4, 8, 16, 32, 64, 128, 256, 512 and 1024 will improve performance by ~(25% / downsample).
 	void ycairo_drop_shadow_fill(cairo_t *cr, double downsample = 4);
@@ -238,9 +238,12 @@ public:
 	void ycairo_initialize_font_face(cairo_t *cr);
 	void ycairo_destroy_font_face();
 
-	void ycairo_set_text(cairo_t *cr, const char *text);
+	void ycairo_set_text(cairo_t *cr, const string &text);
+	void ycairo_set_multiline_text(cairo_t *cr, const string &text);
 
 	void ycairo_set_text_position(cairo_t *cr, DRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
+
+	void ycairo_set_multiline_text_position(cairo_t *cr, DRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_LEFT, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_TOP);
 
 	void ycairo_calculate_extents(cairo_t *cr);
 
@@ -250,13 +253,32 @@ public:
 	void ycairo_show_text(cairo_t *cr, const char *text, double size, IColor color, IRECT rect,
 		ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
 
+	void ycairo_show_multiline_text(cairo_t * cr, const string &text, double size, IColor color, IRECT rect, ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_LEFT, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_TOP);
+
+	void ycairo_show_text(cairo_t *cr, const string &text, double size, IColor color, IRECT rect,
+		ycairo_text_w_aligement w_aligement = YCAIRO_TEXT_W_ALIGN_CENTER, ycairo_text_h_aligement h_aligement = YCAIRO_TEXT_H_ALIGN_CENTER);
+
+	void ycairo_show_multiline_text(cairo_t * cr);
+
 	void ycairo_show_text(cairo_t *cr);
+	
 
 private:
-	const char *draw_text = "";
-	IRECT text_rect;
+	void CreateTextLinesVector(cairo_t *cr, DRECT rect);
+
+		vector<double> multiLinecharSize;
+	vector<int> charType;
+
+	string single_line_text = "";
+	string multi_line_text = "";
+	vector<string> text_lines;
+
+	DRECT text_rect;
+	DRECT multiline_text_rect;
 	ycairo_text_w_aligement width_aligement;
 	ycairo_text_h_aligement height_aligement;
+	ycairo_text_w_aligement multiline_width_aligement;
+	ycairo_text_h_aligement multiline_height_aligement;
 
 	cairo_font_face_t *current_font_face;
 	cairo_text_extents_t *text_extents, *ext_height;

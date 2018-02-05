@@ -281,7 +281,7 @@ void ycairo_helper::ycairo_reset_clip_to(cairo_t *cr, IRECT rect)
 
 void ycairo_helper::ycairo_rounded_rectangle(cairo_t * cr, double x, double y, double width, double height, double corner)
 {
-	cairo_new_sub_path(cr);
+	cairo_new_path(cr);
 	cairo_arc(cr, x + width - corner, y + corner, corner, -1.5707963267948966192313216916398, 0);
 	cairo_arc(cr, x + width - corner, y + height - corner, corner, 0, 1.5707963267948966192313216916398);
 	cairo_arc(cr, x + corner, y + height - corner, corner, 1.5707963267948966192313216916398, 3.1415926535897932384626433832796);
@@ -475,6 +475,11 @@ void ycairo_gui::ycairo_prepare_draw()
 	//Getting surface
 	surface = ycairo->get_surface();
 	cr = ycairo->get_cr();
+
+	// Set anti aliasing method
+	//cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE); // 10x faster than GOOD
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_FAST); // 3x faster than GOOD
+	//cairo_set_antialias(cr, CAIRO_ANTIALIAS_GOOD);
 	
 	//Adding new path and new clip region
 	cairo_new_path(cr);
@@ -614,9 +619,14 @@ void ycairo_text::ycairo_destroy_font_face()
 	cairo_font_face_destroy(current_font_face);
 }
 
-void ycairo_text::ycairo_set_text(cairo_t * cr, const char * text)
+void ycairo_text::ycairo_set_text(cairo_t * cr, const string &text)
 {
-	draw_text = text;
+	single_line_text = text;
+}
+
+void ycairo_text::ycairo_set_multiline_text(cairo_t * cr, const string &text)
+{
+	multi_line_text = text;
 }
 
 void ycairo_text::ycairo_set_text_position(cairo_t * cr, DRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
@@ -669,10 +679,20 @@ void ycairo_text::ycairo_set_text_position(cairo_t * cr, DRECT rect, ycairo_text
 	cairo_move_to(cr, x, y);
 }
 
+void ycairo_text::ycairo_set_multiline_text_position(cairo_t * cr, DRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
+{
+	multiline_width_aligement = w_aligement;
+	multiline_height_aligement = h_aligement;
+
+	multiline_text_rect = rect;
+
+	CreateTextLinesVector(cr, rect);
+}
+
 void ycairo_text::ycairo_calculate_extents(cairo_t * cr)
 {
 	cairo_font_extents(cr, font_extents);
-	cairo_text_extents(cr, draw_text, text_extents);
+	cairo_text_extents(cr, single_line_text.c_str(), text_extents);
 }
 
 cairo_font_extents_t * ycairo_text::ycairo_get_font_extents(cairo_t * cr)
@@ -686,7 +706,6 @@ cairo_text_extents_t * ycairo_text::ycairo_get_text_extents(cairo_t * cr)
 }
 
 void ycairo_text::ycairo_show_text(cairo_t * cr, const char * text, double size, IColor color, IRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
-
 {
 	cairo_set_source_rgba(cr, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0);
 
@@ -708,9 +727,187 @@ void ycairo_text::ycairo_show_text(cairo_t * cr, const char * text, double size,
 	ycairo_destroy_font_face();
 }
 
+void ycairo_text::ycairo_show_multiline_text(cairo_t * cr, const string &text, double size, IColor color, IRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
+{
+	cairo_set_source_rgba(cr, color.R / 255.0, color.G / 255.0, color.B / 255.0, color.A / 255.0);
+
+	ycairo_initialize_font_face(cr);
+	cairo_set_font_size(cr, size);
+	ycairo_set_multiline_text(cr, text);
+	ycairo_set_multiline_text_position(cr, rect, w_aligement, h_aligement);
+	ycairo_show_multiline_text(cr);
+
+	ycairo_destroy_font_face();
+}
+
+void ycairo_text::ycairo_show_text(cairo_t * cr, const string &text, double size, IColor color, IRECT rect, ycairo_text_w_aligement w_aligement, ycairo_text_h_aligement h_aligement)
+{
+	ycairo_show_text(cr, text.c_str(), size, color, rect, w_aligement, h_aligement);
+}
+
+void ycairo_text::ycairo_show_multiline_text(cairo_t * cr)
+{
+	cairo_font_extents(cr, font_extents);
+
+	double fontHeight = font_extents->height;
+	int lineNumber = text_lines.size();
+
+	switch (multiline_height_aligement)
+	{
+	case YCAIRO_TEXT_H_ALIGN_TOP:
+	{
+		for (int i = 0; i < lineNumber; i++)
+		{
+			DRECT textRect = multiline_text_rect;
+			textRect.B = multiline_text_rect.T + (i + 1) * fontHeight;
+			textRect.T = textRect.B - fontHeight;
+			
+			ycairo_set_text(cr, text_lines[i]);
+			ycairo_set_text_position(cr, textRect, multiline_width_aligement, ycairo_text_h_aligement::YCAIRO_TEXT_H_ALIGN_CENTER);
+			cairo_show_text(cr, text_lines[i].c_str());
+		}
+		break;
+	}
+	case YCAIRO_TEXT_H_ALIGN_BOTTOM:
+	{
+		for (int i = 0; i < lineNumber; i++)
+		{
+			int indexInv = (lineNumber - 1) - i;
+
+			DRECT textRect = multiline_text_rect;
+			textRect.T = multiline_text_rect.B - (i + 1) * fontHeight;
+			textRect.B = textRect.T + fontHeight;
+			
+			ycairo_set_text(cr, text_lines[indexInv]);
+			ycairo_set_text_position(cr, textRect, multiline_width_aligement, ycairo_text_h_aligement::YCAIRO_TEXT_H_ALIGN_CENTER);
+			cairo_show_text(cr, text_lines[indexInv].c_str());
+		}
+		break;
+	}
+	case YCAIRO_TEXT_H_ALIGN_CENTER:
+	{
+		for (int i = 0; i < lineNumber; i++)
+		{
+			double top = (multiline_text_rect.H() - lineNumber * fontHeight) / 2 + multiline_text_rect.T;
+
+			DRECT textRect = multiline_text_rect;
+			textRect.B = top + (i + 1) * fontHeight;
+			textRect.T = textRect.B - fontHeight;
+
+			ycairo_set_text(cr, text_lines[i]);
+			ycairo_set_text_position(cr, textRect, multiline_width_aligement, ycairo_text_h_aligement::YCAIRO_TEXT_H_ALIGN_CENTER);
+			cairo_show_text(cr, text_lines[i].c_str());
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void ycairo_text::ycairo_show_text(cairo_t * cr)
 {
-	cairo_show_text(cr, draw_text);
+	cairo_show_text(cr, single_line_text.c_str());
+}
+
+void ycairo_text::CreateTextLinesVector(cairo_t * cr, DRECT rect)
+{
+	text_lines.resize(0);
+	text_lines.push_back(string());
+
+	double stringSize = 0;
+
+	string tmpString;
+	double tmpStringSize = 0;
+
+	// Find space or new line or tab
+	for (int i = 0; i < multi_line_text.size(); i++)
+	{
+		string c;
+		c.push_back(multi_line_text[i]);
+
+		if (c == " ")
+		{
+			if (stringSize + tmpStringSize > rect.W())
+			{
+				text_lines.push_back(string());
+				stringSize = 0;
+			}
+
+			text_lines.back().append(tmpString);
+			stringSize += tmpStringSize;
+
+			tmpString.resize(0);
+			tmpStringSize = 0;
+
+			cairo_text_extents(cr, c.c_str(), text_extents);
+			stringSize += text_extents->x_advance;
+
+			if (stringSize <= rect.W())
+				text_lines.back().append(" ");
+		}
+		else if (c == "\t")
+		{
+			if (stringSize + tmpStringSize > rect.W())
+			{
+				text_lines.push_back(string());
+				stringSize = 0;
+			}
+
+			text_lines.back().append(tmpString);
+			stringSize += tmpStringSize;
+
+			tmpString.resize(0);
+			tmpStringSize = 0;
+
+			cairo_text_extents(cr, "    ", text_extents);
+			stringSize += text_extents->x_advance;
+
+			if (stringSize <= rect.W())
+				text_lines.back().append("    ");
+		}
+		else if (c == "\n")
+		{
+			if (stringSize + tmpStringSize > rect.W())
+			{
+				text_lines.push_back(string());
+				stringSize = 0;
+			}
+
+			text_lines.back().append(tmpString);
+			stringSize += tmpStringSize;
+
+			tmpString.resize(0);
+			tmpStringSize = 0;
+
+			text_lines.push_back(string());
+			stringSize = 0;
+		}
+		else
+		{
+			if (stringSize > rect.W())
+			{
+				text_lines.push_back(string());
+				stringSize = 0;
+			}
+
+			cairo_text_extents(cr, c.c_str(), text_extents);
+			tmpStringSize += text_extents->x_advance;
+			tmpString.append(c);
+		}
+	}
+
+	if (stringSize + tmpStringSize > rect.W())
+	{
+		text_lines.push_back(string());
+		stringSize = 0;
+	}
+
+	text_lines.back().append(tmpString);
+	stringSize += tmpStringSize;
+
+	tmpString.resize(0);
+	tmpStringSize = 0;
 }
 
 
@@ -1092,7 +1289,7 @@ void ycairo_drop_shadow::ycairo_drop_shadow_set_opacity(cairo_t * cr, double opa
 void ycairo_drop_shadow::ycairo_drop_shadow_set_radius(cairo_t * cr, double radius)
 {
 	int props_index = _get_props_index(cr);
-	props[props_index].shadow_radius = IPMAX(radius, 1);
+	props[props_index].shadow_radius = IPMAX(radius, 1.0);
 }
 
 void ycairo_drop_shadow::ycairo_drop_shadow_set_distance(cairo_t * cr, double distance)
@@ -1105,7 +1302,7 @@ void ycairo_drop_shadow::ycairo_drop_shadow_set_distance(cairo_t * cr, double di
 void ycairo_drop_shadow::ycairo_drop_shadow_set_angle(cairo_t * cr, double angle)
 {
 	int props_index = _get_props_index(cr);
-	props[props_index].shadow_angle = IPMAX(IPMIN(angle, 180), -180);
+	props[props_index].shadow_angle = IPMAX(IPMIN(angle, 180.0), -180.0);
 	_calculate_shadow_offset(props_index);
 }
 
@@ -1135,19 +1332,23 @@ int ycairo_drop_shadow::_get_props_index(cairo_t * cr)
 void ycairo_drop_shadow::ycairo_drop_shadow_fill(cairo_t * cr, double downsample)
 {
 	_ycairo_draw_drop_shadow(cr, false, downsample);
+	cairo_new_path(cr);
 }
 
 void ycairo_drop_shadow::ycairo_drop_shadow_fill_fast(cairo_t * cr)
 {
 	_ycairo_draw_drop_shadow_fast(cr, false);
+	cairo_new_path(cr);
 }
 
 void ycairo_drop_shadow::ycairo_drop_shadow_stroke(cairo_t * cr, double downsample)
 {
 	_ycairo_draw_drop_shadow(cr, true, downsample);
+	cairo_new_path(cr);
 }
 
 void ycairo_drop_shadow::ycairo_drop_shadow_stroke_fast(cairo_t * cr)
 {
 	_ycairo_draw_drop_shadow_fast(cr, true);
+	cairo_new_path(cr);
 }
