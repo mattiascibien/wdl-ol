@@ -347,7 +347,7 @@ tresult PLUGIN_API IPlugVST3::setupProcessing (ProcessSetup& newSetup)
   if ((newSetup.symbolicSampleSize != kSample32) && (newSetup.symbolicSampleSize != kSample64)) return kResultFalse;
 
   mSampleRate = newSetup.sampleRate;
-  mIsBypassed = false;
+  //mIsBypassed = false;
   IPlugBase::SetBlockSize(newSetup.maxSamplesPerBlock);
   Reset();
 
@@ -374,7 +374,7 @@ tresult PLUGIN_API IPlugVST3::process(ProcessData& data)
     //it is possible to get a finer resolution of control here by retrieving more values (points) from the queue
     //for now we just grab the last one
 
-    for (int32 i = 0; i < NParams() && numParamsChanged > 0; i++)
+    for (int32 i = 0; i < NParams() > 0; i++)
     {
       IParamValueQueue* paramQueue = paramChanges->getParameterData(i);
       if (paramQueue)
@@ -768,9 +768,7 @@ ParamValue PLUGIN_API IPlugVST3::plainParamToNormalized(ParamID tag, ParamValue 
 }
 
 ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
-{
-    if (tag > NParams()) return 0.0;
-    
+{  
   if (tag == kBypassParam) 
   {
     return (ParamValue) mIsBypassed;
@@ -791,9 +789,7 @@ ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
 }
 
 tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
-{
-    if (tag > NParams()) return kResultFalse;
-    
+{    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -806,9 +802,7 @@ tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
 }
 
 tresult PLUGIN_API IPlugVST3::getParamStringByValue(ParamID tag, ParamValue valueNormalized, String128 string)
-{
-    if (tag > NParams()) return kResultFalse;
-    
+{    
   IParam* param = GetParam(tag);
 
   if (param)
