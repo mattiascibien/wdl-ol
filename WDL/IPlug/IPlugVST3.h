@@ -87,7 +87,7 @@ public:
   virtual void BeginInformHostOfParamChange(int idx) override;
   virtual void InformHostOfParamChange(int idx, double normalizedValue) override;
   virtual void EndInformHostOfParamChange(int idx) override;
-  virtual void InformHostOfProgramChange() override {};
+  virtual void InformHostOfProgramChange() override;;
   
   virtual bool IsRenderingOffline() override { return (processSetup.processMode == Steinberg::Vst::kOffline); }
 
@@ -132,6 +132,7 @@ private:
   virtual Steinberg::tresult beginEdit(Steinberg::Vst::ParamID tag) override;
   virtual Steinberg::tresult performEdit(Steinberg::Vst::ParamID tag, Steinberg::Vst::ParamValue valueNormalized) override;
   virtual Steinberg::tresult endEdit(Steinberg::Vst::ParamID tag) override;
+  virtual Steinberg::tresult setDirty(Steinberg::TBool state) override;
   Steinberg::Vst::AudioBus* getAudioInput(Steinberg::int32 index);
   Steinberg::Vst::AudioBus* getAudioOutput(Steinberg::int32 index);
   Steinberg::Vst::SpeakerArrangement getSpeakerArrForChans(Steinberg::int32 chans);

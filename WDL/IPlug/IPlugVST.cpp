@@ -45,6 +45,7 @@ IPlugVST::IPlugVST(IPlugInstanceInfo instanceInfo,
               kAPIVST2)
   , mHostCallback(instanceInfo.mVSTHostCallback)
   , mHostSpecificInitDone(false)
+  , mPublicParams(nPublicParams)
 {
   Trace(TRACELOC, "%s", effectName);
 
@@ -92,6 +93,7 @@ IPlugVST::IPlugVST(IPlugInstanceInfo instanceInfo,
 
 void IPlugVST::BeginInformHostOfParamChange(int idx)
 {
+    
   mHostCallback(&mAEffect, audioMasterBeginEdit, idx, 0, 0, 0.0f);
 }
 

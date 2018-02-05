@@ -100,7 +100,7 @@ protected:
 	void HostSpecificInit();
 
 private:
-    int mPublicParams = 0;
+    int mPublicParams = 0, mPrivateParams = 0;
 	WDL_String mOSXBundleID;
 	WDL_String mCocoaViewFactoryClassName;
 	char mParamValueString[MAX_PARAM_DISPLAY_LEN];

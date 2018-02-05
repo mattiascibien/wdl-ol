@@ -757,6 +757,8 @@ tresult PLUGIN_API IPlugVST3::getEditorState(IBStream* state)
 
 ParamValue PLUGIN_API IPlugVST3::plainParamToNormalized(ParamID tag, ParamValue plainValue)
 {
+    if (tag >= mPublicParams) return plainValue;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -778,6 +780,9 @@ ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
 //     return (ParamValue) ToNormalizedParam(mCurrentPresetIdx, 0, NPresets(), 1.);
 //   }
 
+    
+    if (tag >= mPublicParams) return 0.0;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -789,7 +794,9 @@ ParamValue PLUGIN_API IPlugVST3::getParamNormalized(ParamID tag)
 }
 
 tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
-{    
+{
+    if (tag >= mPublicParams) return kResultFalse;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -802,7 +809,9 @@ tresult PLUGIN_API IPlugVST3::setParamNormalized(ParamID tag, ParamValue value)
 }
 
 tresult PLUGIN_API IPlugVST3::getParamStringByValue(ParamID tag, ParamValue valueNormalized, String128 string)
-{    
+{
+    if (tag >= mPublicParams) return kResultFalse;
+    
   IParam* param = GetParam(tag);
 
   if (param)
@@ -857,6 +866,15 @@ tresult IPlugVST3::endEdit(ParamID tag)
   if (componentHandler)
     return componentHandler->endEdit(tag);
   return kResultFalse;
+}
+
+tresult IPlugVST3::setDirty(TBool state)
+{
+	if (componentHandler2)
+	{
+		return componentHandler2->setDirty(state);
+	}
+	return kNotImplemented;
 }
 
 AudioBus* IPlugVST3::getAudioInput (int32 index)
@@ -987,6 +1005,11 @@ void IPlugVST3::EndInformHostOfParamChange(int idx)
 {
   Trace(TRACELOC, "%d", idx);
   endEdit(idx);
+}
+
+void IPlugVST3::InformHostOfProgramChange()
+{
+	setDirty(true);
 }
 
 void IPlugVST3::GetTime(ITimeInfo* pTimeInfo)

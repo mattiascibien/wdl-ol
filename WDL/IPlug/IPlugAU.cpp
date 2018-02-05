@@ -493,10 +493,6 @@ OSStatus IPlugAU::GetProperty(AudioUnitPropertyID propID, AudioUnitScope scope, 
         {
             n = (scope == kAudioUnitScope_Global ? mPublicParams : 0);
         }
-        else
-        {
-            n = (scope == kAudioUnitScope_Global ? 1 : 0);
-        }
     
 		*pDataSize = n * sizeof(AudioUnitParameterID);
 		if (pData && n)
@@ -513,24 +509,6 @@ OSStatus IPlugAU::GetProperty(AudioUnitPropertyID propID, AudioUnitScope scope, 
 	{
         // Set dummy parameter
         if (mPublicParams < 1)
-        {
-            ASSERT_SCOPE(kAudioUnitScope_Global);
-            ASSERT_ELEMENT(1);
-            *pDataSize = sizeof(AudioUnitParameterInfo);
-            if (pData)
-            {
-                AudioUnitParameterInfo* pInfo = (AudioUnitParameterInfo*)pData;
-                memset(pInfo, 0, sizeof(AudioUnitParameterInfo));
-                
-                pInfo->flags = kAudioUnitParameterFlag_CFNameRelease;
-                strcpy(pInfo->name, "Dummy Parameter");   // Max 52.
-                pInfo->unit = kAudioUnitParameterUnit_Indexed;
-                pInfo->minValue = 0;
-                pInfo->maxValue = 0;
-                pInfo->defaultValue = 0;
-            }
-        }
-        else
         {
             ASSERT_SCOPE(kAudioUnitScope_Global);
             ASSERT_ELEMENT(mPublicParams);
@@ -1831,6 +1809,7 @@ IPlugAU::IPlugAU(IPlugInstanceInfo instanceInfo,
 	, mTempo(DEFAULT_TEMPO)
 	, mActive(false)
     , mPublicParams(nPublicParams)
+    , mPrivateParams(nPrivateParams)
 {
 	Trace(TRACELOC, "%s", effectName);
 
@@ -1940,23 +1919,20 @@ void IPlugAU::SendAUEvent(AudioUnitEventType type, AudioComponentInstance ci, in
 
 void IPlugAU::BeginInformHostOfParamChange(int idx)
 {
-    if (mPublicParams < 1) idx = 0;
-	Trace(TRACELOC, "%d", idx);
-	SendAUEvent(kAudioUnitEvent_BeginParameterChangeGesture, mCI, idx);
+    Trace(TRACELOC, "%d", idx);
+    SendAUEvent(kAudioUnitEvent_BeginParameterChangeGesture, mCI, idx);
 }
 
 void IPlugAU::InformHostOfParamChange(int idx, double normalizedValue)
 {
-    if (mPublicParams < 1) idx = 0;
-	Trace(TRACELOC, "%d:%f", idx, normalizedValue);
-	SendAUEvent(kAudioUnitEvent_ParameterValueChange, mCI, idx);
+    Trace(TRACELOC, "%d:%f", idx, normalizedValue);
+    SendAUEvent(kAudioUnitEvent_ParameterValueChange, mCI, idx);
 }
 
 void IPlugAU::EndInformHostOfParamChange(int idx)
 {
-    if (mPublicParams < 1) idx = 0;
-	Trace(TRACELOC, "%d", idx);
-	SendAUEvent(kAudioUnitEvent_EndParameterChangeGesture, mCI, idx);
+    Trace(TRACELOC, "%d", idx);
+    SendAUEvent(kAudioUnitEvent_EndParameterChangeGesture, mCI, idx);
 }
 
 void IPlugAU::InformHostOfProgramChange()
