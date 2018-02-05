@@ -116,6 +116,7 @@ public:
 
 	// Run the "open file" or "save file" dialog.  Default to host executable path.
 	virtual void PromptForFile(WDL_String* pFilename, EFileAction action = kFileOpen, WDL_String* pDir = 0, char* extensions = 0) = 0;  // extensions = "txt wav" for example.
+	virtual void PromptForFolder(WDL_String * pFolderPath, const char* title = "Browse for folder...") = 0;
 	virtual bool PromptForColor(IColor* pColor, char* prompt = 0) = 0;
 
 	virtual bool OpenURL(const char* url, const char* msgWindowTitle = 0, const char* confirmMsg = 0, const char* errMsgOnFailure = 0) = 0;
@@ -135,6 +136,9 @@ public:
 
 	virtual void CloseWindow() = 0;
 	virtual void* GetWindow() = 0;
+
+	void OnGUIOpen();
+	void OnGUIClose();
 
 	virtual bool GetTextFromClipboard(WDL_String* pStr) = 0;
 
@@ -180,6 +184,7 @@ public:
 	void RemoveControl(int Index);
 
 	IControl* GetControl(int idx) { return mControls.Get(idx); }
+	int GetNUserControls();
 	int GetNControls() { return mControls.GetSize(); }
 	void HideControl(int paramIdx, bool hide);
 	void GrayOutControl(int paramIdx, bool gray);

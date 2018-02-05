@@ -614,6 +614,12 @@ void IGraphics::AttachKeyCatcher(IControl* pControl)
 	mKeyCatcher = pControl;
 }
 
+int IGraphics::GetNUserControls()
+{
+	if (mPlug->GetGUIResize()) return GetNControls() - 3;
+	else return GetNControls();
+}
+
 void IGraphics::HideControl(int paramIdx, bool hide)
 {
 	int i, n = mControls.GetSize();
@@ -1273,6 +1279,28 @@ void IGraphics::SetStrictDrawing(bool strict)
 {
 	mStrict = strict;
 	SetAllControlsDirty();
+}
+
+void IGraphics::OnGUIOpen()
+{
+	int i, n = mControls.GetSize();
+	IControl** ppControl = mControls.GetList();
+	for (i = 0; i < n; ++i, ++ppControl)
+	{
+		IControl* pControl = *ppControl;
+		pControl->OnGUIOpen();
+	}
+}
+
+void IGraphics::OnGUIClose()
+{
+	int i, n = mControls.GetSize();
+	IControl** ppControl = mControls.GetList();
+	for (i = 0; i < n; ++i, ++ppControl)
+	{
+		IControl* pControl = *ppControl;
+		pControl->OnGUIClose();
+	}
 }
 
 void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
