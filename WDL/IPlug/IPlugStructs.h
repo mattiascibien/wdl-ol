@@ -402,6 +402,16 @@ struct DRECT
 
 	operator IRECT();
 
+	bool operator==(const DRECT& rhs) const
+	{
+		return (L == rhs.L && T == rhs.T && R == rhs.R && B == rhs.B);
+	}
+
+	bool operator!=(const DRECT& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 	DRECT operator+(const DRECT& rhs) const
 	{
 		return DRECT(L + rhs.L, T + rhs.T, R + rhs.R, B + rhs.B);
@@ -491,6 +501,11 @@ struct DRECT
 		if (Empty()) { return *pRHS; }
 		if (pRHS->Empty()) { return *this; }
 		return DRECT(IPMIN(L, pRHS->L), IPMIN(T, pRHS->T), IPMAX(R, pRHS->R), IPMAX(B, pRHS->B));
+	}
+
+	inline bool Contains(double x, double y)
+	{
+		return (!Empty() && x >= L && x < R && y >= T && y < B);
 	}
 };
 
