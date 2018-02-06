@@ -1090,7 +1090,7 @@ int IPlugVST3::GetSamplePos()
 
 void IPlugVST3::ResizeGraphics(int w, int h)
 {
-    if (GetGUI())
+    if (GetGUI() && viewsArray.size())
     {
         viewsArray[0]->resize(w, h);
         
