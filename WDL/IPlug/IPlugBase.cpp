@@ -1029,8 +1029,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	int pos = startPos;
 
 	// Load last saved parameter number.
-
-	int nStoredPublicParams, nStoredPrivateParams, nGuiResizeParams;
+	int nStoredPublicParams = 0, nStoredPrivateParams = 0, nGuiResizeParams = 0;
 	pos = pChunk->Get(&nStoredPublicParams, pos);
 	pos = pChunk->Get(&nStoredPrivateParams, pos);
 	pos = pChunk->Get(&nGuiResizeParams, pos);
@@ -1041,7 +1040,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	// Load parameters for GUIResize
 	if (GetGUIResize())
 	{
-		for (int i = 0; i < nGuiResizeParams; i++)
+		for (int i = 0; i < nGuiResizeParams && i < GetGUIResize()->GetGUIResizeParameterSize() && pos >= 0; i++)
 		{
 			IParam* pParam = GetGUIResize()->GetGUIResizeParameter(i);
 			double v = 0.0;
@@ -1052,7 +1051,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	}
 
 	// Load public parameters
-	for (int i = 0; i < nStoredPublicParams && pos >= 0; ++i)
+	for (int i = 0; i < nStoredPublicParams && i < mParams.size() && pos >= 0; i++)
 	{
 		IParam* pParam = &mParams[i];
 		double v = 0.0;
@@ -1062,7 +1061,7 @@ int IPlugBase::UnserializeParams(ByteChunk* pChunk, int startPos)
 	}
 
 	// Load private parameters
-	for (int i = 0; i < nStoredPrivateParams && pos >= 0; ++i)
+	for (int i = 0; i < nStoredPrivateParams && (i + numPublicParams) < mParams.size() && pos >= 0; i++)
 	{
 		IParam* pParam = &mParams[i + numPublicParams];
 		double v = 0.0;
