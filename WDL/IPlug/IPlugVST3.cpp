@@ -655,21 +655,47 @@ tresult PLUGIN_API IPlugVST3::getState(IBStream* state)
 
 tresult PLUGIN_API IPlugVST3::setComponentState(IBStream *state)
 {
-  TRACE;
-  WDL_MutexLock lock(&mMutex);
-
-  ByteChunk chunk;
-  SerializeState(&chunk); // to get the size
-
-  if (chunk.Size() > 0)
-  {
-    state->read(chunk.GetBytes(), chunk.Size());
-    UnserializeState(&chunk, 0);
-    RedrawParamControls();
+    TRACE;
+    WDL_MutexLock lock(&mMutex);
+    
+    ByteChunk chunk;
+    
+    int chunkSize = 0;
+    int64 stateStartPosition, stateEndPosition;
+    
+    // Get the position at the start
+    state->tell(&stateStartPosition);
+    
+    // Leave room to write chunk size at the beginning.
+    // Write dummy chunk size that will be overwritten at the end.
+    state->write(&chunkSize, sizeof(int));
+    
+    if (SerializeState(&chunk))
+    {
+        state->write(chunk.GetBytes(), chunk.Size());
+    }
+    else
+    {
+        return kResultFalse;
+    }
+    
+    // Get the position at the end
+    state->tell(&stateEndPosition);
+    
+    // Move to beginning to write the chunk size
+    state->seek(stateStartPosition, IBStream::IStreamSeekMode::kIBSeekSet);
+    
+    // Write chunk size at the beginning
+    chunkSize = chunk.Size();
+    state->write(&chunkSize, sizeof(int));
+    
+    // Return position to the end
+    state->seek(stateEndPosition, IBStream::IStreamSeekMode::kIBSeekSet);
+    
+    int32 toSaveBypass = mIsBypassed ? 1 : 0;
+    state->write(&toSaveBypass, sizeof(int32));
+    
     return kResultOk;
-  }
-
-  return kResultFalse;
 }
 
 tresult PLUGIN_API IPlugVST3::canProcessSampleSize(int32 symbolicSampleSize)
