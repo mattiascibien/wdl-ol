@@ -447,16 +447,22 @@ CALL ..\..\AAX_SDK\Utilities\CreatePackage.bat $(OutDir) ..\..\AAX_SDK\Utilities
     <ClCompile Include="..\..\WDL\IPlug\Hosts.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IBitmapMonoText.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IControl.cpp" />
+    <ClCompile Include="..\..\WDL\IPlug\IControlGroup.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IGraphics.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IGraphicsWin.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IParam.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IPlugBase.cpp" />
+    <ClCompile Include="..\..\WDL\IPlug\IPlugConfigFile.cpp" />
+    <ClCompile Include="..\..\WDL\IPlug\IPlugFileSystem.cpp" />
+    <ClCompile Include="..\..\WDL\IPlug\IPlugGUILiveEdit.cpp" />
+    <ClCompile Include="..\..\WDL\IPlug\IPlugGUIResize.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IPlugStructs.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IPopupMenu.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\Log.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\AAX\AAX_CIPlugParameters.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\IPlugAAX.cpp" />
     <ClCompile Include="..\..\WDL\IPlug\AAX\IPlugAAX_Describe.cpp" />
+    <ClCompile Include="..\..\YCAIRO\ycairo.cpp" />
     <ClCompile Include="IPlugEffectGUIResize.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -493,11 +499,16 @@ CALL ..\..\AAX_SDK\Utilities\CreatePackage.bat $(OutDir) ..\..\AAX_SDK\Utilities
     <ClInclude Include="..\..\WDL\IPlug\Hosts.h" />
     <ClInclude Include="..\..\WDL\IPlug\IBitmapMonoText.h" />
     <ClInclude Include="..\..\WDL\IPlug\IControl.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IControlGroup.h" />
     <ClInclude Include="..\..\WDL\IPlug\IGraphics.h" />
     <ClInclude Include="..\..\WDL\IPlug\IGraphicsWin.h" />
     <ClInclude Include="..\..\WDL\IPlug\IKeyboardControl.h" />
     <ClInclude Include="..\..\WDL\IPlug\IMidiQueue.h" />
     <ClInclude Include="..\..\WDL\IPlug\IParam.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IPlugConfigFile.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IPlugFileSystem.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IPlugGUILiveEdit.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IPlugGUIResize.h" />
     <ClInclude Include="..\..\WDL\IPlug\IPlug_include_in_plug_hdr.h" />
     <ClInclude Include="..\..\WDL\IPlug\IPlug_include_in_plug_src.h" />
     <ClInclude Include="..\..\WDL\IPlug\IPlugBase.h" />
@@ -507,6 +518,8 @@ CALL ..\..\AAX_SDK\Utilities\CreatePackage.bat $(OutDir) ..\..\AAX_SDK\Utilities
     <ClInclude Include="..\..\WDL\IPlug\Log.h" />
     <ClInclude Include="..\..\WDL\IPlug\AAX\AAX_CIPlugParameters.h" />
     <ClInclude Include="..\..\WDL\IPlug\IPlugAAX.h" />
+    <ClInclude Include="..\..\WDL\IPlug\UTF_Helper.h" />
+    <ClInclude Include="..\..\YCAIRO\ycairo.h" />
     <ClInclude Include="IPlugEffectGUIResize.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

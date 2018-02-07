@@ -55,6 +55,24 @@
     <ClCompile Include="..\..\AAX_SDK\Interfaces\AAX_Exports.cpp">
       <Filter>Libs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\WDL\IPlug\IPlugGUILiveEdit.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\WDL\IPlug\IPlugGUIResize.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\WDL\IPlug\IControlGroup.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\WDL\IPlug\IPlugConfigFile.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\WDL\IPlug\IPlugFileSystem.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\YCAIRO\ycairo.cpp">
+      <Filter>IPlug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\WDL\IPlug\Containers.h">
@@ -113,6 +131,27 @@
     </ClInclude>
     <ClInclude Include="IPlugEffectCairoGraphics.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="..\..\WDL\IPlug\IPlugFileSystem.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\WDL\IPlug\IPlugGUILiveEdit.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\WDL\IPlug\IPlugGUIResize.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\WDL\IPlug\UTF_Helper.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\WDL\IPlug\IControlGroup.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\WDL\IPlug\IPlugConfigFile.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\YCAIRO\ycairo.h">
+      <Filter>IPlug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IPlugEffectCairoGraphics.rc" />
