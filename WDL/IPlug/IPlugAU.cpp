@@ -507,8 +507,7 @@ OSStatus IPlugAU::GetProperty(AudioUnitPropertyID propID, AudioUnitScope scope, 
 	}
 	case kAudioUnitProperty_ParameterInfo:               // 4,  listenable
 	{
-        // Set dummy parameter
-        if (mPublicParams < 1)
+        if (mPublicParams > 0)
         {
             ASSERT_SCOPE(kAudioUnitScope_Global);
             ASSERT_ELEMENT(mPublicParams);
