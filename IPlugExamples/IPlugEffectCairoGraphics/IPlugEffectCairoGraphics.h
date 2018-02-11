@@ -33,27 +33,38 @@ public:
 
 		// Custom cairo code -----------------------------------------------------------------------------------------------------------------------------------
 
-		cairo_set_line_width(cr, 6);
+		//cairo_set_line_width(cr, 6);
 
-		cairo_rectangle(cr, 12, 12, 232, 70);
-		cairo_new_sub_path(cr); cairo_arc(cr, 64, 64, 40, 0, 2 * M_PI);
-		cairo_new_sub_path(cr); cairo_arc_negative(cr, 192, 64, 40, 0, -2 * M_PI);
+		//cairo_rectangle(cr, 12, 12, 232, 70);
+		//cairo_new_sub_path(cr); cairo_arc(cr, 64, 64, 40, 0, 2 * M_PI);
+		//cairo_new_sub_path(cr); cairo_arc_negative(cr, 192, 64, 40, 0, -2 * M_PI);
 
-		cairo_set_fill_rule(cr, CAIRO_FILL_RULE_EVEN_ODD);
-		cairo_set_source_rgb(cr, 0, 0.7, 0); cairo_fill_preserve(cr);
-		cairo_set_source_rgb(cr, 0, 0, 0); cairo_stroke(cr);
+		//cairo_set_fill_rule(cr, CAIRO_FILL_RULE_EVEN_ODD);
+		//cairo_set_source_rgb(cr, 0, 0.7, 0); cairo_fill_preserve(cr);
+		//cairo_set_source_rgb(cr, 0, 0, 0); cairo_stroke(cr);
 
-		cairo_translate(cr, 0, 128);
-		cairo_rectangle(cr, 12, 12, 232, 70);
-		cairo_new_sub_path(cr); cairo_arc(cr, 64, 64, 40, 0, 2 * M_PI);
-		cairo_new_sub_path(cr); cairo_arc_negative(cr, 192, 64, 40, 0, -2 * M_PI);
+		//cairo_translate(cr, 0, 128);
+		//cairo_rectangle(cr, 12, 12, 232, 70);
+		//cairo_new_sub_path(cr); cairo_arc(cr, 64, 64, 40, 0, 2 * M_PI);
+		//cairo_new_sub_path(cr); cairo_arc_negative(cr, 192, 64, 40, 0, -2 * M_PI);
 
-		cairo_set_fill_rule(cr, CAIRO_FILL_RULE_WINDING);
-		cairo_set_source_rgb(cr, 0, 0, 0.9); cairo_fill_preserve(cr);
-		cairo_set_source_rgb(cr, 0, 0, 0); cairo_stroke(cr);
+		//cairo_set_fill_rule(cr, CAIRO_FILL_RULE_WINDING);
+		//cairo_set_source_rgb(cr, 0, 0, 0.9); cairo_fill_preserve(cr);
+		//cairo_set_source_rgb(cr, 0, 0, 0); cairo_stroke(cr);
 
-		cairo_translate(cr, 0, -128);
+		//cairo_translate(cr, 0, -128);
 
+
+		cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
+		ycairo_set_source_rgba(cr, IColor(255, 182, 59, 65));
+		cairo_paint(cr);
+
+		cairo_set_operator(cr, CAIRO_OPERATOR_COLOR_DODGE);
+		ycairo_set_source_rgba(cr, IColor(255, 169, 142, 235));
+		cairo_rectangle(cr, 50, 50, 200, 200);
+		cairo_fill(cr);
+
+		cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
 		// ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
