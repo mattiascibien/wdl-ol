@@ -576,7 +576,7 @@ void IGraphicsWin::Resize(int w, int h)
   int dw = w - Width(), dh = h - Height();
   IGraphics::Resize(w, h);
   
-
+#ifndef AAX_API
   if (WindowIsOpen())
   {
     HWND pParent = 0, pGrandparent = 0;
@@ -619,6 +619,7 @@ void IGraphicsWin::Resize(int w, int h)
 	InvalidateRect(mPlugWnd, &r, FALSE);
 	UpdateWindow(mPlugWnd);
   }
+#endif // !AAX_API
 }
 
 void IGraphicsWin::HideMouseCursor()

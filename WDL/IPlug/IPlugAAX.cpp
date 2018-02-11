@@ -41,6 +41,9 @@ void AAX_CEffectGUI_IPLUG::CreateViewContainer()
   {
     mGraphics->SetViewContainer(GetViewContainer());
     mGraphics->OpenWindow(winPtr);
+     
+    mGraphics->GetPlug()->OnGUIOpen();
+    mGraphics->GetPlug()->ResizeAtGUIOpen(mGraphics);
   }
 }
 
@@ -48,6 +51,7 @@ void AAX_CEffectGUI_IPLUG::DeleteViewContainer()
 {
   if(mGraphics)
   {
+    mGraphics->GetPlug()->OnGUIClose();
     mGraphics->CloseWindow();
   }
 }
@@ -127,6 +131,8 @@ IPlugAAX::IPlugAAX(IPlugInstanceInfo instanceInfo,
 {
   Trace(TRACELOC, "%s%s", effectName, channelIOStr);
 
+  mPublicParams = nPublicParams;
+
   SetInputChannelConnections(0, NInChannels(), true);
   SetOutputChannelConnections(0, NOutChannels(), true);
   
@@ -161,7 +167,7 @@ AAX_Result IPlugAAX::EffectInit()
   mBypassParameter->SetType( AAX_eParameterType_Discrete );
   mParameterManager.AddParameter(mBypassParameter);
       
-  for (int i=0;i<NParams();i++)
+  for (int i=0;i<mPublicParams;i++)
   {
     IParam *p = GetParam(i);
     AAX_IParameter* param = 0;
@@ -191,12 +197,13 @@ AAX_Result IPlugAAX::EffectInit()
         param = new AAX_CParameter<int>(paramID->Get(), 
                                         AAX_CString(p->GetNameForHost()), 
                                         (int)p->GetDefault(), 
-                                        AAX_CLinearTaperDelegate<int>((int)p->GetMin(), (int)p->GetMax()), 
+										AAX_CLinearTaperDelegate<int, 1>((int)p->GetMin(), (int)p->GetMax()),
                                         AAX_CUnitDisplayDelegateDecorator<int>( AAX_CNumberDisplayDelegate<int>(), AAX_CString(p->GetLabelForHost())), 
                                         p->GetCanAutomate());
         
         param->SetNumberOfSteps(128);
         param->SetType(AAX_eParameterType_Continuous);
+
 
         break;
       }
@@ -258,7 +265,7 @@ AAX_Result IPlugAAX::UpdateParameterNormalizedValue(AAX_CParamID iParameterID, d
   
   int paramIdx = atoi(iParameterID) - kAAXParamIdxOffset;
   
-  if ((paramIdx >= 0) && (paramIdx < NParams())) 
+  if ((paramIdx >= 0) && (paramIdx < mPublicParams)) 
   {
     IMutexLock lock(this);
     
@@ -414,7 +421,7 @@ AAX_Result IPlugAAX::SetChunk(AAX_CTypeID chunkID, const AAX_SPlugInChunk * iChu
     //GetIPlugVerFromChunk(&IPlugChunk, &pos);
     pos = UnserializeState(&IPlugChunk, pos);
     
-    for (int i = 0; i< NParams(); i++)
+    for (int i = 0; i< mPublicParams; i++)
     {
       SetParameterNormalizedValue(mParamIDs.Get(i)->Get(), GetParam(i)->GetNormalized() );
     }
@@ -448,18 +455,24 @@ AAX_Result IPlugAAX::CompareActiveChunk(const AAX_SPlugInChunk * aChunkP, AAX_CB
 void IPlugAAX::BeginInformHostOfParamChange(int idx)
 {
   TRACE;
+
+  if (idx < mPublicParams)
   TouchParameter(mParamIDs.Get(idx)->Get());
 }
 
 void IPlugAAX::InformHostOfParamChange(int idx, double normalizedValue)
 {
   TRACE;
+
+  if (idx < mPublicParams)
   SetParameterNormalizedValue(mParamIDs.Get(idx)->Get(), normalizedValue );
 }
 
 void IPlugAAX::EndInformHostOfParamChange(int idx)
 {
   TRACE;
+
+  if (idx < mPublicParams)
   ReleaseParameter(mParamIDs.Get(idx)->Get());
 }
 
@@ -519,13 +532,14 @@ void IPlugAAX::ResizeGraphics(int w, int h)
     AAX_Point oEffectViewSize;
     oEffectViewSize.horz = (float) w;
     oEffectViewSize.vert = (float) h;
-    pGraphics->GetViewContainer()->SetViewSize(oEffectViewSize);
-
-    OnWindowResize();
-
+	
 #ifdef USING_YCAIRO
 	ResizeCairoSurface();
 #endif
+
+	pGraphics->GetViewContainer()->SetViewSize(oEffectViewSize);
+
+      OnWindowResize();
   }
 }
 

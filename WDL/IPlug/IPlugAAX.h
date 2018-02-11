@@ -96,6 +96,7 @@ private:
   AAX_CParameter<bool>* mBypassParameter;
   AAX_ITransport* mTransport;
   WDL_PtrList<WDL_String> mParamIDs;
+  int mPublicParams = 0;
 };
 
 IPlugAAX* MakePlug();

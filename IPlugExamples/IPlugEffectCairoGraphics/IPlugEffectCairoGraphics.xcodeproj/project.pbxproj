@@ -121,6 +121,7 @@
 		0F40451E1E74C89300A28FED /* swell-misc.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D3F13B635A0001D0217 /* swell-misc.mm */; };
 		0F40451F1E74C89300A28FED /* swell-wnd.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4113B635AB001D0217 /* swell-wnd.mm */; };
 		0F4045201E74C89300A28FED /* swell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4FD16D4313B635B2001D0217 /* swell.cpp */; };
+		0F853B91202F701C00F8A39C /* libAAXLibrary_libcpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FE4D6721EABBAD200ACFC54 /* libAAXLibrary_libcpp.a */; };
 		0FDA231F1EBF519600593ADC /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F78D7CF13B637790032E0F3 /* CoreMIDI.framework */; };
 		0FE4D6681EABBAD200ACFC54 /* IControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4D6661EABBAD200ACFC54 /* IControlGroup.cpp */; };
 		0FE4D6691EABBAD200ACFC54 /* IControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FE4D6661EABBAD200ACFC54 /* IControlGroup.cpp */; };
@@ -147,7 +148,6 @@
 		4F3AE1D712C0E5E2001FD7A4 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52E41D7E0D14C2D100A0943B /* AudioUnit.framework */; };
 		4F3AE1D812C0E5E2001FD7A4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52E41CC40D14C2B000A0943B /* CoreServices.framework */; };
 		4F3AE1D912C0E5E2001FD7A4 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52E41CB90D14C2A900A0943B /* CoreAudio.framework */; };
-		4F3B0B44158B50A5001B0CEF /* libAAXLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F8B6723158B4EB2002FC25B /* libAAXLibrary.a */; };
 		4F3EE94613B65A350097B791 /* IPlugOSDetect.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EE94513B65A350097B791 /* IPlugOSDetect.h */; };
 		4F3EE94913B65A350097B791 /* IPlugOSDetect.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F3EE94513B65A350097B791 /* IPlugOSDetect.h */; };
 		4F78D70B13B637340032E0F3 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F78D62313B637200032E0F3 /* CoreFoundation.framework */; };
@@ -382,19 +382,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0F853B8E202F701700F8A39C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4FF7B0F3156A831000E6CB12 /* AAXLibrary.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 842A78E51A6098F400EC60F5;
+			remoteInfo = AAXLibrary_libcpp;
+		};
 		0FE4D6711EABBAD200ACFC54 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4FF7B0F3156A831000E6CB12 /* AAXLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 842A79751A6098F400EC60F5;
 			remoteInfo = AAXLibrary_libcpp;
-		};
-		4F3B0B42158B509A001B0CEF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4FF7B0F3156A831000E6CB12 /* AAXLibrary.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC045055464E500DB518D;
-			remoteInfo = AAXLibrary;
 		};
 		4F4AD1F51409A56A0068A6D4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -855,8 +855,8 @@
 				0F40433A1E70A5D000A28FED /* libpng16.a in Frameworks */,
 				0F4043221E70A5D000A28FED /* libexpat.a in Frameworks */,
 				0F40432E1E70A5D000A28FED /* libfreetype.a in Frameworks */,
-				4F3B0B44158B50A5001B0CEF /* libAAXLibrary.a in Frameworks */,
 				4FB600551567CBF90020189A /* lice.a in Frameworks */,
+				0F853B91202F701C00F8A39C /* libAAXLibrary_libcpp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -893,6 +893,7 @@
 				32C88E010371C26100C91783 /* Other Sources */,
 				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
 				19C28FB8FE9D52D311CA2CBB /* Products */,
+				0F853B90202F701C00F8A39C /* Frameworks */,
 			);
 			name = IPlugExample;
 			sourceTree = "<group>";
@@ -933,6 +934,13 @@
 				0F4043161E70A5D000A28FED /* libpng16.a */,
 			);
 			name = "Cairo Libs";
+			sourceTree = "<group>";
+		};
+		0F853B90202F701C00F8A39C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
@@ -1697,8 +1705,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				0F853B8F202F701700F8A39C /* PBXTargetDependency */,
 				4FB600501567CB990020189A /* PBXTargetDependency */,
-				4F3B0B43158B509A001B0CEF /* PBXTargetDependency */,
 			);
 			name = AAX;
 			productInstallPath = "$(HOME)/Library/Bundles";
@@ -2160,10 +2168,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4F3B0B43158B509A001B0CEF /* PBXTargetDependency */ = {
+		0F853B8F202F701700F8A39C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = AAXLibrary;
-			targetProxy = 4F3B0B42158B509A001B0CEF /* PBXContainerItemProxy */;
+			name = AAXLibrary_libcpp;
+			targetProxy = 0F853B8E202F701700F8A39C /* PBXContainerItemProxy */;
 		};
 		4F678B6D13E984B200A6A9BB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

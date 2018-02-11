@@ -113,6 +113,8 @@ public:
 	// Your plugin class, or a control class, can call these functions.
 
 	int NParams() { return mParams.size(); }
+	int NPrivateParams() { return numPrivateParams; }
+	int NPublicParams() { return numPublicParams; }
 	IParam* GetParam(int idx) { return &mParams[idx]; }
 	IGraphics* GetGUI() { return mGraphics; }
 

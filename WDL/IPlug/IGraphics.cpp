@@ -1332,7 +1332,7 @@ void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 #endif
 
 #ifdef AAX_API
-		if (mAAXViewContainer && paramIdx >= 0)
+		if (mAAXViewContainer && paramIdx >= 0 && paramIdx < mPlug->NPublicParams())
 		{
 			uint32_t mods = GetAAXModifiersFromIMouseMod(pMod);
 #ifdef OS_WIN
@@ -1351,7 +1351,7 @@ void IGraphics::OnMouseDown(int x, int y, IMouseMod* pMod)
 		}
 #endif
 
-		if (paramIdx >= 0)
+		if (paramIdx >= 0 && paramIdx < mPlug->NPublicParams())
 		{
 			mPlug->BeginInformHostOfParamChange(paramIdx);
 		}
@@ -1373,7 +1373,7 @@ void IGraphics::OnMouseUp(int x, int y, IMouseMod* pMod)
 		pControl->OnMouseUp(x, y, pMod);
 		pControl = mControls.Get(c); // needed if the mouse message caused a resize/rebuild
 		int paramIdx = pControl->ParamIdx();
-		if (paramIdx >= 0)
+		if (paramIdx >= 0 && paramIdx < mPlug->NPublicParams())
 		{
 			mPlug->EndInformHostOfParamChange(paramIdx);
 		}

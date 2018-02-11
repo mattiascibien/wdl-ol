@@ -47,5 +47,5 @@ VST_FOLDER = /Library/Audio/Plug-Ins/VST
 VST3_FOLDER = /Library/Audio/Plug-Ins/VST3
 AU_FOLDER = /Library/Audio/Plug-Ins/Components
 RTAS_FOLDER = /Applications/Avid/ProTools_3PDev/Plug-Ins
-AAX_FOLDER = /Applications/Avid/ProTools_3PDev/Plug-Ins
+AAX_FOLDER = /Library/Application Support/Avid/Audio/Plug-Ins
 APP_FOLDER = /Applications

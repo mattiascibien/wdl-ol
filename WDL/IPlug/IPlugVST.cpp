@@ -233,8 +233,6 @@ void IPlugVST::ResizeGraphics(int w, int h)
 {
   IGraphics* pGraphics = GetGUI();
     
-    
-    
   if (pGraphics)
   {
       mEditRect.left = 0;

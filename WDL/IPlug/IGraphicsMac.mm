@@ -496,6 +496,7 @@ void IGraphicsMac::ResizePluginView(int w, int h, bool resizeSuperView)
     [NSAnimationContext beginGrouping]; // Prevent animated resizing
     [[NSAnimationContext currentContext] setDuration:0.0];
     [view setFrameSize: size ];
+    //[view setNeedsDisplay:YES];
     [NSAnimationContext endGrouping];
     
 //    NSPoint origin;
@@ -571,7 +572,6 @@ void IGraphicsMac::Resize(int w, int h)
 //            {
 //                ResizePluginView(dW, dH);
 //            }
-            
             
             ResizePluginView(dW, dH);
         }
