@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Single object library component (body only).                         */
 /*                                                                         */
-/*  Copyright 1996-2018 by                                                 */
+/*  Copyright 1996-2017 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -29,7 +29,6 @@
 #include "ftobjs.c"
 #include "ftoutln.c"
 #include "ftpic.c"
-#include "ftpsprop.c"
 #include "ftrfork.c"
 #include "ftsnames.c"
 #include "ftstream.c"
