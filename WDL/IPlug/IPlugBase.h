@@ -15,7 +15,7 @@
 // Uncomment to enable IPlug::OnIdle() and IGraphics::OnGUIIdle().
 // #define USE_IDLE_CALLS
 
-#define USING_YCAIRO // Define this if you want to use Cairo graphics with IPlug
+//#define USING_YCAIRO // Define this if you want to use Cairo graphics with IPlug
 
 #define MAX_EFFECT_NAME_LEN 128
 #define DEFAULT_BLOCK_SIZE 1024

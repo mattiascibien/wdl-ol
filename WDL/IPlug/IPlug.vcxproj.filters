@@ -12,7 +12,6 @@
     <ClCompile Include="IPlugStructs.cpp" />
     <ClCompile Include="IPopupMenu.cpp" />
     <ClCompile Include="Log.cpp" />
-    <ClCompile Include="..\..\YCAIRO\ycairo.cpp" />
     <ClCompile Include="IPlugGUILiveEdit.cpp" />
     <ClCompile Include="IControlGroup.cpp" />
     <ClCompile Include="IPlugConfigFile.cpp" />
@@ -31,7 +30,6 @@
     <ClInclude Include="IPlugStructs.h" />
     <ClInclude Include="IPopupMenu.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="..\..\YCAIRO\ycairo.h" />
     <ClInclude Include="IPlugGUILiveEdit.h" />
     <ClInclude Include="IControlGroup.h" />
     <ClInclude Include="IPlugConfigFile.h" />
