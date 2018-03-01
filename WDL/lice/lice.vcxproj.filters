@@ -7,6 +7,9 @@
     <Filter Include="zlib">
       <UniqueIdentifier>{00f8957e-dc21-46c5-90a5-878c0fd1ff77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="glew">
+      <UniqueIdentifier>{ccac3d2e-239b-4d67-9834-bda56a091e13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\libpng\png.c">
@@ -107,6 +110,10 @@
     <ClCompile Include="..\lice\lice_palette.cpp" />
     <ClCompile Include="..\lice\lice_png.cpp" />
     <ClCompile Include="..\lice\lice_texgen.cpp" />
+    <ClCompile Include="lice_gl_ctx.cpp" />
+    <ClCompile Include="glew\src\glew.c">
+      <Filter>glew</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libpng\png.h">
@@ -167,5 +174,15 @@
     <ClInclude Include="..\lice\lice_extended.h" />
     <ClInclude Include="..\lice\lice_text.h" />
     <ClInclude Include="lice.h" />
+    <ClInclude Include="lice_gl_ctx.h" />
+    <ClInclude Include="glew\include\GL\glew.h">
+      <Filter>glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\glxew.h">
+      <Filter>glew</Filter>
+    </ClInclude>
+    <ClInclude Include="glew\include\GL\wglew.h">
+      <Filter>glew</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
